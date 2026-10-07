@@ -1,2 +1,2 @@
-export * from './provider.js';
-export * from './hooks.js';
+export * from './useClearSign.js';
+export * from './withClearSign.js';
