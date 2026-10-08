@@ -13,6 +13,62 @@ function shortenAddress(addr: string) {
   return `${addr.slice(0, 4)}...${addr.slice(-4)}`;
 }
 
+const handleCopy = (text: string) => {
+  navigator.clipboard.writeText(text).catch(() => {});
+};
+
+const DisplayValueRenderer: React.FC<{ val: DisplayValue }> = ({ val }) => {
+  if (val.kind === 'address') {
+    return (
+      <span title={val.value}>
+        {shortenAddress(val.value)}
+        <button type="button" onClick={() => handleCopy(val.value)} aria-label="Copy address">Copy</button>
+      </span>
+    );
+  }
+  if (val.kind === 'int' || val.kind === 'bool' || val.kind === 'string' || val.kind === 'symbol' || val.kind === 'void') {
+    return <span>{'value' in val ? String(val.value) : 'void'}</span>;
+  }
+  if (val.kind === 'bytes') {
+    return <span>{val.hex}</span>;
+  }
+  if (val.kind === 'vec') {
+    return (
+      <ul>
+        {val.items.map((item, i) => (
+           <li key={i}><DisplayValueRenderer val={item} /></li>
+        ))}
+      </ul>
+    );
+  }
+  if (val.kind === 'struct') {
+    return (
+      <ul>
+        {val.fields.map((f, i) => (
+           <li key={i}><strong>{f.name}:</strong> <DisplayValueRenderer val={f.value} /></li>
+        ))}
+      </ul>
+    );
+  }
+  return <span>Complex value</span>;
+};
+
+const AuthNodeRenderer: React.FC<{ node: AuthNode }> = ({ node }) => {
+  return (
+    <div className={styles.treeNode}>
+      <div><strong>{node.kind}</strong></div>
+      {node.contractId && <div>Contract: <span title={node.contractId}>{shortenAddress(node.contractId)}</span></div>}
+      {node.functionName && <div>Function: {node.functionName}</div>}
+      {node.children && node.children.length > 0 && (
+        <div>
+          Sub-invocations:
+          {node.children.map((child, i) => <AuthNodeRenderer key={i} node={child} />)}
+        </div>
+      )}
+    </div>
+  );
+};
+
 export const ClearSignModal: React.FC<ClearSignModalProps> = ({ preview, onApprove, onReject }) => {
   const [reviewed, setReviewed] = useState(false);
   const [xdrExpanded, setXdrExpanded] = useState(false);
@@ -67,62 +123,6 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({ preview, onAppro
 
   const riskInfo = getRiskBannerInfo();
 
-  const handleCopy = (text: string) => {
-    navigator.clipboard.writeText(text).catch(() => {});
-  };
-
-  const renderDisplayValue = (val: DisplayValue): React.ReactNode => {
-    if (val.kind === 'address') {
-      return (
-        <span title={val.value}>
-          {shortenAddress(val.value)}
-          <button type="button" onClick={() => handleCopy(val.value)} aria-label="Copy address">Copy</button>
-        </span>
-      );
-    }
-    if (val.kind === 'int' || val.kind === 'bool' || val.kind === 'string' || val.kind === 'symbol' || val.kind === 'void') {
-      return <span>{'value' in val ? String(val.value) : 'void'}</span>;
-    }
-    if (val.kind === 'bytes') {
-      return <span>{val.hex}</span>;
-    }
-    if (val.kind === 'vec') {
-      return (
-        <ul>
-          {val.items.map((item, i) => (
-             <li key={i}>{renderDisplayValue(item)}</li>
-          ))}
-        </ul>
-      );
-    }
-    if (val.kind === 'struct') {
-      return (
-        <ul>
-          {val.fields.map((f, i) => (
-             <li key={i}><strong>{f.name}:</strong> {renderDisplayValue(f.value)}</li>
-          ))}
-        </ul>
-      );
-    }
-    return <span>Complex value</span>;
-  };
-
-  const renderAuthNode = (node: AuthNode, index: number) => {
-    return (
-      <div key={index} className={styles.treeNode}>
-        <div><strong>{node.kind}</strong></div>
-        {node.contractId && <div>Contract: <span title={node.contractId}>{shortenAddress(node.contractId)}</span></div>}
-        {node.functionName && <div>Function: {node.functionName}</div>}
-        {node.children && node.children.length > 0 && (
-          <div>
-            Sub-invocations:
-            {node.children.map((child, i) => renderAuthNode(child, i))}
-          </div>
-        )}
-      </div>
-    );
-  };
-
   return (
     <div className={styles.modalOverlay}>
       <div 
@@ -173,7 +173,7 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({ preview, onAppro
               {preview.invocation.args && preview.invocation.args.length > 0 && (
                  <ul>
                     {preview.invocation.args.map((arg, i) => (
-                       <li key={i}><strong>{arg.name || 'arg'}:</strong> {renderDisplayValue(arg.value)}</li>
+                       <li key={i}><strong>{arg.name || 'arg'}:</strong> <DisplayValueRenderer val={arg.value} /></li>
                     ))}
                  </ul>
               )}
@@ -186,7 +186,7 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({ preview, onAppro
               {preview.auth.map((entry, i) => (
                 <div key={i}>
                   <div>Credentials: {entry.credentials.type}</div>
-                  {renderAuthNode(entry.root, i)}
+                  <AuthNodeRenderer node={entry.root} />
                 </div>
               ))}
             </div>
