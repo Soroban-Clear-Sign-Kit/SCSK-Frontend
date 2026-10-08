@@ -34,14 +34,17 @@ export function useClearSign(opts: UseClearSignOptions): UseClearSignResult {
     setOpen(true);
     
     try {
-      const res = await buildPreview({
+      const buildInput: any = {
         xdr,
         rpcUrl: opts.rpcUrl,
         networkPassphrase: opts.networkPassphrase,
         signerAddress: requestOpts?.signerAddress,
         intent: requestOpts?.intent,
         specs: requestOpts?.specs
-      });
+      };
+      Object.keys(buildInput).forEach(k => buildInput[k] === undefined && delete buildInput[k]);
+      
+      const res = await buildPreview(buildInput);
       setPreview(res);
     } catch (err: any) {
       // In case buildPreview somehow throws despite catching internals
