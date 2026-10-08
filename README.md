@@ -4,15 +4,24 @@ The Frontend package of the **Soroban Clear-Sign Kit (SCSK)** provides React con
 
 ## Features
 
-- **`ClearSignProvider`**: Supplies configuration (such as Soroban RPC URL, Network Passphrase, and contract spec caching policies) across the React application tree.
-- **`useClearSign(xdrBase64)`**: Synchronously and reactively decodes transaction envelopes, unwraps muxed accounts, decodes host functions, inspects authorization trees, and flags security warnings (e.g. unknown contracts, high fees, expiration).
-- **`useSimulateTransaction(xdrBase64)`**: Submits candidate transactions to the Soroban RPC simulation endpoint, extracting and parsing diagnostic events and ledger state mutations into clear before/after diffs.
-- **Accessibility & UX**: Tested with jsdom and React Testing Library to deliver accessible transaction previews.
+- **`ClearSignModal`**: A plug-and-play UI component to safely preview, simulate, and request signatures for transactions.
+- **`useClearSign`**: A hook that manages the UI state for transaction previews and leverages `@clearsign/core` to build transaction summaries and decode arguments.
+- **Accessibility & UX**: Built with modern CSS modules, offering clean diffs, warning cards, and structured invocation displays.
 
 ## Installation
 
 ```bash
 pnpm install
+```
+
+## Running the Demo
+
+A full Vite + React demo application is included:
+
+```bash
+cd example
+pnpm install
+pnpm run dev
 ```
 
 ## Building
