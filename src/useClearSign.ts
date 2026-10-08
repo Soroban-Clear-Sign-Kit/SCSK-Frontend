@@ -29,6 +29,9 @@ export function useClearSign(opts: UseClearSignOptions): UseClearSignResult {
   const resolverRef = useRef<((value: boolean) => void) | null>(null);
 
   const requestApproval = useCallback(async (xdr: string, requestOpts?: RequestApprovalOptions) => {
+    if (resolverRef.current) {
+      resolverRef.current(false);
+    }
     setLoading(true);
     setPreview(null);
     setOpen(true);
