@@ -34,15 +34,14 @@ export function useClearSign(opts: UseClearSignOptions): UseClearSignResult {
     setOpen(true);
     
     try {
-      const buildInput: any = {
+      const buildInput: Parameters<typeof buildPreview>[0] = {
         xdr,
         rpcUrl: opts.rpcUrl,
         networkPassphrase: opts.networkPassphrase,
-        signerAddress: requestOpts?.signerAddress,
-        intent: requestOpts?.intent,
-        specs: requestOpts?.specs
       };
-      Object.keys(buildInput).forEach(k => buildInput[k] === undefined && delete buildInput[k]);
+      if (requestOpts?.signerAddress !== undefined) buildInput.signerAddress = requestOpts.signerAddress;
+      if (requestOpts?.intent !== undefined) buildInput.intent = requestOpts.intent;
+      if (requestOpts?.specs !== undefined) buildInput.specs = requestOpts.specs;
       
       const res = await buildPreview(buildInput);
       setPreview(res);
