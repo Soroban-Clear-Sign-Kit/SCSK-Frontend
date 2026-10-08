@@ -8,66 +8,9 @@ export interface ClearSignModalProps {
   onReject: () => void;
 }
 
-function shortenAddress(addr: string) {
-  if (!addr || addr.length < 12) return addr;
-  return `${addr.slice(0, 4)}...${addr.slice(-4)}`;
-}
-
-const handleCopy = (text: string) => {
-  navigator.clipboard.writeText(text).catch(() => {});
-};
-
-const DisplayValueRenderer: React.FC<{ val: DisplayValue }> = ({ val }) => {
-  if (val.kind === 'address') {
-    return (
-      <span title={val.value}>
-        {shortenAddress(val.value)}
-        <button type="button" onClick={() => handleCopy(val.value)} aria-label="Copy address">Copy</button>
-      </span>
-    );
-  }
-  if (val.kind === 'int' || val.kind === 'bool' || val.kind === 'string' || val.kind === 'symbol' || val.kind === 'void') {
-    return <span>{'value' in val ? String(val.value) : 'void'}</span>;
-  }
-  if (val.kind === 'bytes') {
-    return <span>{val.hex}</span>;
-  }
-  if (val.kind === 'vec') {
-    return (
-      <ul>
-        {val.items.map((item, i) => (
-           <li key={i}><DisplayValueRenderer val={item} /></li>
-        ))}
-      </ul>
-    );
-  }
-  if (val.kind === 'struct') {
-    return (
-      <ul>
-        {val.fields.map((f, i) => (
-           <li key={i}><strong>{f.name}:</strong> <DisplayValueRenderer val={f.value} /></li>
-        ))}
-      </ul>
-    );
-  }
-  return <span>Complex value</span>;
-};
-
-const AuthNodeRenderer: React.FC<{ node: AuthNode }> = ({ node }) => {
-  return (
-    <div className={styles.treeNode}>
-      <div><strong>{node.kind}</strong></div>
-      {node.contractId && <div>Contract: <span title={node.contractId}>{shortenAddress(node.contractId)}</span></div>}
-      {node.functionName && <div>Function: {node.functionName}</div>}
-      {node.children && node.children.length > 0 && (
-        <div>
-          Sub-invocations:
-          {node.children.map((child, i) => <AuthNodeRenderer key={i} node={child} />)}
-        </div>
-      )}
-    </div>
-  );
-};
+import { handleCopy, shortenAddress } from './utils.js';
+import { DisplayValueRenderer } from './components/DisplayValueRenderer.js';
+import { AuthNodeRenderer } from './components/AuthNodeRenderer.js';
 
 export const ClearSignModal: React.FC<ClearSignModalProps> = ({ preview, onApprove, onReject }) => {
   const [reviewed, setReviewed] = useState(false);
