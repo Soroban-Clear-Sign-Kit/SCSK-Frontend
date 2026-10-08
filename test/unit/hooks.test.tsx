@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { renderHook, act } from '@testing-library/react';
+import { renderHook, act, waitFor } from '@testing-library/react';
 import { useClearSign } from '../../src/useClearSign.js';
 import * as core from '@clearsign/core';
 
@@ -24,8 +24,7 @@ describe('useClearSign', () => {
 
     expect(result.current.loading).toBe(true);
 
-    // wait for async buildPreview
-    await vi.waitFor(() => {
+    await waitFor(() => {
        expect(result.current.open).toBe(true);
        expect(result.current.preview).toEqual(mockPreview);
        expect(result.current.loading).toBe(false);
@@ -37,7 +36,7 @@ describe('useClearSign', () => {
 
     expect(result.current.open).toBe(false);
     
-    await vi.waitFor(() => {
+    await waitFor(() => {
        expect(approved).toBe(true);
     });
   });
@@ -51,7 +50,7 @@ describe('useClearSign', () => {
       result.current.requestApproval('xdr').then(res => { approved = res; });
     });
 
-    await vi.waitFor(() => {
+    await waitFor(() => {
        expect(result.current.open).toBe(true);
     });
 
@@ -59,8 +58,9 @@ describe('useClearSign', () => {
       result.current.onReject();
     });
 
-    await vi.waitFor(() => {
+    await waitFor(() => {
        expect(approved).toBe(false);
     });
   });
 });
+
