@@ -95,23 +95,24 @@ describe('ClearSignModal', () => {
     const previewWithAllTypes: ClearSignPreview = {
       ...basePreview,
       effects: [
-        { account: 'GDQJUTQYK2MQX2VGDR2FYWLIYAQIEGXTQVTPEKGQKJZLDEOJKIOPU', delta: '100', symbol: 'USDC', formatted: '100' },
-        { account: 'GA23', delta: '-50' }, // short address, negative delta
+        { account: 'GDQJUTQYK2MQX2VGDR2FYWLIYAQIEGXTQVTPEKGQKJZLDEOJKIOPU', delta: '100', symbol: 'USDC', formatted: '100', tokenContractId: 'C123' },
+        { account: 'GA23', delta: '-50', tokenContractId: 'C456' }, // short address, negative delta
       ],
       invocation: {
+        specSource: 'wasm',
         contractId: 'C12345678901234567890',
         functionName: 'swap',
         args: [
-          { name: 'amount', value: { kind: 'int', type: 'u32', value: '100' } },
-          { name: 'flag', value: { kind: 'bool', value: true } },
-          { name: 'str', value: { kind: 'string', value: 'hello' } },
-          { name: 'sym', value: { kind: 'symbol', value: 'sym' } },
-          { name: 'vd', value: { kind: 'void' } },
-          { name: 'addr', value: { kind: 'address', value: 'GBXXX34567890' } },
-          { name: 'b', value: { kind: 'bytes', hex: 'deadbeef' } },
-          { name: 'list', value: { kind: 'vec', items: [{ kind: 'int', type: 'u32', value: '1' }] } },
-          { name: 'obj', value: { kind: 'struct', fields: [{ name: 'a', value: { kind: 'int', type: 'u32', value: '2' } }] } },
-          { name: 'unknown', value: { kind: 'unknown' } as any } // coverage for fallback
+          { name: 'amount', typeName: 'u32', value: { kind: 'int', type: 'u32', value: '100' } },
+          { name: 'flag', typeName: 'bool', value: { kind: 'bool', value: true } },
+          { name: 'str', typeName: 'string', value: { kind: 'string', value: 'hello', truncated: false, sanitized: false } },
+          { name: 'sym', typeName: 'symbol', value: { kind: 'symbol', value: 'sym', truncated: false, sanitized: false } },
+          { name: 'vd', typeName: 'void', value: { kind: 'void' } },
+          { name: 'addr', typeName: 'address', value: { kind: 'address', value: 'GBXXX34567890', addressType: 'account' } },
+          { name: 'b', typeName: 'bytes', value: { kind: 'bytes', hex: 'deadbeef', length: 4, truncated: false } },
+          { name: 'list', typeName: 'vec', value: { kind: 'vec', items: [{ kind: 'int', type: 'u32', value: '1' }] } },
+          { name: 'obj', typeName: 'struct', value: { kind: 'struct', name: 'MyStruct', fields: [{ name: 'a', value: { kind: 'int', type: 'u32', value: '2' } }] } },
+          { name: 'unknown', typeName: 'unknown', value: { kind: 'unknown' } as any } // coverage for fallback
         ]
       },
       simulation: {
@@ -119,7 +120,7 @@ describe('ClearSignModal', () => {
         minResourceFee: '123'
       },
       warnings: [
-        { code: 'WARNING_1', message: 'Something is off', severity: 'warning' },
+        { code: 'WARNING_1', message: 'Something is off', severity: 'review' },
         { code: 'BLOCKED_1', message: 'Malicious', severity: 'blocked' }
       ]
     };
@@ -215,10 +216,11 @@ describe('ClearSignModal', () => {
     const previewWithAddr: ClearSignPreview = {
       ...basePreview,
       invocation: {
+        specSource: 'wasm',
         contractId: 'C123',
         functionName: 'func',
         args: [
-          { name: 'addr', value: { kind: 'address', value: 'GBXXX34567890' } }
+          { name: 'addr', typeName: 'address', value: { kind: 'address', value: 'GBXXX34567890', addressType: 'account' } }
         ]
       }
     };
@@ -248,10 +250,11 @@ describe('ClearSignModal', () => {
     const previewWithAddr: ClearSignPreview = {
       ...basePreview,
       invocation: {
+        specSource: 'wasm',
         contractId: 'C123',
         functionName: 'func',
         args: [
-          { name: 'addr', value: { kind: 'address', value: 'GBXXX34567890' } }
+          { name: 'addr', typeName: 'address', value: { kind: 'address', value: 'GBXXX34567890', addressType: 'account' } }
         ]
       }
     };
