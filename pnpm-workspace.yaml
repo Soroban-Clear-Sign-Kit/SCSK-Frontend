@@ -1,4 +1,4 @@
 packages:
-  - '.'
-  - 'example'
-  - 'vue'
+  - "."
+  - "example"
+  - "vue"
