@@ -10,8 +10,8 @@ export interface WithClearSignOptions {
   requestApproval: (xdr: string, opts?: any) => Promise<boolean>;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- wraps arbitrary signer signatures
 export function withClearSign<
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- wraps arbitrary signer signatures
   T extends (xdr: string, ...args: any[]) => Promise<any>,
 >(signTransaction: T, options: WithClearSignOptions): T {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- must match T's rest args
