@@ -48,7 +48,7 @@ export function useClearSign(opts: UseClearSignOptions): UseClearSignResult {
       
       const res = await buildPreview(buildInput);
       setPreview(res);
-    } catch (err: any) {
+    } catch {
       // In case buildPreview somehow throws despite catching internals
       setPreview(null);
     } finally {
