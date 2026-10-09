@@ -10,7 +10,7 @@ vi.mock('@clearsign/core', () => ({
 describe('useClearSign', () => {
   it('manages modal open state and requests approval', async () => {
     const mockPreview = { risk: 'ok' };
-    (core.buildPreview as any).mockResolvedValue(mockPreview);
+    vi.mocked(core.buildPreview).mockResolvedValue(mockPreview as never);
 
     const { result } = renderHook(() => useClearSign({ rpcUrl: 'http://localhost', networkPassphrase: 'test' }));
     
@@ -42,7 +42,7 @@ describe('useClearSign', () => {
   });
 
   it('resolves false on reject', async () => {
-    (core.buildPreview as any).mockResolvedValue({ risk: 'ok' });
+    vi.mocked(core.buildPreview).mockResolvedValue({ risk: 'ok' } as never);
     const { result } = renderHook(() => useClearSign({ rpcUrl: 'http://localhost', networkPassphrase: 'test' }));
     
     let approved: boolean | undefined;
