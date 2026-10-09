@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ClearSignPreview, AuthNode, DisplayValue } from '@clearsign/core';
+import { ClearSignPreview } from '@clearsign/core';
 import styles from './styles.module.css';
 
 export interface ClearSignModalProps {
