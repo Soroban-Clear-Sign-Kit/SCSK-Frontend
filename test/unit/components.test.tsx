@@ -1,6 +1,6 @@
 import React from 'react';
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent, act } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { ClearSignModal } from '../../src/ClearSignModal.js';
 import { ClearSignPreview } from '@clearsign/core';
 
@@ -54,7 +54,7 @@ describe('ClearSignModal', () => {
   });
 
   it('handles unknown risk gracefully', () => {
-    const unknownPreview = { ...basePreview, risk: 'unknown' as any };
+    const unknownPreview = { ...basePreview, risk: 'unknown' as never };
     render(<ClearSignModal preview={unknownPreview} onApprove={vi.fn()} onReject={vi.fn()} />);
     expect(screen.getByText('Unknown risk')).toBeInTheDocument();
   });
@@ -112,7 +112,7 @@ describe('ClearSignModal', () => {
           { name: 'b', typeName: 'bytes', value: { kind: 'bytes', hex: 'deadbeef', length: 4, truncated: false } },
           { name: 'list', typeName: 'vec', value: { kind: 'vec', items: [{ kind: 'int', type: 'u32', value: '1' }] } },
           { name: 'obj', typeName: 'struct', value: { kind: 'struct', name: 'MyStruct', fields: [{ name: 'a', value: { kind: 'int', type: 'u32', value: '2' } }] } },
-          { name: 'unknown', typeName: 'unknown', value: { kind: 'unknown' } as any } // coverage for fallback
+          { name: 'unknown', typeName: 'unknown', value: { kind: 'unknown' } as never } // coverage for fallback
         ]
       },
       simulation: {
@@ -182,13 +182,9 @@ describe('ClearSignModal', () => {
 
   it('expands XDR and copies text', async () => {
     const originalClipboard = navigator.clipboard;
-    let clipboardText = '';
     Object.assign(navigator, {
       clipboard: {
-        writeText: vi.fn().mockImplementation((text) => {
-          clipboardText = text;
-          return Promise.resolve();
-        })
+        writeText: vi.fn().mockResolvedValue(undefined)
       }
     });
 
@@ -226,13 +222,9 @@ describe('ClearSignModal', () => {
     };
 
     const originalClipboard = navigator.clipboard;
-    let clipboardText = '';
     Object.assign(navigator, {
       clipboard: {
-        writeText: vi.fn().mockImplementation((text) => {
-          clipboardText = text;
-          return Promise.resolve();
-        })
+        writeText: vi.fn().mockResolvedValue(undefined)
       }
     });
 
