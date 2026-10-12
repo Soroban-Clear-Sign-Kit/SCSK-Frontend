@@ -148,6 +148,12 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({ preview, onAppro
           )}
 
           <div className={styles.section}>
+            <h3 className={styles.sectionTitle}>Network</h3>
+            <div>{preview.network.passphrase}</div>
+            <div>{preview.network.verified ? 'Network verified against the RPC' : 'Network not verified'}</div>
+          </div>
+
+          <div className={styles.section}>
             <h3 className={styles.sectionTitle}>Fees</h3>
             <div>Declared Fee: {preview.envelope.fee}</div>
             {preview.simulation.minResourceFee && <div>Simulated Resource Fee: {preview.simulation.minResourceFee}</div>}

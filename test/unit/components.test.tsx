@@ -366,4 +366,19 @@ describe('ClearSignModal', () => {
       expect(screen.getByText('Simulation error: HostError: insufficient balance')).toBeInTheDocument();
     });
   });
+
+  describe('network details', () => {
+    it('shows the passphrase and that it was verified', () => {
+      render(<ClearSignModal preview={basePreview} onApprove={vi.fn()} onReject={vi.fn()} />);
+      expect(screen.getByText('test')).toBeInTheDocument();
+      expect(screen.getByText('Network verified against the RPC')).toBeInTheDocument();
+    });
+
+    it('says so when the network could not be verified', () => {
+      const unverified = { ...basePreview, network: { passphrase: 'Public Global Stellar Network ; September 2015', verified: false } };
+      render(<ClearSignModal preview={unverified} onApprove={vi.fn()} onReject={vi.fn()} />);
+      expect(screen.getByText('Network not verified')).toBeInTheDocument();
+      expect(screen.getByText('Public Global Stellar Network ; September 2015')).toBeInTheDocument();
+    });
+  });
 });
