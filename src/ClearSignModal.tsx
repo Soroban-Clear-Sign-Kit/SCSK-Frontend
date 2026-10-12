@@ -151,6 +151,8 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({ preview, onAppro
             <h3 className={styles.sectionTitle}>Fees</h3>
             <div>Declared Fee: {preview.envelope.fee}</div>
             {preview.simulation.minResourceFee && <div>Simulated Resource Fee: {preview.simulation.minResourceFee}</div>}
+            <div>Simulation: {preview.simulation.status}</div>
+            {preview.simulation.error && <div>Simulation error: {preview.simulation.error}</div>}
           </div>
 
           {preview.warnings && preview.warnings.length > 0 && (

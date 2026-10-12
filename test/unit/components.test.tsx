@@ -347,4 +347,23 @@ describe('ClearSignModal', () => {
       expect(second).toHaveBeenCalledTimes(1);
     });
   });
+
+  describe('simulation details', () => {
+    it('shows the simulation status', () => {
+      render(<ClearSignModal preview={basePreview} onApprove={vi.fn()} onReject={vi.fn()} />);
+      expect(screen.getByText('Simulation: success')).toBeInTheDocument();
+    });
+
+    it('shows the simulation error when there is one', () => {
+      const failed: ClearSignPreview = {
+        ...basePreview,
+        risk: 'blocked',
+        simulation: { status: 'failed', error: 'HostError: insufficient balance' },
+      };
+      render(<ClearSignModal preview={failed} onApprove={vi.fn()} onReject={vi.fn()} />);
+
+      expect(screen.getByText('Simulation: failed')).toBeInTheDocument();
+      expect(screen.getByText('Simulation error: HostError: insufficient balance')).toBeInTheDocument();
+    });
+  });
 });
