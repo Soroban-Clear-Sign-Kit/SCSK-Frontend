@@ -45,4 +45,15 @@ describe('withClearSign', () => {
 
     expect(requestApproval).toHaveBeenCalledWith('xdr', expect.objectContaining({ signerAddress: 'A' }));
   });
+
+  it('forwards intent and specs to the approval request', async () => {
+    const requestApproval = vi.fn().mockResolvedValue(true);
+    const safeSign = withClearSign(vi.fn().mockResolvedValue('ok'), { requestApproval });
+    const intent = { contractId: 'C1', functionName: 'transfer' };
+    const specs = { C1: new Uint8Array([1, 2, 3]) };
+
+    await safeSign('xdr', { intent, specs });
+
+    expect(requestApproval).toHaveBeenCalledWith('xdr', expect.objectContaining({ intent, specs }));
+  });
 });
