@@ -61,3 +61,15 @@ describe('DisplayValueRenderer: options', () => {
     expect(container).toHaveTextContent('Some(7)');
   });
 });
+
+describe('DisplayValueRenderer: time values', () => {
+  it('labels timepoints', () => {
+    const { container } = render(<DisplayValueRenderer val={{ kind: 'timepoint', value: '1700000000' }} />);
+    expect(container).toHaveTextContent('Timepoint 1700000000');
+  });
+
+  it('labels durations', () => {
+    const { container } = render(<DisplayValueRenderer val={{ kind: 'duration', value: '3600' }} />);
+    expect(container).toHaveTextContent('Duration 3600');
+  });
+});
