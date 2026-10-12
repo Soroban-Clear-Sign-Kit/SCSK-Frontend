@@ -27,6 +27,8 @@ export function useClearSign(opts: UseClearSignOptions): UseClearSignResult {
   const [loading, setLoading] = useState(false);
   
   const resolverRef = useRef<((value: boolean) => void) | null>(null);
+  const previewRef = useRef<ClearSignPreview | null>(null);
+  previewRef.current = preview;
   const requestIdRef = useRef(0);
 
   const requestApproval = useCallback(async (xdr: string, requestOpts?: RequestApprovalOptions) => {
@@ -74,9 +76,13 @@ export function useClearSign(opts: UseClearSignOptions): UseClearSignResult {
   }, [opts.rpcUrl, opts.networkPassphrase]);
 
   const onApprove = useCallback(() => {
+    const current = previewRef.current;
+    if (!current) return; // nothing to approve yet
+    // Never approve something the kit refused to vouch for, even if the UI lets the call through.
+    const approvable = current.risk === 'ok' || current.risk === 'review';
     setOpen(false);
     if (resolverRef.current) {
-      resolverRef.current(true);
+      resolverRef.current(approvable);
       resolverRef.current = null;
     }
   }, []);

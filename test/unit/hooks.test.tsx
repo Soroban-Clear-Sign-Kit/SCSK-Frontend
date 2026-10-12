@@ -124,5 +124,39 @@ describe('useClearSign', () => {
     expect(result.current.preview).toEqual({ risk: 'ok', tag: 'second' });
     expect(first).toBe(false);
   });
+
+  it.each(['blocked', 'unknown'])('refuses to approve a %s preview', async (risk) => {
+    (core.buildPreview as any).mockResolvedValue({ risk });
+    const { result } = renderHook(() => useClearSign({ rpcUrl: 'http://localhost', networkPassphrase: 'test' }));
+
+    let approved: boolean | undefined;
+    act(() => {
+      result.current.requestApproval('xdr').then(res => { approved = res; });
+    });
+    await waitFor(() => expect(result.current.preview).not.toBeNull());
+
+    act(() => {
+      result.current.onApprove();
+    });
+
+    await waitFor(() => expect(approved).toBe(false));
+    expect(result.current.open).toBe(false);
+  });
+
+  it('ignores onApprove while the preview is still loading', async () => {
+    (core.buildPreview as any).mockImplementation(() => new Promise(() => {}));
+    const { result } = renderHook(() => useClearSign({ rpcUrl: 'http://localhost', networkPassphrase: 'test' }));
+
+    let settled = false;
+    act(() => {
+      result.current.requestApproval('xdr').then(() => { settled = true; });
+    });
+    act(() => {
+      result.current.onApprove();
+    });
+
+    expect(settled).toBe(false);
+    expect(result.current.open).toBe(true);
+  });
 });
 
