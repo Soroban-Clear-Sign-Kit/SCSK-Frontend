@@ -48,9 +48,12 @@ export function useClearSign(opts: UseClearSignOptions): UseClearSignResult {
       
       const res = await buildPreview(buildInput);
       setPreview(res);
-    } catch (err: any) {
-      // In case buildPreview somehow throws despite catching internals
+    } catch {
+      // buildPreview is designed not to throw. If it does, fail closed: there is nothing
+      // to show the user, so close the dialog and report the request as rejected.
       setPreview(null);
+      setOpen(false);
+      return false;
     } finally {
       setLoading(false);
     }

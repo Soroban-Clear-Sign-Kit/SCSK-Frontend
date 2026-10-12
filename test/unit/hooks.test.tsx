@@ -62,5 +62,20 @@ describe('useClearSign', () => {
        expect(approved).toBe(false);
     });
   });
+
+  it('fails closed when buildPreview throws', async () => {
+    (core.buildPreview as any).mockRejectedValue(new Error('boom'));
+    const { result } = renderHook(() => useClearSign({ rpcUrl: 'http://localhost', networkPassphrase: 'test' }));
+
+    let approved: boolean | undefined;
+    await act(async () => {
+      approved = await result.current.requestApproval('xdr');
+    });
+
+    expect(approved).toBe(false);
+    expect(result.current.open).toBe(false);
+    expect(result.current.loading).toBe(false);
+    expect(result.current.preview).toBeNull();
+  });
 });
 
