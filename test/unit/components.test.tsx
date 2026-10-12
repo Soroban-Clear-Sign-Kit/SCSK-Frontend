@@ -158,7 +158,7 @@ describe('ClearSignModal', () => {
     expect(screen.getByText('Function: swap')).toBeInTheDocument();
     expect(screen.getByText('GBXX...7890')).toBeInTheDocument();
     expect(screen.getByText('hello')).toBeInTheDocument();
-    expect(screen.getByText('deadbeef')).toBeInTheDocument();
+    expect(screen.getByText(/deadbeef/)).toBeInTheDocument();
     expect(screen.getByText('Complex value')).toBeInTheDocument();
     
     // Simulation

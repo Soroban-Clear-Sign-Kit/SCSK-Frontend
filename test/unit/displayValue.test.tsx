@@ -82,3 +82,32 @@ describe('DisplayValueRenderer: raw fallback', () => {
     expect(el).toHaveAttribute('title', 'AAAA');
   });
 });
+
+describe('DisplayValueRenderer: bytes', () => {
+  it('shows the hex and byte length', () => {
+    const { container } = render(<DisplayValueRenderer val={{ kind: 'bytes', hex: 'deadbeef', length: 4, truncated: false }} />);
+    expect(container).toHaveTextContent('deadbeef (4 bytes)');
+  });
+
+  it('says when the hex shown is only a prefix', () => {
+    const { container } = render(<DisplayValueRenderer val={{ kind: 'bytes', hex: 'aabb', length: 4096, truncated: true }} />);
+    expect(container).toHaveTextContent('aabb… (4096 bytes, truncated)');
+  });
+});
+
+describe('DisplayValueRenderer: strings', () => {
+  it('renders plain strings without markers', () => {
+    const { container } = render(<DisplayValueRenderer val={{ kind: 'string', value: 'hello', truncated: false, sanitized: false }} />);
+    expect(container).toHaveTextContent(/^hello$/);
+  });
+
+  it('marks truncated strings', () => {
+    const { container } = render(<DisplayValueRenderer val={{ kind: 'string', value: 'long', truncated: true, sanitized: false }} />);
+    expect(container).toHaveTextContent('long (truncated)');
+  });
+
+  it('marks strings that had hidden characters removed', () => {
+    render(<DisplayValueRenderer val={{ kind: 'symbol', value: 'abc', truncated: false, sanitized: true }} />);
+    expect(screen.getByText('(sanitized)')).toHaveAttribute('title', 'Hidden or control characters were removed');
+  });
+});
