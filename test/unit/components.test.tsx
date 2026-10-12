@@ -305,6 +305,22 @@ describe('ClearSignModal', () => {
       trigger.remove();
     });
 
+    it('ignores Escape while there is no preview to show', () => {
+      const onReject = vi.fn();
+      render(<ClearSignModal preview={null} onApprove={vi.fn()} onReject={onReject} />);
+
+      fireEvent.keyDown(document, { key: 'Escape', code: 'Escape' });
+
+      expect(onReject).not.toHaveBeenCalled();
+    });
+
+    it('moves focus into the dialog when the preview arrives after mount', () => {
+      const { rerender } = render(<ClearSignModal preview={null} onApprove={vi.fn()} onReject={vi.fn()} />);
+      rerender(<ClearSignModal preview={basePreview} onApprove={vi.fn()} onReject={vi.fn()} />);
+
+      expect(screen.getByRole('dialog')).toHaveFocus();
+    });
+
     it('calls the latest onReject on Escape', () => {
       const first = vi.fn();
       const second = vi.fn();

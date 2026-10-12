@@ -20,10 +20,13 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({ preview, onAppro
   const onRejectRef = useRef(onReject);
   onRejectRef.current = onReject;
 
-  // Runs once per mount. Reading onReject through a ref keeps the listener stable when the
-  // parent passes a fresh callback on every render, which would otherwise re-capture the focus
-  // origin (the dialog itself) and steal focus back to the dialog.
+  const hasPreview = preview !== null;
+
+  // Runs when the dialog appears. Reading onReject through a ref keeps the listener stable when
+  // the parent passes a fresh callback on every render, which would otherwise re-capture the
+  // focus origin (the dialog itself) and steal focus back to the dialog.
   useEffect(() => {
+    if (!hasPreview) return;
     triggerRef.current = document.activeElement as HTMLElement;
     if (modalRef.current) {
        modalRef.current.focus();
@@ -58,7 +61,7 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({ preview, onAppro
         triggerRef.current.focus();
       }
     };
-  }, []);
+  }, [hasPreview]);
 
   if (!preview) return null;
 
