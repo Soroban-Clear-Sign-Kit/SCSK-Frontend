@@ -158,5 +158,20 @@ describe('useClearSign', () => {
     expect(settled).toBe(false);
     expect(result.current.open).toBe(true);
   });
+
+  it('resolves a pending request as rejected when unmounted', async () => {
+    (core.buildPreview as any).mockResolvedValue({ risk: 'ok' });
+    const { result, unmount } = renderHook(() => useClearSign({ rpcUrl: 'http://localhost', networkPassphrase: 'test' }));
+
+    let approved: boolean | undefined;
+    act(() => {
+      result.current.requestApproval('xdr').then(res => { approved = res; });
+    });
+    await waitFor(() => expect(result.current.open).toBe(true));
+
+    unmount();
+
+    await waitFor(() => expect(approved).toBe(false));
+  });
 });
 

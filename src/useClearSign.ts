@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { buildPreview, ClearSignPreview, Intent } from '@clearsign/core';
 
 export interface UseClearSignOptions {
@@ -30,6 +30,13 @@ export function useClearSign(opts: UseClearSignOptions): UseClearSignResult {
   const previewRef = useRef<ClearSignPreview | null>(null);
   previewRef.current = preview;
   const requestIdRef = useRef(0);
+
+  // If the component unmounts mid-request, don't leave the caller waiting forever.
+  useEffect(() => () => {
+    requestIdRef.current++;
+    resolverRef.current?.(false);
+    resolverRef.current = null;
+  }, []);
 
   const requestApproval = useCallback(async (xdr: string, requestOpts?: RequestApprovalOptions) => {
     // A newer request supersedes any pending one, which is reported as rejected.
