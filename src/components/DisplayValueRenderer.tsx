@@ -35,5 +35,17 @@ export const DisplayValueRenderer: React.FC<{ val: DisplayValue }> = ({ val }) =
       </ul>
     );
   }
+  if (val.kind === 'map') {
+    if (val.entries.length === 0) return <span>Empty map</span>;
+    return (
+      <ul>
+        {val.entries.map((entry, i) => (
+           <li key={i}>
+             <DisplayValueRenderer val={entry.key} /> <span aria-hidden="true">&rarr;</span> <DisplayValueRenderer val={entry.value} />
+           </li>
+        ))}
+      </ul>
+    );
+  }
   return <span>Complex value</span>;
 };
