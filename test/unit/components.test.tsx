@@ -95,23 +95,24 @@ describe('ClearSignModal', () => {
     const previewWithAllTypes: ClearSignPreview = {
       ...basePreview,
       effects: [
-        { account: 'GDQJUTQYK2MQX2VGDR2FYWLIYAQIEGXTQVTPEKGQKJZLDEOJKIOPU', delta: '100', symbol: 'USDC', formatted: '100' },
-        { account: 'GA23', delta: '-50' }, // short address, negative delta
+        { tokenContractId: 'CTOKEN', account: 'GDQJUTQYK2MQX2VGDR2FYWLIYAQIEGXTQVTPEKGQKJZLDEOJKIOPU', delta: '100', symbol: 'USDC', formatted: '100' },
+        { tokenContractId: 'CTOKEN', account: 'GA23', delta: '-50' }, // short address, negative delta
       ],
       invocation: {
         contractId: 'C12345678901234567890',
         functionName: 'swap',
+        specSource: 'none',
         args: [
-          { name: 'amount', value: { kind: 'int', type: 'u32', value: '100' } },
-          { name: 'flag', value: { kind: 'bool', value: true } },
-          { name: 'str', value: { kind: 'string', value: 'hello' } },
-          { name: 'sym', value: { kind: 'symbol', value: 'sym' } },
-          { name: 'vd', value: { kind: 'void' } },
-          { name: 'addr', value: { kind: 'address', value: 'GBXXX34567890' } },
-          { name: 'b', value: { kind: 'bytes', hex: 'deadbeef' } },
-          { name: 'list', value: { kind: 'vec', items: [{ kind: 'int', type: 'u32', value: '1' }] } },
-          { name: 'obj', value: { kind: 'struct', fields: [{ name: 'a', value: { kind: 'int', type: 'u32', value: '2' } }] } },
-          { name: 'unknown', value: { kind: 'unknown' } as any } // coverage for fallback
+          { name: 'amount', typeName: null, value: { kind: 'int', type: 'u32', value: '100' } },
+          { name: 'flag', typeName: null, value: { kind: 'bool', value: true } },
+          { name: 'str', typeName: null, value: { kind: 'string', value: 'hello', truncated: false, sanitized: false } },
+          { name: 'sym', typeName: null, value: { kind: 'symbol', value: 'sym', truncated: false, sanitized: false } },
+          { name: 'vd', typeName: null, value: { kind: 'void' } },
+          { name: 'addr', typeName: null, value: { kind: 'address', value: 'GBXXX34567890', addressType: 'account' } },
+          { name: 'b', typeName: null, value: { kind: 'bytes', hex: 'deadbeef', length: 4, truncated: false } },
+          { name: 'list', typeName: null, value: { kind: 'vec', items: [{ kind: 'int', type: 'u32', value: '1' }] } },
+          { name: 'obj', typeName: null, value: { kind: 'struct', name: 'Point', fields: [{ name: 'a', typeName: null, value: { kind: 'int', type: 'u32', value: '2' } }] } },
+          { name: 'unknown', typeName: null, value: { kind: 'unknown' } as any } // coverage for fallback
         ]
       },
       simulation: {
@@ -119,7 +120,7 @@ describe('ClearSignModal', () => {
         minResourceFee: '123'
       },
       warnings: [
-        { code: 'WARNING_1', message: 'Something is off', severity: 'warning' },
+        { code: 'WARNING_1', message: 'Something is off', severity: 'review' },
         { code: 'BLOCKED_1', message: 'Malicious', severity: 'blocked' }
       ]
     };
@@ -217,8 +218,9 @@ describe('ClearSignModal', () => {
       invocation: {
         contractId: 'C123',
         functionName: 'func',
+        specSource: 'none',
         args: [
-          { name: 'addr', value: { kind: 'address', value: 'GBXXX34567890' } }
+          { name: 'addr', typeName: null, value: { kind: 'address', value: 'GBXXX34567890', addressType: 'account' } }
         ]
       }
     };
@@ -250,8 +252,9 @@ describe('ClearSignModal', () => {
       invocation: {
         contractId: 'C123',
         functionName: 'func',
+        specSource: 'none',
         args: [
-          { name: 'addr', value: { kind: 'address', value: 'GBXXX34567890' } }
+          { name: 'addr', typeName: null, value: { kind: 'address', value: 'GBXXX34567890', addressType: 'account' } }
         ]
       }
     };
