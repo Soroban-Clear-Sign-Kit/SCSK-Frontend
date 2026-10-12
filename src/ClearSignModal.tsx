@@ -93,7 +93,7 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({ preview, onAppro
         </div>
         
         <div className={styles.modalBody}>
-          <div className={`${styles.riskBanner} ${riskInfo.className}`}>
+          <div className={`${styles.riskBanner} ${riskInfo.className}`} role={preview.risk === 'ok' ? 'status' : 'alert'}>
             {riskInfo.text}
           </div>
 

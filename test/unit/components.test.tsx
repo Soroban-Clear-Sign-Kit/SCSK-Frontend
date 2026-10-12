@@ -381,4 +381,16 @@ describe('ClearSignModal', () => {
       expect(screen.getByText('Public Global Stellar Network ; September 2015')).toBeInTheDocument();
     });
   });
+
+  describe('risk banner semantics', () => {
+    it.each([
+      ['blocked', 'alert'],
+      ['review', 'alert'],
+      ['ok', 'status'],
+    ] as const)('announces %s risk with role %s', (risk, role) => {
+      render(<ClearSignModal preview={{ ...basePreview, risk }} onApprove={vi.fn()} onReject={vi.fn()} />);
+      const banner = screen.getByRole(role);
+      expect(banner).toHaveTextContent(/Decoded and verified|Review carefully|Signing blocked/);
+    });
+  });
 });
