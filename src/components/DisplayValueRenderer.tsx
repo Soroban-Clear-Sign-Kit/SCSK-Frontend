@@ -47,5 +47,19 @@ export const DisplayValueRenderer: React.FC<{ val: DisplayValue }> = ({ val }) =
       </ul>
     );
   }
+  if (val.kind === 'enum') {
+    return (
+      <span>
+        <strong>{val.name}::{val.variant}</strong>
+        {val.values.length > 0 && (
+          <ul>
+            {val.values.map((v, i) => (
+               <li key={i}><DisplayValueRenderer val={v} /></li>
+            ))}
+          </ul>
+        )}
+      </span>
+    );
+  }
   return <span>Complex value</span>;
 };
