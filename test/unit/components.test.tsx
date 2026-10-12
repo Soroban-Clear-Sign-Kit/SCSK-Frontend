@@ -409,4 +409,40 @@ describe('ClearSignModal', () => {
     const order = screen.getAllByText(/ADVISORY_|BLOCKER_/).map((el) => el.textContent);
     expect(order).toEqual(['BLOCKER_B', 'ADVISORY_A', 'ADVISORY_C']);
   });
+
+  describe('loading state', () => {
+    it('shows a busy dialog with only a reject button while loading', () => {
+      const onReject = vi.fn();
+      render(<ClearSignModal preview={null} loading onApprove={vi.fn()} onReject={onReject} />);
+
+      expect(screen.getByRole('dialog')).toHaveAttribute('aria-busy', 'true');
+      expect(screen.getByRole('status')).toHaveTextContent(/simulating/i);
+      expect(screen.queryByRole('button', { name: 'Approve' })).not.toBeInTheDocument();
+
+      fireEvent.click(screen.getByRole('button', { name: 'Reject' }));
+      expect(onReject).toHaveBeenCalled();
+    });
+
+    it('can be dismissed with Escape while loading', () => {
+      const onReject = vi.fn();
+      render(<ClearSignModal preview={null} loading onApprove={vi.fn()} onReject={onReject} />);
+
+      fireEvent.keyDown(document, { key: 'Escape', code: 'Escape' });
+
+      expect(onReject).toHaveBeenCalledTimes(1);
+    });
+
+    it('renders nothing without a preview when not loading', () => {
+      const { container } = render(<ClearSignModal preview={null} onApprove={vi.fn()} onReject={vi.fn()} />);
+      expect(container).toBeEmptyDOMElement();
+    });
+
+    it('swaps the busy dialog for the preview once it arrives', () => {
+      const { rerender } = render(<ClearSignModal preview={null} loading onApprove={vi.fn()} onReject={vi.fn()} />);
+      rerender(<ClearSignModal preview={basePreview} loading={false} onApprove={vi.fn()} onReject={vi.fn()} />);
+
+      expect(screen.getByText('Decoded and verified')).toBeInTheDocument();
+      expect(screen.queryByRole('status', { name: /simulating/i })).not.toBeInTheDocument();
+    });
+  });
 });

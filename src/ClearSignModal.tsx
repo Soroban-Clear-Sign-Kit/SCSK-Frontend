@@ -4,6 +4,8 @@ import styles from './styles.module.css';
 
 export interface ClearSignModalProps {
   preview: ClearSignPreview | null;
+  /** Shows a busy dialog (with a Reject button) while the preview is still being built. */
+  loading?: boolean;
   onApprove: () => void;
   onReject: () => void;
 }
@@ -12,7 +14,7 @@ import { handleCopy, orderWarnings, shortenAddress } from './utils.js';
 import { DisplayValueRenderer } from './components/DisplayValueRenderer.js';
 import { AuthNodeRenderer } from './components/AuthNodeRenderer.js';
 
-export const ClearSignModal: React.FC<ClearSignModalProps> = ({ preview, onApprove, onReject }) => {
+export const ClearSignModal: React.FC<ClearSignModalProps> = ({ preview, loading = false, onApprove, onReject }) => {
   // The acknowledgement belongs to one specific preview, so a new preview starts unacknowledged.
   const [reviewedPreview, setReviewedPreview] = useState<ClearSignPreview | null>(null);
   const reviewed = preview !== null && reviewedPreview === preview;
@@ -22,13 +24,13 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({ preview, onAppro
   const onRejectRef = useRef(onReject);
   onRejectRef.current = onReject;
 
-  const hasPreview = preview !== null;
+  const visible = preview !== null || loading;
 
   // Runs when the dialog appears. Reading onReject through a ref keeps the listener stable when
   // the parent passes a fresh callback on every render, which would otherwise re-capture the
   // focus origin (the dialog itself) and steal focus back to the dialog.
   useEffect(() => {
-    if (!hasPreview) return;
+    if (!visible) return;
     triggerRef.current = document.activeElement as HTMLElement;
     if (modalRef.current) {
        modalRef.current.focus();
@@ -63,9 +65,38 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({ preview, onAppro
         triggerRef.current.focus();
       }
     };
-  }, [hasPreview]);
+  }, [visible]);
 
-  if (!preview) return null;
+  if (!preview) {
+    if (!loading) return null;
+    return (
+      <div className={styles.modalOverlay}>
+        <div
+          className={styles.modalContent}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="clearsign-modal-title"
+          aria-busy="true"
+          ref={modalRef}
+          tabIndex={-1}
+        >
+          <div className={styles.modalHeader}>
+            <h2 id="clearsign-modal-title">Transaction Preview</h2>
+          </div>
+          <div className={styles.modalBody}>
+            <p role="status">Decoding and simulating the transaction&hellip;</p>
+          </div>
+          <div className={styles.modalFooter}>
+            <div className={styles.buttonGroup}>
+              <button type="button" className={`${styles.button} ${styles.buttonReject}`} onClick={onReject}>
+                Reject
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const getRiskBannerInfo = () => {
     switch (preview.risk) {
