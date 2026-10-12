@@ -182,7 +182,7 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({ preview, onAppro
             <button type="button" className={`${styles.button} ${styles.buttonReject}`} onClick={onReject}>
               Reject
             </button>
-            {preview.risk !== 'blocked' && (
+            {(preview.risk === 'ok' || preview.risk === 'review') && (
               <button 
                 type="button" 
                 className={`${styles.button} ${styles.buttonApprove}`} 

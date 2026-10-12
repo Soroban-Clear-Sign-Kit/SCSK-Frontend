@@ -59,6 +59,13 @@ describe('ClearSignModal', () => {
     expect(screen.getByText('Unknown risk')).toBeInTheDocument();
   });
 
+  it('offers no approve button when the risk level is unrecognised', () => {
+    const unknownPreview = { ...basePreview, risk: 'unknown' as any };
+    render(<ClearSignModal preview={unknownPreview} onApprove={vi.fn()} onReject={vi.fn()} />);
+    expect(screen.queryByRole('button', { name: 'Approve' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Reject' })).toBeInTheDocument();
+  });
+
   it('triggers reject on Escape key', () => {
     const onReject = vi.fn();
     render(<ClearSignModal preview={basePreview} onApprove={vi.fn()} onReject={onReject} />);
