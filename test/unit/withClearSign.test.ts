@@ -23,4 +23,26 @@ describe('withClearSign', () => {
     await expect(safeSign('xdr', {})).rejects.toThrow(ClearSignRejectedError);
     expect(signTransaction).not.toHaveBeenCalled();
   });
+
+  it.each([
+    ['signerAddress', 'GSIGNER'],
+    ['address', 'GWALLET'],
+    ['publicKey', 'GLEGACY'],
+  ])('derives the signer from %s', async (key, value) => {
+    const requestApproval = vi.fn().mockResolvedValue(true);
+    const safeSign = withClearSign(vi.fn().mockResolvedValue('ok'), { requestApproval });
+
+    await safeSign('xdr', { [key]: value });
+
+    expect(requestApproval).toHaveBeenCalledWith('xdr', expect.objectContaining({ signerAddress: value }));
+  });
+
+  it('prefers signerAddress over address and publicKey', async () => {
+    const requestApproval = vi.fn().mockResolvedValue(true);
+    const safeSign = withClearSign(vi.fn().mockResolvedValue('ok'), { requestApproval });
+
+    await safeSign('xdr', { signerAddress: 'A', address: 'B', publicKey: 'C' });
+
+    expect(requestApproval).toHaveBeenCalledWith('xdr', expect.objectContaining({ signerAddress: 'A' }));
+  });
 });

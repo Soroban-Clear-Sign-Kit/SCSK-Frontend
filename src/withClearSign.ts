@@ -15,7 +15,7 @@ export function withClearSign<T extends (xdr: string, ...args: any[]) => Promise
 ): T {
   const safeSign = async (xdr: string, ...args: any[]) => {
     const intent = args[0]?.intent;
-    const signerAddress = args[0]?.signerAddress || args[0]?.publicKey;
+    const signerAddress = args[0]?.signerAddress || args[0]?.address || args[0]?.publicKey;
     
     let approved = await options.requestApproval(xdr, { signerAddress, intent });
     
