@@ -77,5 +77,52 @@ describe('useClearSign', () => {
     expect(result.current.loading).toBe(false);
     expect(result.current.preview).toBeNull();
   });
+
+  it('rejects a pending request when a newer one supersedes it', async () => {
+    (core.buildPreview as any).mockResolvedValue({ risk: 'ok' });
+    const { result } = renderHook(() => useClearSign({ rpcUrl: 'http://localhost', networkPassphrase: 'test' }));
+
+    let first: boolean | undefined;
+    let second: boolean | undefined;
+    act(() => {
+      result.current.requestApproval('xdr-1').then(res => { first = res; });
+    });
+    await waitFor(() => expect(result.current.preview).not.toBeNull());
+
+    act(() => {
+      result.current.requestApproval('xdr-2').then(res => { second = res; });
+    });
+    await waitFor(() => expect(first).toBe(false));
+    await waitFor(() => expect(result.current.preview).not.toBeNull());
+
+    act(() => {
+      result.current.onApprove();
+    });
+    await waitFor(() => expect(second).toBe(true));
+  });
+
+  it('ignores a stale preview that resolves after a newer request', async () => {
+    let releaseFirst!: (value: unknown) => void;
+    (core.buildPreview as any)
+      .mockImplementationOnce(() => new Promise(resolve => { releaseFirst = resolve; }))
+      .mockResolvedValueOnce({ risk: 'ok', tag: 'second' });
+    const { result } = renderHook(() => useClearSign({ rpcUrl: 'http://localhost', networkPassphrase: 'test' }));
+
+    let first: boolean | undefined;
+    act(() => {
+      result.current.requestApproval('xdr-1').then(res => { first = res; });
+    });
+    act(() => {
+      result.current.requestApproval('xdr-2');
+    });
+    await waitFor(() => expect(result.current.preview).toEqual({ risk: 'ok', tag: 'second' }));
+
+    await act(async () => {
+      releaseFirst({ risk: 'ok', tag: 'first' });
+    });
+
+    expect(result.current.preview).toEqual({ risk: 'ok', tag: 'second' });
+    expect(first).toBe(false);
+  });
 });
 
