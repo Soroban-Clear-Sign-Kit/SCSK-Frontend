@@ -20,7 +20,7 @@ export function withClearSign<T extends (xdr: string, ...args: any[]) => Promise
     
     let approved = await options.requestApproval(xdr, { signerAddress, intent, specs });
     
-    if (!approved) {
+    if (approved !== true) {
       throw new ClearSignRejectedError();
     }
     

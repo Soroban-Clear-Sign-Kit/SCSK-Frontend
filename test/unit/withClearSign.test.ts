@@ -56,4 +56,35 @@ describe('withClearSign', () => {
 
     expect(requestApproval).toHaveBeenCalledWith('xdr', expect.objectContaining({ intent, specs }));
   });
+
+  it.each([undefined, null, 0, 'yes', 1])('only a literal true counts as approval (%s)', async (value) => {
+    const signTransaction = vi.fn().mockResolvedValue('signed');
+    const requestApproval = vi.fn().mockResolvedValue(value);
+    const safeSign = withClearSign(signTransaction, { requestApproval });
+
+    await expect(safeSign('xdr', {})).rejects.toThrow(ClearSignRejectedError);
+    expect(signTransaction).not.toHaveBeenCalled();
+  });
+
+  it('propagates errors from the wrapped signer', async () => {
+    const signTransaction = vi.fn().mockRejectedValue(new Error('wallet locked'));
+    const safeSign = withClearSign(signTransaction, { requestApproval: vi.fn().mockResolvedValue(true) });
+
+    await expect(safeSign('xdr', {})).rejects.toThrow('wallet locked');
+  });
+
+  it('does not call the wrapped signer when the approval request itself fails', async () => {
+    const signTransaction = vi.fn();
+    const safeSign = withClearSign(signTransaction, { requestApproval: vi.fn().mockRejectedValue(new Error('rpc down')) });
+
+    await expect(safeSign('xdr', {})).rejects.toThrow('rpc down');
+    expect(signTransaction).not.toHaveBeenCalled();
+  });
+
+  it('exposes a named rejection error', () => {
+    const err = new ClearSignRejectedError();
+    expect(err.name).toBe('ClearSignRejectedError');
+    expect(err.message).toBe('User rejected the transaction preview');
+    expect(new ClearSignRejectedError('custom').message).toBe('custom');
+  });
 });
