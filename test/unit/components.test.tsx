@@ -53,6 +53,20 @@ describe('ClearSignModal', () => {
     expect(approveBtn).not.toBeDisabled();
   });
 
+  it('asks for a fresh acknowledgement when the preview changes', () => {
+    const first = { ...basePreview, risk: 'review' as const };
+    const second = { ...basePreview, risk: 'review' as const, summary: ['different'] };
+    const { rerender } = render(<ClearSignModal preview={first} onApprove={vi.fn()} onReject={vi.fn()} />);
+
+    fireEvent.click(screen.getByRole('checkbox', { name: /I have reviewed the warnings/i }));
+    expect(screen.getByRole('button', { name: 'Approve' })).not.toBeDisabled();
+
+    rerender(<ClearSignModal preview={second} onApprove={vi.fn()} onReject={vi.fn()} />);
+
+    expect(screen.getByRole('checkbox', { name: /I have reviewed the warnings/i })).not.toBeChecked();
+    expect(screen.getByRole('button', { name: 'Approve' })).toBeDisabled();
+  });
+
   it('handles unknown risk gracefully', () => {
     const unknownPreview = { ...basePreview, risk: 'unknown' as any };
     render(<ClearSignModal preview={unknownPreview} onApprove={vi.fn()} onReject={vi.fn()} />);

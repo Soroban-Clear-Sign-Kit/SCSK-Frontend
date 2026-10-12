@@ -13,7 +13,9 @@ import { DisplayValueRenderer } from './components/DisplayValueRenderer.js';
 import { AuthNodeRenderer } from './components/AuthNodeRenderer.js';
 
 export const ClearSignModal: React.FC<ClearSignModalProps> = ({ preview, onApprove, onReject }) => {
-  const [reviewed, setReviewed] = useState(false);
+  // The acknowledgement belongs to one specific preview, so a new preview starts unacknowledged.
+  const [reviewedPreview, setReviewedPreview] = useState<ClearSignPreview | null>(null);
+  const reviewed = preview !== null && reviewedPreview === preview;
   const [xdrExpanded, setXdrExpanded] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLElement | null>(null);
@@ -182,7 +184,7 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({ preview, onAppro
         <div className={styles.modalFooter}>
           {preview.risk === 'review' && (
             <label className={styles.reviewCheckbox}>
-              <input type="checkbox" checked={reviewed} onChange={(e) => setReviewed(e.target.checked)} />
+              <input type="checkbox" checked={reviewed} onChange={(e) => setReviewedPreview(e.target.checked ? preview : null)} />
               I have reviewed the warnings
             </label>
           )}
