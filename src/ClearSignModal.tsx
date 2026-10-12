@@ -4,27 +4,39 @@ import styles from './styles.module.css';
 
 export interface ClearSignModalProps {
   preview: ClearSignPreview | null;
+  /** Shows a busy dialog (with a Reject button) while the preview is still being built. */
+  loading?: boolean;
   onApprove: () => void;
   onReject: () => void;
 }
 
-import { handleCopy, shortenAddress } from './utils.js';
+import { handleCopy, orderWarnings, shortenAddress } from './utils.js';
 import { DisplayValueRenderer } from './components/DisplayValueRenderer.js';
 import { AuthNodeRenderer } from './components/AuthNodeRenderer.js';
 
-export const ClearSignModal: React.FC<ClearSignModalProps> = ({ preview, onApprove, onReject }) => {
-  const [reviewed, setReviewed] = useState(false);
+export const ClearSignModal: React.FC<ClearSignModalProps> = ({ preview, loading = false, onApprove, onReject }) => {
+  // The acknowledgement belongs to one specific preview, so a new preview starts unacknowledged.
+  const [reviewedPreview, setReviewedPreview] = useState<ClearSignPreview | null>(null);
+  const reviewed = preview !== null && reviewedPreview === preview;
   const [xdrExpanded, setXdrExpanded] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLElement | null>(null);
+  const onRejectRef = useRef(onReject);
+  onRejectRef.current = onReject;
 
+  const visible = preview !== null || loading;
+
+  // Runs when the dialog appears. Reading onReject through a ref keeps the listener stable when
+  // the parent passes a fresh callback on every render, which would otherwise re-capture the
+  // focus origin (the dialog itself) and steal focus back to the dialog.
   useEffect(() => {
+    if (!visible) return;
     triggerRef.current = document.activeElement as HTMLElement;
     if (modalRef.current) {
        modalRef.current.focus();
     }
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onReject();
+      if (e.key === 'Escape') onRejectRef.current();
       
       // Basic focus trap
       if (e.key === 'Tab' && modalRef.current) {
@@ -53,9 +65,38 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({ preview, onAppro
         triggerRef.current.focus();
       }
     };
-  }, [onReject]);
+  }, [visible]);
 
-  if (!preview) return null;
+  if (!preview) {
+    if (!loading) return null;
+    return (
+      <div className={styles.modalOverlay}>
+        <div
+          className={styles.modalContent}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="clearsign-modal-title"
+          aria-busy="true"
+          ref={modalRef}
+          tabIndex={-1}
+        >
+          <div className={styles.modalHeader}>
+            <h2 id="clearsign-modal-title">Transaction Preview</h2>
+          </div>
+          <div className={styles.modalBody}>
+            <p role="status">Decoding and simulating the transaction&hellip;</p>
+          </div>
+          <div className={styles.modalFooter}>
+            <div className={styles.buttonGroup}>
+              <button type="button" className={`${styles.button} ${styles.buttonReject}`} onClick={onReject}>
+                Reject
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const getRiskBannerInfo = () => {
     switch (preview.risk) {
@@ -83,7 +124,7 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({ preview, onAppro
         </div>
         
         <div className={styles.modalBody}>
-          <div className={`${styles.riskBanner} ${riskInfo.className}`}>
+          <div className={`${styles.riskBanner} ${riskInfo.className}`} role={preview.risk === 'ok' ? 'status' : 'alert'}>
             {riskInfo.text}
           </div>
 
@@ -138,15 +179,23 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({ preview, onAppro
           )}
 
           <div className={styles.section}>
+            <h3 className={styles.sectionTitle}>Network</h3>
+            <div>{preview.network.passphrase}</div>
+            <div>{preview.network.verified ? 'Network verified against the RPC' : 'Network not verified'}</div>
+          </div>
+
+          <div className={styles.section}>
             <h3 className={styles.sectionTitle}>Fees</h3>
             <div>Declared Fee: {preview.envelope.fee}</div>
             {preview.simulation.minResourceFee && <div>Simulated Resource Fee: {preview.simulation.minResourceFee}</div>}
+            <div>Simulation: {preview.simulation.status}</div>
+            {preview.simulation.error && <div>Simulation error: {preview.simulation.error}</div>}
           </div>
 
           {preview.warnings && preview.warnings.length > 0 && (
             <div className={styles.section}>
               <h3 className={styles.sectionTitle}>Warnings</h3>
-              {preview.warnings.map((w, i) => (
+              {orderWarnings(preview.warnings).map((w, i) => (
                 <div key={i} className={`${styles.warningItem} ${w.severity === 'blocked' ? styles.warningBlocked : ''}`}>
                   <strong>{w.code}</strong>: {w.message}
                 </div>
@@ -174,7 +223,7 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({ preview, onAppro
         <div className={styles.modalFooter}>
           {preview.risk === 'review' && (
             <label className={styles.reviewCheckbox}>
-              <input type="checkbox" checked={reviewed} onChange={(e) => setReviewed(e.target.checked)} />
+              <input type="checkbox" checked={reviewed} onChange={(e) => setReviewedPreview(e.target.checked ? preview : null)} />
               I have reviewed the warnings
             </label>
           )}
@@ -182,7 +231,7 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({ preview, onAppro
             <button type="button" className={`${styles.button} ${styles.buttonReject}`} onClick={onReject}>
               Reject
             </button>
-            {preview.risk !== 'blocked' && (
+            {(preview.risk === 'ok' || preview.risk === 'review') && (
               <button 
                 type="button" 
                 className={`${styles.button} ${styles.buttonApprove}`} 

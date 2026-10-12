@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches: ['main', 'fix/*']
+  pull_request:
+    branches: ['main']
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      # @clearsign/core is linked from ../SCSK-Backend, so both repos are checked out as siblings.
+      - uses: actions/checkout@v4
+        with:
+          path: SCSK-Frontend
+      - uses: actions/checkout@v4
+        with:
+          repository: Soroban-Clear-Sign-Kit/SCSK-Backend
+          path: SCSK-Backend
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Build @clearsign/core
+        working-directory: SCSK-Backend
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm run build
+      - name: Install frontend dependencies
+        working-directory: SCSK-Frontend
+        run: pnpm install --frozen-lockfile
+      - name: Type-check
+        working-directory: SCSK-Frontend
+        run: pnpm run typecheck
+      - name: Test with coverage
+        working-directory: SCSK-Frontend
+        run: pnpm run test:coverage
+      - name: Build
+        working-directory: SCSK-Frontend
+        run: pnpm run build

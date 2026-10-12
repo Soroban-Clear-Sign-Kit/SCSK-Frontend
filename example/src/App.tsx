@@ -4,8 +4,7 @@ import '@clearsign/react/styles.css'
 
 function App() {
   const [xdr, setXdr] = useState('');
-  const [isOpen, setIsOpen] = useState(false);
-  const { preview, loading, requestApproval } = useClearSign({
+  const { open, preview, loading, requestApproval, onApprove, onReject } = useClearSign({
     networkPassphrase: "Test SDF Network ; September 2015",
     rpcUrl: "https://soroban-testnet.stellar.org"
   });
@@ -25,10 +24,8 @@ function App() {
       <br/>
       <button 
         onClick={() => {
-          setIsOpen(true);
           requestApproval(xdr).then(approved => {
             if (approved) alert('Signed!');
-            setIsOpen(false);
           }).catch(console.error);
         }}
         disabled={!xdr}
@@ -37,18 +34,14 @@ function App() {
         Preview Transaction
       </button>
 
-      {isOpen && preview && (
-        <ClearSignModal 
+      {open && (
+        <ClearSignModal
           preview={preview}
-          onApprove={() => {
-            // Internal callback logic is handled by hook's promise
-          }}
-          onReject={() => {
-            // Internal callback logic is handled by hook's promise
-          }}
+          loading={loading}
+          onApprove={onApprove}
+          onReject={onReject}
         />
       )}
-      {isOpen && loading && <p>Loading preview...</p>}
     </div>
   )
 }

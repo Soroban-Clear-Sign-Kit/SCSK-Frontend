@@ -53,10 +53,31 @@ describe('ClearSignModal', () => {
     expect(approveBtn).not.toBeDisabled();
   });
 
+  it('asks for a fresh acknowledgement when the preview changes', () => {
+    const first = { ...basePreview, risk: 'review' as const };
+    const second = { ...basePreview, risk: 'review' as const, summary: ['different'] };
+    const { rerender } = render(<ClearSignModal preview={first} onApprove={vi.fn()} onReject={vi.fn()} />);
+
+    fireEvent.click(screen.getByRole('checkbox', { name: /I have reviewed the warnings/i }));
+    expect(screen.getByRole('button', { name: 'Approve' })).not.toBeDisabled();
+
+    rerender(<ClearSignModal preview={second} onApprove={vi.fn()} onReject={vi.fn()} />);
+
+    expect(screen.getByRole('checkbox', { name: /I have reviewed the warnings/i })).not.toBeChecked();
+    expect(screen.getByRole('button', { name: 'Approve' })).toBeDisabled();
+  });
+
   it('handles unknown risk gracefully', () => {
     const unknownPreview = { ...basePreview, risk: 'unknown' as any };
     render(<ClearSignModal preview={unknownPreview} onApprove={vi.fn()} onReject={vi.fn()} />);
     expect(screen.getByText('Unknown risk')).toBeInTheDocument();
+  });
+
+  it('offers no approve button when the risk level is unrecognised', () => {
+    const unknownPreview = { ...basePreview, risk: 'unknown' as any };
+    render(<ClearSignModal preview={unknownPreview} onApprove={vi.fn()} onReject={vi.fn()} />);
+    expect(screen.queryByRole('button', { name: 'Approve' })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Reject' })).toBeInTheDocument();
   });
 
   it('triggers reject on Escape key', () => {
@@ -95,23 +116,24 @@ describe('ClearSignModal', () => {
     const previewWithAllTypes: ClearSignPreview = {
       ...basePreview,
       effects: [
-        { account: 'GDQJUTQYK2MQX2VGDR2FYWLIYAQIEGXTQVTPEKGQKJZLDEOJKIOPU', delta: '100', symbol: 'USDC', formatted: '100' },
-        { account: 'GA23', delta: '-50' }, // short address, negative delta
+        { tokenContractId: 'CTOKEN', account: 'GDQJUTQYK2MQX2VGDR2FYWLIYAQIEGXTQVTPEKGQKJZLDEOJKIOPU', delta: '100', symbol: 'USDC', formatted: '100' },
+        { tokenContractId: 'CTOKEN', account: 'GA23', delta: '-50' }, // short address, negative delta
       ],
       invocation: {
         contractId: 'C12345678901234567890',
         functionName: 'swap',
+        specSource: 'none',
         args: [
-          { name: 'amount', value: { kind: 'int', type: 'u32', value: '100' } },
-          { name: 'flag', value: { kind: 'bool', value: true } },
-          { name: 'str', value: { kind: 'string', value: 'hello' } },
-          { name: 'sym', value: { kind: 'symbol', value: 'sym' } },
-          { name: 'vd', value: { kind: 'void' } },
-          { name: 'addr', value: { kind: 'address', value: 'GBXXX34567890' } },
-          { name: 'b', value: { kind: 'bytes', hex: 'deadbeef' } },
-          { name: 'list', value: { kind: 'vec', items: [{ kind: 'int', type: 'u32', value: '1' }] } },
-          { name: 'obj', value: { kind: 'struct', fields: [{ name: 'a', value: { kind: 'int', type: 'u32', value: '2' } }] } },
-          { name: 'unknown', value: { kind: 'unknown' } as any } // coverage for fallback
+          { name: 'amount', typeName: null, value: { kind: 'int', type: 'u32', value: '100' } },
+          { name: 'flag', typeName: null, value: { kind: 'bool', value: true } },
+          { name: 'str', typeName: null, value: { kind: 'string', value: 'hello', truncated: false, sanitized: false } },
+          { name: 'sym', typeName: null, value: { kind: 'symbol', value: 'sym', truncated: false, sanitized: false } },
+          { name: 'vd', typeName: null, value: { kind: 'void' } },
+          { name: 'addr', typeName: null, value: { kind: 'address', value: 'GBXXX34567890', addressType: 'account' } },
+          { name: 'b', typeName: null, value: { kind: 'bytes', hex: 'deadbeef', length: 4, truncated: false } },
+          { name: 'list', typeName: null, value: { kind: 'vec', items: [{ kind: 'int', type: 'u32', value: '1' }] } },
+          { name: 'obj', typeName: null, value: { kind: 'struct', name: 'Point', fields: [{ name: 'a', typeName: null, value: { kind: 'int', type: 'u32', value: '2' } }] } },
+          { name: 'unknown', typeName: null, value: { kind: 'unknown' } as any } // coverage for fallback
         ]
       },
       simulation: {
@@ -119,7 +141,7 @@ describe('ClearSignModal', () => {
         minResourceFee: '123'
       },
       warnings: [
-        { code: 'WARNING_1', message: 'Something is off', severity: 'warning' },
+        { code: 'WARNING_1', message: 'Something is off', severity: 'review' },
         { code: 'BLOCKED_1', message: 'Malicious', severity: 'blocked' }
       ]
     };
@@ -136,7 +158,7 @@ describe('ClearSignModal', () => {
     expect(screen.getByText('Function: swap')).toBeInTheDocument();
     expect(screen.getByText('GBXX...7890')).toBeInTheDocument();
     expect(screen.getByText('hello')).toBeInTheDocument();
-    expect(screen.getByText('deadbeef')).toBeInTheDocument();
+    expect(screen.getByText(/deadbeef/)).toBeInTheDocument();
     expect(screen.getByText('Complex value')).toBeInTheDocument();
     
     // Simulation
@@ -217,8 +239,9 @@ describe('ClearSignModal', () => {
       invocation: {
         contractId: 'C123',
         functionName: 'func',
+        specSource: 'none',
         args: [
-          { name: 'addr', value: { kind: 'address', value: 'GBXXX34567890' } }
+          { name: 'addr', typeName: null, value: { kind: 'address', value: 'GBXXX34567890', addressType: 'account' } }
         ]
       }
     };
@@ -250,8 +273,9 @@ describe('ClearSignModal', () => {
       invocation: {
         contractId: 'C123',
         functionName: 'func',
+        specSource: 'none',
         args: [
-          { name: 'addr', value: { kind: 'address', value: 'GBXXX34567890' } }
+          { name: 'addr', typeName: null, value: { kind: 'address', value: 'GBXXX34567890', addressType: 'account' } }
         ]
       }
     };
@@ -276,5 +300,149 @@ describe('ClearSignModal', () => {
   it('renders null if preview is missing', () => {
     const { container } = render(<ClearSignModal preview={null} onApprove={vi.fn()} onReject={vi.fn()} />);
     expect(container.firstChild).toBeNull();
+  });
+
+  describe('focus and keyboard handling', () => {
+    it('returns focus to the original trigger even when onReject changes between renders', () => {
+      const trigger = document.createElement('button');
+      document.body.appendChild(trigger);
+      trigger.focus();
+
+      const { rerender, unmount } = render(
+        <ClearSignModal preview={basePreview} onApprove={vi.fn()} onReject={() => {}} />
+      );
+      rerender(<ClearSignModal preview={basePreview} onApprove={vi.fn()} onReject={() => {}} />);
+      rerender(<ClearSignModal preview={basePreview} onApprove={vi.fn()} onReject={() => {}} />);
+      unmount();
+
+      expect(document.activeElement).toBe(trigger);
+      trigger.remove();
+    });
+
+    it('ignores Escape while there is no preview to show', () => {
+      const onReject = vi.fn();
+      render(<ClearSignModal preview={null} onApprove={vi.fn()} onReject={onReject} />);
+
+      fireEvent.keyDown(document, { key: 'Escape', code: 'Escape' });
+
+      expect(onReject).not.toHaveBeenCalled();
+    });
+
+    it('moves focus into the dialog when the preview arrives after mount', () => {
+      const { rerender } = render(<ClearSignModal preview={null} onApprove={vi.fn()} onReject={vi.fn()} />);
+      rerender(<ClearSignModal preview={basePreview} onApprove={vi.fn()} onReject={vi.fn()} />);
+
+      expect(screen.getByRole('dialog')).toHaveFocus();
+    });
+
+    it('calls the latest onReject on Escape', () => {
+      const first = vi.fn();
+      const second = vi.fn();
+      const { rerender } = render(<ClearSignModal preview={basePreview} onApprove={vi.fn()} onReject={first} />);
+      rerender(<ClearSignModal preview={basePreview} onApprove={vi.fn()} onReject={second} />);
+
+      fireEvent.keyDown(document, { key: 'Escape', code: 'Escape' });
+
+      expect(first).not.toHaveBeenCalled();
+      expect(second).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('simulation details', () => {
+    it('shows the simulation status', () => {
+      render(<ClearSignModal preview={basePreview} onApprove={vi.fn()} onReject={vi.fn()} />);
+      expect(screen.getByText('Simulation: success')).toBeInTheDocument();
+    });
+
+    it('shows the simulation error when there is one', () => {
+      const failed: ClearSignPreview = {
+        ...basePreview,
+        risk: 'blocked',
+        simulation: { status: 'failed', error: 'HostError: insufficient balance' },
+      };
+      render(<ClearSignModal preview={failed} onApprove={vi.fn()} onReject={vi.fn()} />);
+
+      expect(screen.getByText('Simulation: failed')).toBeInTheDocument();
+      expect(screen.getByText('Simulation error: HostError: insufficient balance')).toBeInTheDocument();
+    });
+  });
+
+  describe('network details', () => {
+    it('shows the passphrase and that it was verified', () => {
+      render(<ClearSignModal preview={basePreview} onApprove={vi.fn()} onReject={vi.fn()} />);
+      expect(screen.getByText('test')).toBeInTheDocument();
+      expect(screen.getByText('Network verified against the RPC')).toBeInTheDocument();
+    });
+
+    it('says so when the network could not be verified', () => {
+      const unverified = { ...basePreview, network: { passphrase: 'Public Global Stellar Network ; September 2015', verified: false } };
+      render(<ClearSignModal preview={unverified} onApprove={vi.fn()} onReject={vi.fn()} />);
+      expect(screen.getByText('Network not verified')).toBeInTheDocument();
+      expect(screen.getByText('Public Global Stellar Network ; September 2015')).toBeInTheDocument();
+    });
+  });
+
+  describe('risk banner semantics', () => {
+    it.each([
+      ['blocked', 'alert'],
+      ['review', 'alert'],
+      ['ok', 'status'],
+    ] as const)('announces %s risk with role %s', (risk, role) => {
+      render(<ClearSignModal preview={{ ...basePreview, risk }} onApprove={vi.fn()} onReject={vi.fn()} />);
+      const banner = screen.getByRole(role);
+      expect(banner).toHaveTextContent(/Decoded and verified|Review carefully|Signing blocked/);
+    });
+  });
+
+  it('lists blocking warnings before advisory ones', () => {
+    const preview: ClearSignPreview = {
+      ...basePreview,
+      risk: 'blocked',
+      warnings: [
+        { code: 'ADVISORY_A', message: 'a', severity: 'review' },
+        { code: 'BLOCKER_B', message: 'b', severity: 'blocked' },
+        { code: 'ADVISORY_C', message: 'c', severity: 'review' },
+      ],
+    };
+    render(<ClearSignModal preview={preview} onApprove={vi.fn()} onReject={vi.fn()} />);
+
+    const order = screen.getAllByText(/ADVISORY_|BLOCKER_/).map((el) => el.textContent);
+    expect(order).toEqual(['BLOCKER_B', 'ADVISORY_A', 'ADVISORY_C']);
+  });
+
+  describe('loading state', () => {
+    it('shows a busy dialog with only a reject button while loading', () => {
+      const onReject = vi.fn();
+      render(<ClearSignModal preview={null} loading onApprove={vi.fn()} onReject={onReject} />);
+
+      expect(screen.getByRole('dialog')).toHaveAttribute('aria-busy', 'true');
+      expect(screen.getByRole('status')).toHaveTextContent(/simulating/i);
+      expect(screen.queryByRole('button', { name: 'Approve' })).not.toBeInTheDocument();
+
+      fireEvent.click(screen.getByRole('button', { name: 'Reject' }));
+      expect(onReject).toHaveBeenCalled();
+    });
+
+    it('can be dismissed with Escape while loading', () => {
+      const onReject = vi.fn();
+      render(<ClearSignModal preview={null} loading onApprove={vi.fn()} onReject={onReject} />);
+
+      fireEvent.keyDown(document, { key: 'Escape', code: 'Escape' });
+
+      expect(onReject).toHaveBeenCalledTimes(1);
+    });
+
+    it('renders nothing without a preview when not loading', () => {
+      const { container } = render(<ClearSignModal preview={null} onApprove={vi.fn()} onReject={vi.fn()} />);
+      expect(container).toBeEmptyDOMElement();
+    });
+
+    it('swaps the busy dialog for the preview once it arrives', () => {
+      const { rerender } = render(<ClearSignModal preview={null} loading onApprove={vi.fn()} onReject={vi.fn()} />);
+      rerender(<ClearSignModal preview={basePreview} loading={false} onApprove={vi.fn()} onReject={vi.fn()} />);
+
+      expect(screen.getByText('Decoded and verified')).toBeInTheDocument();
+      expect(screen.queryByRole('status', { name: /simulating/i })).not.toBeInTheDocument();
+    });
   });
 });
