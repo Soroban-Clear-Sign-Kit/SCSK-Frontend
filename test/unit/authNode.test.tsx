@@ -59,3 +59,29 @@ describe('AuthNodeRenderer: arguments', () => {
     expect(screen.getByText('99')).toBeInTheDocument();
   });
 });
+
+describe('AuthNodeRenderer: contract creation details', () => {
+  it('lists the details of a create-contract authorization', () => {
+    render(
+      <AuthNodeRenderer
+        node={{
+          kind: 'create-contract-v2',
+          depth: 0,
+          children: [],
+          details: { executable: 'wasm:abcd', salt: '0011' },
+        }}
+      />
+    );
+
+    expect(screen.getByText('create-contract-v2')).toBeInTheDocument();
+    expect(screen.getByText('executable')).toBeInTheDocument();
+    expect(screen.getByText('wasm:abcd')).toBeInTheDocument();
+    expect(screen.getByText('salt')).toBeInTheDocument();
+    expect(screen.getByText('0011')).toBeInTheDocument();
+  });
+
+  it('renders no definition list when there are no details', () => {
+    const { container } = render(<AuthNodeRenderer node={call()} />);
+    expect(container.querySelector('dl')).toBeNull();
+  });
+});

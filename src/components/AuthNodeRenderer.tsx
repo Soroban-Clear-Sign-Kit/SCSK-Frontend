@@ -17,6 +17,16 @@ export const AuthNodeRenderer: React.FC<{ node: AuthNode }> = ({ node }) => {
           ))}
         </ul>
       )}
+      {node.details && Object.keys(node.details).length > 0 && (
+        <dl>
+          {Object.entries(node.details).map(([key, value]) => (
+            <React.Fragment key={key}>
+              <dt>{key}</dt>
+              <dd>{value}</dd>
+            </React.Fragment>
+          ))}
+        </dl>
+      )}
       {node.children && node.children.length > 0 && (
         <div>
           Sub-invocations:
