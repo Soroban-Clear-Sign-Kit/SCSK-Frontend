@@ -68,5 +68,12 @@ export const DisplayValueRenderer: React.FC<{ val: DisplayValue }> = ({ val }) =
   if (val.kind === 'timepoint' || val.kind === 'duration') {
     return <span>{val.kind === 'timepoint' ? 'Timepoint' : 'Duration'} {val.value}</span>;
   }
+  if (val.kind === 'raw') {
+    return (
+      <span title={val.xdr}>
+        Undecoded {val.scvalType} value (raw XDR available below)
+      </span>
+    );
+  }
   return <span>Complex value</span>;
 };

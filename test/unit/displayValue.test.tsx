@@ -73,3 +73,12 @@ describe('DisplayValueRenderer: time values', () => {
     expect(container).toHaveTextContent('Duration 3600');
   });
 });
+
+describe('DisplayValueRenderer: raw fallback', () => {
+  it('says the value was not decoded and names its type', () => {
+    render(<DisplayValueRenderer val={{ kind: 'raw', scvalType: 'scvContractInstance', xdr: 'AAAA' }} />);
+
+    const el = screen.getByText(/Undecoded scvContractInstance value/);
+    expect(el).toHaveAttribute('title', 'AAAA');
+  });
+});
