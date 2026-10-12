@@ -287,4 +287,34 @@ describe('ClearSignModal', () => {
     const { container } = render(<ClearSignModal preview={null} onApprove={vi.fn()} onReject={vi.fn()} />);
     expect(container.firstChild).toBeNull();
   });
+
+  describe('focus and keyboard handling', () => {
+    it('returns focus to the original trigger even when onReject changes between renders', () => {
+      const trigger = document.createElement('button');
+      document.body.appendChild(trigger);
+      trigger.focus();
+
+      const { rerender, unmount } = render(
+        <ClearSignModal preview={basePreview} onApprove={vi.fn()} onReject={() => {}} />
+      );
+      rerender(<ClearSignModal preview={basePreview} onApprove={vi.fn()} onReject={() => {}} />);
+      rerender(<ClearSignModal preview={basePreview} onApprove={vi.fn()} onReject={() => {}} />);
+      unmount();
+
+      expect(document.activeElement).toBe(trigger);
+      trigger.remove();
+    });
+
+    it('calls the latest onReject on Escape', () => {
+      const first = vi.fn();
+      const second = vi.fn();
+      const { rerender } = render(<ClearSignModal preview={basePreview} onApprove={vi.fn()} onReject={first} />);
+      rerender(<ClearSignModal preview={basePreview} onApprove={vi.fn()} onReject={second} />);
+
+      fireEvent.keyDown(document, { key: 'Escape', code: 'Escape' });
+
+      expect(first).not.toHaveBeenCalled();
+      expect(second).toHaveBeenCalledTimes(1);
+    });
+  });
 });

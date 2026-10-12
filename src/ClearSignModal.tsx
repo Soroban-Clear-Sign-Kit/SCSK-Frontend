@@ -17,14 +17,19 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({ preview, onAppro
   const [xdrExpanded, setXdrExpanded] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLElement | null>(null);
+  const onRejectRef = useRef(onReject);
+  onRejectRef.current = onReject;
 
+  // Runs once per mount. Reading onReject through a ref keeps the listener stable when the
+  // parent passes a fresh callback on every render, which would otherwise re-capture the focus
+  // origin (the dialog itself) and steal focus back to the dialog.
   useEffect(() => {
     triggerRef.current = document.activeElement as HTMLElement;
     if (modalRef.current) {
        modalRef.current.focus();
     }
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onReject();
+      if (e.key === 'Escape') onRejectRef.current();
       
       // Basic focus trap
       if (e.key === 'Tab' && modalRef.current) {
@@ -53,7 +58,7 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({ preview, onAppro
         triggerRef.current.focus();
       }
     };
-  }, [onReject]);
+  }, []);
 
   if (!preview) return null;
 
