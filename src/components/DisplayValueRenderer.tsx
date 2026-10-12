@@ -61,5 +61,9 @@ export const DisplayValueRenderer: React.FC<{ val: DisplayValue }> = ({ val }) =
       </span>
     );
   }
+  if (val.kind === 'option') {
+    if (val.value === null) return <span>None</span>;
+    return <span>Some(<DisplayValueRenderer val={val.value} />)</span>;
+  }
   return <span>Complex value</span>;
 };

@@ -49,3 +49,15 @@ describe('DisplayValueRenderer: enums', () => {
     expect(screen.queryByRole('list')).not.toBeInTheDocument();
   });
 });
+
+describe('DisplayValueRenderer: options', () => {
+  it('renders None for an empty option', () => {
+    render(<DisplayValueRenderer val={{ kind: 'option', value: null }} />);
+    expect(screen.getByText('None')).toBeInTheDocument();
+  });
+
+  it('renders the wrapped value of Some', () => {
+    const { container } = render(<DisplayValueRenderer val={{ kind: 'option', value: u32('7') }} />);
+    expect(container).toHaveTextContent('Some(7)');
+  });
+});
