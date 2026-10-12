@@ -8,7 +8,7 @@ export interface ClearSignModalProps {
   onReject: () => void;
 }
 
-import { handleCopy, shortenAddress } from './utils.js';
+import { handleCopy, orderWarnings, shortenAddress } from './utils.js';
 import { DisplayValueRenderer } from './components/DisplayValueRenderer.js';
 import { AuthNodeRenderer } from './components/AuthNodeRenderer.js';
 
@@ -164,7 +164,7 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({ preview, onAppro
           {preview.warnings && preview.warnings.length > 0 && (
             <div className={styles.section}>
               <h3 className={styles.sectionTitle}>Warnings</h3>
-              {preview.warnings.map((w, i) => (
+              {orderWarnings(preview.warnings).map((w, i) => (
                 <div key={i} className={`${styles.warningItem} ${w.severity === 'blocked' ? styles.warningBlocked : ''}`}>
                   <strong>{w.code}</strong>: {w.message}
                 </div>

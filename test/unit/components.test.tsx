@@ -393,4 +393,20 @@ describe('ClearSignModal', () => {
       expect(banner).toHaveTextContent(/Decoded and verified|Review carefully|Signing blocked/);
     });
   });
+
+  it('lists blocking warnings before advisory ones', () => {
+    const preview: ClearSignPreview = {
+      ...basePreview,
+      risk: 'blocked',
+      warnings: [
+        { code: 'ADVISORY_A', message: 'a', severity: 'review' },
+        { code: 'BLOCKER_B', message: 'b', severity: 'blocked' },
+        { code: 'ADVISORY_C', message: 'c', severity: 'review' },
+      ],
+    };
+    render(<ClearSignModal preview={preview} onApprove={vi.fn()} onReject={vi.fn()} />);
+
+    const order = screen.getAllByText(/ADVISORY_|BLOCKER_/).map((el) => el.textContent);
+    expect(order).toEqual(['BLOCKER_B', 'ADVISORY_A', 'ADVISORY_C']);
+  });
 });
