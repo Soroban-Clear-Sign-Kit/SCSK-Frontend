@@ -7,7 +7,14 @@ export default defineConfig({
     setupFiles: ['./test/setup.ts'],
     coverage: {
       include: ['src/**/*.ts', 'src/**/*.tsx'],
-      exclude: ['src/index.ts']
+      exclude: ['src/index.ts', 'src/**/*.d.ts'],
+      reporter: ['text', 'lcov'],
+      thresholds: {
+        statements: 95,
+        lines: 95,
+        functions: 95,
+        branches: 85
+      }
     }
   },
 });

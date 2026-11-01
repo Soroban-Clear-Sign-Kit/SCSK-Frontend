@@ -15,11 +15,12 @@ export function withClearSign<T extends (xdr: string, ...args: any[]) => Promise
 ): T {
   const safeSign = async (xdr: string, ...args: any[]) => {
     const intent = args[0]?.intent;
-    const signerAddress = args[0]?.signerAddress || args[0]?.publicKey;
+    const specs = args[0]?.specs;
+    const signerAddress = args[0]?.signerAddress || args[0]?.address || args[0]?.publicKey;
     
-    let approved = await options.requestApproval(xdr, { signerAddress, intent });
+    let approved = await options.requestApproval(xdr, { signerAddress, intent, specs });
     
-    if (!approved) {
+    if (approved !== true) {
       throw new ClearSignRejectedError();
     }
     

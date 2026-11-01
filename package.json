@@ -2,10 +2,14 @@
   "name": "@clearsign/react",
   "version": "0.1.0",
   "description": "Soroban Clear-Sign Kit - React hooks and UI components for transaction clear-signing",
+  "license": "Apache-2.0",
   "type": "module",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
+  "sideEffects": [
+    "**/*.css"
+  ],
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -17,7 +21,10 @@
   "scripts": {
     "build": "tsup",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run --dir test"
+    "test": "vitest run --dir test",
+    "test:coverage": "vitest run --dir test --coverage",
+    "check": "pnpm run typecheck && pnpm test",
+    "prepublishOnly": "pnpm run check && pnpm run build"
   },
   "dependencies": {
     "@clearsign/core": "link:../SCSK-Backend",
