@@ -1,6 +1,6 @@
 import React from "react";
 import { describe, it, expect } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { DisplayValueRenderer } from "../../src/components/DisplayValueRenderer.js";
 import type { DisplayValue } from "@clearsign/core";
 
@@ -179,5 +179,39 @@ describe("DisplayValueRenderer: strings", () => {
       "title",
       "Hidden or control characters were removed",
     );
+  });
+});
+
+describe("DisplayValueRenderer: addresses and on-demand reveal", () => {
+  it("renders address with middle-truncation by default and allows full grouped reveal", () => {
+    const address = "GBRPYHIL2CI3FNQ4BXLFMNDLFJUNPU2HY3ZMFSHONUCEOASW7QC7OX2H";
+    render(
+      <DisplayValueRenderer
+        val={{
+          kind: "address",
+          value: address,
+          addressType: "account",
+        }}
+      />,
+    );
+
+    // Initial middle-truncated view
+    expect(screen.getByText("GBRP...OX2H")).toBeInTheDocument();
+
+    // Reveal button exists
+    const revealBtn = screen.getByRole("button", {
+      name: /reveal full address/i,
+    });
+    expect(revealBtn).toBeInTheDocument();
+
+    // Click reveal button
+    fireEvent.click(revealBtn);
+
+    // Full value rendered in grouped monospace chunks
+    expect(
+      screen.getByText(
+        "GBRP YHIL 2CI3 FNQ4 BXLF MNDL FJUN PU2H Y3ZM FSHO NUCE OASW 7QC7 OX2H",
+      ),
+    ).toBeInTheDocument();
   });
 });

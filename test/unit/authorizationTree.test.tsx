@@ -6,6 +6,7 @@ import {
   AuthTreeNode,
   convertCoreAuthToTree,
 } from "../../src/components/AuthorizationTree.js";
+import { formatGroupedMonospace } from "../../src/utils.js";
 import { ClearSignModal } from "../../src/ClearSignModal.js";
 import { ClearSignPreview } from "@clearsign/core";
 
@@ -112,10 +113,12 @@ describe("AuthorizationTree Component", () => {
         fireEvent.click(revealBtn);
       }
 
-      // Full address revealed
+      // Full address revealed in grouped monospace chunks
       expect(
         screen.getByText(
-          "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+          formatGroupedMonospace(
+            "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+          ),
         ),
       ).toBeInTheDocument();
       const hideBtn = screen.getAllByRole("button", {

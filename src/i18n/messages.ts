@@ -71,6 +71,7 @@ export interface ClearSignMessages {
 
   // Value Display
   copyAddressAriaLabel: string;
+  copyContractAriaLabel: string;
   revealFullAddress: string;
   hideFullAddress: string;
   revealFullValue: string;
@@ -187,6 +188,7 @@ export const DEFAULT_MESSAGES: ClearSignMessages = {
 
   // Value Display
   copyAddressAriaLabel: "Copy address",
+  copyContractAriaLabel: "Copy contract address",
   revealFullAddress: "Reveal full address",
   hideFullAddress: "Hide full address",
   revealFullValue: "Reveal full value",

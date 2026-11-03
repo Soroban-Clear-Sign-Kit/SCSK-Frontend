@@ -6,7 +6,7 @@ import React, {
   useMemo,
 } from "react";
 import styles from "../styles.module.css";
-import { shortenAddress } from "../utils.js";
+import { shortenAddress, formatGroupedMonospace } from "../utils.js";
 import { ClearSignMessages } from "../i18n/messages.js";
 import { useClearSignMessages } from "../i18n/context.js";
 
@@ -295,10 +295,15 @@ export const AuthorizationTree: React.FC<AuthorizationTreeProps> = ({
 
           const isLong =
             formattedValue.length > 25 || formattedValue.includes("\n");
+          const isAddressOrHash =
+            (formattedValue.length === 56 || formattedValue.length === 64) &&
+            !formattedValue.includes(" ");
           const displayPreview =
             isLong && !isRevealed
               ? `${formattedValue.slice(0, 25)}...`
-              : formattedValue;
+              : isRevealed && isAddressOrHash
+                ? formatGroupedMonospace(formattedValue)
+                : formattedValue;
 
           return (
             <li key={idx} className={styles.authTreeArgItem}>
@@ -389,9 +394,13 @@ export const AuthorizationTree: React.FC<AuthorizationTreeProps> = ({
 
           {item.contract && (
             <span className={styles.authTreeContract}>
-              {isContractRevealed
-                ? item.contract
-                : shortenAddress(item.contract)}
+              {isContractRevealed ? (
+                <code className={styles.addressHashGrouped}>
+                  {formatGroupedMonospace(item.contract)}
+                </code>
+              ) : (
+                shortenAddress(item.contract)
+              )}
               {item.contract.length > 12 && (
                 <button
                   type="button"

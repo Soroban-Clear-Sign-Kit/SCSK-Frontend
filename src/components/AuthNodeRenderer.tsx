@@ -1,7 +1,7 @@
 import React from "react";
 import { AuthNode } from "@clearsign/core";
-import { shortenAddress } from "../utils.js";
 import { DisplayValueRenderer } from "./DisplayValueRenderer.js";
+import { AddressHashView } from "./AddressHashView.js";
 import { ClearSignMessages } from "../i18n/messages.js";
 import { useClearSignMessages } from "../i18n/context.js";
 import styles from "../styles.module.css";
@@ -25,7 +25,11 @@ export const AuthNodeRenderer: React.FC<AuthNodeRendererProps> = ({
       {node.contractId && (
         <div>
           {m.contractLabel}{" "}
-          <span title={node.contractId}>{shortenAddress(node.contractId)}</span>
+          <AddressHashView
+            value={node.contractId}
+            kind="address"
+            messages={messages}
+          />
         </div>
       )}
       {node.functionName && (

@@ -1,6 +1,6 @@
 import React from "react";
 import { DisplayValue } from "@clearsign/core";
-import { shortenAddress, handleCopy } from "../utils.js";
+import { AddressHashView } from "./AddressHashView.js";
 import { ClearSignMessages } from "../i18n/messages.js";
 import { useClearSignMessages } from "../i18n/context.js";
 
@@ -17,16 +17,7 @@ export const DisplayValueRenderer: React.FC<DisplayValueRendererProps> = ({
 
   if (val.kind === "address") {
     return (
-      <span title={val.value}>
-        {shortenAddress(val.value)}
-        <button
-          type="button"
-          onClick={() => handleCopy(val.value)}
-          aria-label={m.copyAddressAriaLabel}
-        >
-          {m.copy}
-        </button>
-      </span>
+      <AddressHashView value={val.value} kind="address" messages={messages} />
     );
   }
   if (val.kind === "string" || val.kind === "symbol") {

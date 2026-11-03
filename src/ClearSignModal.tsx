@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { ClearSignPreview } from "@clearsign/core";
 import styles from "./styles.module.css";
-import { handleCopy, shortenAddress } from "./utils.js";
+import { handleCopy } from "./utils.js";
 import { DisplayValueRenderer } from "./components/DisplayValueRenderer.js";
 import { AuthNodeRenderer } from "./components/AuthNodeRenderer.js";
+import { AddressHashView } from "./components/AddressHashView.js";
 import {
   AuthorizationTree,
   AuthTreeNode,
@@ -371,9 +372,11 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({
                 const isNegative = effect.delta.startsWith("-");
                 return (
                   <div key={i} className={styles.balanceDelta}>
-                    <span title={effect.account}>
-                      {shortenAddress(effect.account)}
-                    </span>
+                    <AddressHashView
+                      value={effect.account}
+                      kind="address"
+                      messages={messages}
+                    />
                     <span
                       className={
                         isNegative
@@ -396,9 +399,14 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({
               <h3 className={styles.sectionTitle}>{m.sectionCallDetails}</h3>
               <div>
                 {m.contractLabel}{" "}
-                <span title={preview.invocation.contractId}>
-                  {shortenAddress(preview.invocation.contractId)}
-                </span>
+                <AddressHashView
+                  value={preview.invocation.contractId}
+                  kind="address"
+                  messages={{
+                    ...messages,
+                    copyAddressAriaLabel: m.copyContractAriaLabel,
+                  }}
+                />
               </div>
               <div>
                 {m.functionLabel} {preview.invocation.functionName}
