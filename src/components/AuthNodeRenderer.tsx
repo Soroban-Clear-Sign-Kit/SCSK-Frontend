@@ -2,9 +2,21 @@ import React from "react";
 import { AuthNode } from "@clearsign/core";
 import { shortenAddress } from "../utils.js";
 import { DisplayValueRenderer } from "./DisplayValueRenderer.js";
+import { ClearSignMessages } from "../i18n/messages.js";
+import { useClearSignMessages } from "../i18n/context.js";
 import styles from "../styles.module.css";
 
-export const AuthNodeRenderer: React.FC<{ node: AuthNode }> = ({ node }) => {
+export interface AuthNodeRendererProps {
+  node: AuthNode;
+  messages?: Partial<ClearSignMessages> | undefined;
+}
+
+export const AuthNodeRenderer: React.FC<AuthNodeRendererProps> = ({
+  node,
+  messages,
+}) => {
+  const m = useClearSignMessages(messages);
+
   return (
     <div className={styles.treeNode}>
       <div>
@@ -12,17 +24,21 @@ export const AuthNodeRenderer: React.FC<{ node: AuthNode }> = ({ node }) => {
       </div>
       {node.contractId && (
         <div>
-          Contract:{" "}
+          {m.contractLabel}{" "}
           <span title={node.contractId}>{shortenAddress(node.contractId)}</span>
         </div>
       )}
-      {node.functionName && <div>Function: {node.functionName}</div>}
+      {node.functionName && (
+        <div>
+          {m.functionLabel} {node.functionName}
+        </div>
+      )}
       {node.args && node.args.length > 0 && (
         <ul>
           {node.args.map((arg, i) => (
             <li key={i}>
               <strong>{arg.name || "arg"}:</strong>{" "}
-              <DisplayValueRenderer val={arg.value} />
+              <DisplayValueRenderer val={arg.value} messages={messages} />
             </li>
           ))}
         </ul>
@@ -39,9 +55,9 @@ export const AuthNodeRenderer: React.FC<{ node: AuthNode }> = ({ node }) => {
       )}
       {node.children && node.children.length > 0 && (
         <div>
-          Sub-invocations:
+          {m.subInvocationsLabel}
           {node.children.map((child, i) => (
-            <AuthNodeRenderer key={i} node={child} />
+            <AuthNodeRenderer key={i} node={child} messages={messages} />
           ))}
         </div>
       )}

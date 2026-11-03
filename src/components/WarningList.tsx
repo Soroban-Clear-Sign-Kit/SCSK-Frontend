@@ -1,5 +1,7 @@
 import React from "react";
 import styles from "../styles.module.css";
+import { ClearSignMessages, DEFAULT_MESSAGES } from "../i18n/messages.js";
+import { useClearSignMessages } from "../i18n/context.js";
 
 export type WarningSeverity = "blocked" | "review" | "info";
 
@@ -93,7 +95,7 @@ export function mapToWarningViewModel(
   const explanation =
     raw?.explanation ||
     raw?.message ||
-    "No additional explanation available for this warning.";
+    DEFAULT_MESSAGES.defaultWarningExplanation;
 
   const docsUrl =
     raw?.docsUrl || `https://docs.clearsign.io/warnings/${code.toLowerCase()}`;
@@ -135,13 +137,16 @@ export function groupWarningsBySeverity(
 export interface WarningListProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   warnings: Array<WarningViewModel | any>;
-  className?: string;
+  className?: string | undefined;
+  messages?: Partial<ClearSignMessages> | undefined;
 }
 
 export const WarningList: React.FC<WarningListProps> = ({
   warnings,
   className = "",
+  messages,
 }) => {
+  const m = useClearSignMessages(messages);
   if (!warnings || warnings.length === 0) return null;
 
   const normalizedWarnings: WarningViewModel[] = warnings.map((w) =>
@@ -187,9 +192,9 @@ export const WarningList: React.FC<WarningListProps> = ({
               target="_blank"
               rel="noopener noreferrer"
               className={styles.warningDocsLink}
-              aria-label={`Docs: ${w.code} documentation`}
+              aria-label={m.warningDocsAriaLabel(w.code)}
             >
-              Docs ↗
+              {m.warningDocsLink}
             </a>
           )}
         </div>
@@ -202,13 +207,13 @@ export const WarningList: React.FC<WarningListProps> = ({
   return (
     <div
       className={`${styles.section} ${className}`}
-      aria-label="Transaction Warnings"
+      aria-label={m.sectionWarnings}
     >
       {grouped.blocked.length > 0 && (
         <div className={styles.warningGroup}>
           <div className={styles.warningGroupTitle}>
             <span aria-hidden="true">🛑</span>
-            <span>Blocked ({grouped.blocked.length})</span>
+            <span>{m.warningsBlockedTitle(grouped.blocked.length)}</span>
           </div>
           {grouped.blocked.map((w, idx) =>
             renderItem(w, `blocked-${w.code}-${idx}`),
@@ -220,7 +225,7 @@ export const WarningList: React.FC<WarningListProps> = ({
         <div className={styles.warningGroup}>
           <div className={styles.warningGroupTitle}>
             <span aria-hidden="true">⚠️</span>
-            <span>Review Required ({grouped.review.length})</span>
+            <span>{m.warningsReviewTitle(grouped.review.length)}</span>
           </div>
           {grouped.review.map((w, idx) =>
             renderItem(w, `review-${w.code}-${idx}`),
@@ -232,7 +237,7 @@ export const WarningList: React.FC<WarningListProps> = ({
         <div className={styles.warningGroup}>
           <div className={styles.warningGroupTitle}>
             <span aria-hidden="true">ℹ️</span>
-            <span>Informational ({grouped.info.length})</span>
+            <span>{m.warningsInfoTitle(grouped.info.length)}</span>
           </div>
           {grouped.info.map((w, idx) => renderItem(w, `info-${w.code}-${idx}`))}
         </div>

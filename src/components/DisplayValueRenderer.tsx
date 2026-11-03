@@ -1,10 +1,20 @@
 import React from "react";
 import { DisplayValue } from "@clearsign/core";
 import { shortenAddress, handleCopy } from "../utils.js";
+import { ClearSignMessages } from "../i18n/messages.js";
+import { useClearSignMessages } from "../i18n/context.js";
 
-export const DisplayValueRenderer: React.FC<{ val: DisplayValue }> = ({
+export interface DisplayValueRendererProps {
+  val: DisplayValue;
+  messages?: Partial<ClearSignMessages> | undefined;
+}
+
+export const DisplayValueRenderer: React.FC<DisplayValueRendererProps> = ({
   val,
+  messages,
 }) => {
+  const m = useClearSignMessages(messages);
+
   if (val.kind === "address") {
     return (
       <span title={val.value}>
@@ -12,9 +22,9 @@ export const DisplayValueRenderer: React.FC<{ val: DisplayValue }> = ({
         <button
           type="button"
           onClick={() => handleCopy(val.value)}
-          aria-label="Copy address"
+          aria-label={m.copyAddressAriaLabel}
         >
-          Copy
+          {m.copy}
         </button>
       </span>
     );
@@ -23,12 +33,9 @@ export const DisplayValueRenderer: React.FC<{ val: DisplayValue }> = ({
     return (
       <span>
         <span>{val.value}</span>
-        {val.truncated && <em> (truncated)</em>}
+        {val.truncated && <em> {m.truncatedBadge}</em>}
         {val.sanitized && (
-          <em title="Hidden or control characters were removed">
-            {" "}
-            (sanitized)
-          </em>
+          <em title={m.sanitizedTooltip}> {m.sanitizedBadge}</em>
         )}
       </span>
     );
@@ -42,9 +49,7 @@ export const DisplayValueRenderer: React.FC<{ val: DisplayValue }> = ({
         <span>{val.hex}</span>
         {val.truncated ? "…" : ""}{" "}
         {val.length !== undefined && (
-          <span>
-            ({val.length} bytes{val.truncated ? ", truncated" : ""})
-          </span>
+          <span>{m.bytesFormatted(val.length, val.truncated)}</span>
         )}
       </span>
     );
@@ -54,7 +59,7 @@ export const DisplayValueRenderer: React.FC<{ val: DisplayValue }> = ({
       <ul>
         {val.items.map((item, i) => (
           <li key={i}>
-            <DisplayValueRenderer val={item} />
+            <DisplayValueRenderer val={item} messages={messages} />
           </li>
         ))}
       </ul>
@@ -65,21 +70,22 @@ export const DisplayValueRenderer: React.FC<{ val: DisplayValue }> = ({
       <ul>
         {val.fields.map((f, i) => (
           <li key={i}>
-            <strong>{f.name}:</strong> <DisplayValueRenderer val={f.value} />
+            <strong>{f.name}:</strong>{" "}
+            <DisplayValueRenderer val={f.value} messages={messages} />
           </li>
         ))}
       </ul>
     );
   }
   if (val.kind === "map") {
-    if (val.entries.length === 0) return <span>Empty map</span>;
+    if (val.entries.length === 0) return <span>{m.emptyMap}</span>;
     return (
       <ul>
         {val.entries.map((entry, i) => (
           <li key={i}>
-            <DisplayValueRenderer val={entry.key} />{" "}
+            <DisplayValueRenderer val={entry.key} messages={messages} />{" "}
             <span aria-hidden="true">&rarr;</span>{" "}
-            <DisplayValueRenderer val={entry.value} />
+            <DisplayValueRenderer val={entry.value} messages={messages} />
           </li>
         ))}
       </ul>
@@ -95,7 +101,7 @@ export const DisplayValueRenderer: React.FC<{ val: DisplayValue }> = ({
           <ul>
             {val.values.map((v, i) => (
               <li key={i}>
-                <DisplayValueRenderer val={v} />
+                <DisplayValueRenderer val={v} messages={messages} />
               </li>
             ))}
           </ul>
@@ -104,27 +110,24 @@ export const DisplayValueRenderer: React.FC<{ val: DisplayValue }> = ({
     );
   }
   if (val.kind === "option") {
-    if (val.value === null) return <span>None</span>;
+    if (val.value === null) return <span>{m.optionNone}</span>;
     return (
       <span>
-        Some(
-        <DisplayValueRenderer val={val.value} />)
+        {m.optionSomePrefix}
+        <DisplayValueRenderer val={val.value} messages={messages} />)
       </span>
     );
   }
   if (val.kind === "timepoint" || val.kind === "duration") {
     return (
       <span>
-        {val.kind === "timepoint" ? "Timepoint" : "Duration"} {val.value}
+        {val.kind === "timepoint" ? m.timepointLabel : m.durationLabel}{" "}
+        {val.value}
       </span>
     );
   }
   if (val.kind === "raw") {
-    return (
-      <span title={val.xdr}>
-        Undecoded {val.scvalType} value (raw XDR available below)
-      </span>
-    );
+    return <span title={val.xdr}>{m.undecodedLabel(val.scvalType)}</span>;
   }
-  return <span>Complex value</span>;
+  return <span>{m.complexValue}</span>;
 };

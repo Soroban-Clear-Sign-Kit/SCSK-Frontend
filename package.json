@@ -16,6 +16,16 @@
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     },
+    "./adapters/freighter": {
+      "types": "./dist/adapters/freighter.d.ts",
+      "import": "./dist/adapters/freighter.js",
+      "require": "./dist/adapters/freighter.cjs"
+    },
+    "./adapters/stellar-wallets-kit": {
+      "types": "./dist/adapters/stellar-wallets-kit.d.ts",
+      "import": "./dist/adapters/stellar-wallets-kit.js",
+      "require": "./dist/adapters/stellar-wallets-kit.cjs"
+    },
     "./styles.css": "./dist/index.css"
   },
   "scripts": {
@@ -31,10 +41,21 @@
   },
   "peerDependencies": {
     "react": "^18.0.0 || ^19.0.0",
-    "react-dom": "^18.0.0 || ^19.0.0"
+    "react-dom": "^18.0.0 || ^19.0.0",
+    "@stellar/freighter-api": ">=1.0.0",
+    "@creit.tech/stellar-wallets-kit": ">=1.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@stellar/freighter-api": {
+      "optional": true
+    },
+    "@creit.tech/stellar-wallets-kit": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@stellar/freighter-api": "^6.0.1",
     "@testing-library/jest-dom": "^6.5.0",
     "@testing-library/react": "^16.0.1",
     "@types/node": "^22.5.5",

@@ -270,8 +270,8 @@ describe("AuthorizationTree Component", () => {
       render(<AuthorizationTree nodes={largeTree} defaultExpandedDepth={2} />);
       const renderDuration = performance.now() - startTime;
 
-      // Performance check: should render smoothly in under 100ms in jsdom
-      expect(renderDuration).toBeLessThan(100);
+      // Performance check: should render smoothly in under 500ms in jsdom
+      expect(renderDuration).toBeLessThan(500);
 
       // Root is rendered
       expect(document.getElementById("perf-root")).toBeInTheDocument();

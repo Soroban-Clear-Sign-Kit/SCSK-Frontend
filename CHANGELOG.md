@@ -9,6 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `ClearSignMessages` interface, `DEFAULT_MESSAGES`, `ClearSignProvider`, and `useClearSignMessages` hook for full internationalization and string overrides without hard-coded strings.
+- Pseudo-localization utilities `pseudoLocalizeString` and `createPseudoLocalizedMessages` for stress-testing UI with character dilation and diacritics.
+- Complete design tokens via CSS custom properties (`--clearsign-*`) for colors, spacing, border radii, and typography.
+- Automatic light and dark mode switching via `prefers-color-scheme` and manual override via `theme="light" | "dark" | "auto"` prop or `data-theme` attribute.
+- Automated WCAG 2.1 AA relative luminance and contrast ratio verification for dark and light mode texts, buttons, and warning severities.
+- Right-to-Left (RTL) layout support using CSS logical properties (`margin-inline`, `padding-inline`, `border-inline`).
+- Theming and internationalization documentation with custom brand styling and Spanish localization examples (`docs/THEMING_AND_I18N.md`).
+- Automated tests for pseudo-localization, zero hard-coded strings, and RTL layout (`test/unit/localization.test.tsx`).
+- `SignerAdapter` interface (`getAddress()`, `signTransaction(xdr, { networkPassphrase })`) and typed errors (`ClearSignRejectedError`, `WalletSigningError`).
+- Decoupled wallet signing in `useClearSign` via optional `adapter` prop, `isSigning` state, `signedXdr` state, typed `error` state, and `signTransaction()` method.
+- Reference adapter for Freighter wallet exported at `@clearsign/react/adapters/freighter` with support for injected instances, `window.freighter`, and `@stellar/freighter-api`.
+- Reference adapter for Stellar Wallets Kit exported at `@clearsign/react/adapters/stellar-wallets-kit`.
+- Separate subpath exports and optional peer dependencies for `@stellar/freighter-api` and `@creit.tech/stellar-wallets-kit` ensuring zero main bundle size overhead.
+- Double-click protection and state-gated signing preventing signing when blocked and requiring acknowledgement when under review.
+- Unit test suite for signer adapters and gating (`test/unit/signer.test.ts`).
+- Interactive Freighter testnet signing integration in `example/src/App.tsx`.
 - Local `WarningViewModel` and `WarningSeverity` types with `mapToWarningViewModel` and `groupWarningsBySeverity` mapping functions.
 - `WarningList` component grouping warnings by severity (`blocked`, `review`, `info`) with codes, titles, explanations, and documentation links.
 - Warnings specification and decision table documentation in `docs/WARNINGS.md`.
