@@ -26,6 +26,7 @@ import { ClearSignModal } from "@clearsign/react";
 - `authTree` (AuthTreeNode[], optional): Custom authorization tree nodes to display directly.
 - `theme` (`"light" | "dark" | "auto"`, optional, default: `"auto"`): Forces light or dark mode styling, overriding system preferences.
 - `messages` (`Partial<ClearSignMessages>`, optional): Custom or translated strings for all user-facing labels in this modal instance. See [docs/THEMING_AND_I18N.md](THEMING_AND_I18N.md).
+- `stateDiffs` (`StateDiffItem[]`, optional): Custom state modifications or balance deltas to display in the paginated diff view. See [docs/VERIFICATION_AND_RAW.md](VERIFICATION_AND_RAW.md).
 
 ### `WarningList`
 
@@ -86,6 +87,34 @@ import { ClearSignProvider } from "@clearsign/react";
 <ClearSignProvider messages={customMessages}>
   <App />
 </ClearSignProvider>;
+```
+
+### `AddressHashView`
+
+An accessible component that formats long Stellar addresses, Soroban contract IDs, and cryptographic hashes. Displays a middle-truncated preview by default (e.g. `GBRP...OX2H`), expands into grouped 4-character monospace chunks on demand, and copies untruncated values directly to the clipboard. See [docs/VERIFICATION_AND_RAW.md](VERIFICATION_AND_RAW.md).
+
+```tsx
+import { AddressHashView } from "@clearsign/react";
+
+<AddressHashView
+  value="GBRPYHIL2CI3FNQ4BXLFMNDLFJUNPU2HY3ZMFSHONUCEOASW7QC7OX2H"
+  kind="address"
+  copyable={true}
+/>;
+```
+
+### `StateDiffViewer`
+
+A high-performance paginated viewer for balance changes and contract storage modifications. Capable of smoothly rendering 1,000+ diff entries with interactive page controls, size selection, and full address inspection.
+
+```tsx
+import { StateDiffViewer, StateDiffItem } from "@clearsign/react";
+
+<StateDiffViewer
+  entries={diffs}
+  pageSize={25}
+  pageSizeOptions={[10, 25, 50, 100]}
+/>;
 ```
 
 ## Hooks

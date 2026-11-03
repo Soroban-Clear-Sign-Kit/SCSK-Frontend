@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Accessible 'Raw' tab in `ClearSignModal` featuring transaction envelope XDR (base64) and formatted decoded JSON with dedicated copy buttons and copy status feedback.
+- WAI-ARIA compliant tab navigation between 'Details' and 'Raw' tabs with arrow key switching.
+- `AddressHashView` component and `formatGroupedMonospace` utility providing middle-truncated default previews, on-demand full reveals in grouped 4-character monospace chunks, and direct clipboard copying.
+- `StateDiffViewer` component and `StateDiffItem` interface providing pagination and virtualization for balance changes and contract state modifications, handling 1,000+ diff entries smoothly.
+- `stateDiffs` prop on `ClearSignModal` for custom state modification feeds.
+- Comprehensive verification and raw view documentation (`docs/VERIFICATION_AND_RAW.md`).
+- Automated test suites for `AddressHashView` (`test/unit/addressHashView.test.tsx`), `StateDiffViewer` with 1,000-entry diff benchmarks (`test/unit/stateDiffViewer.test.tsx`), and `Raw` tab with copy behaviors (`test/unit/rawTab.test.tsx`).
 - `ClearSignMessages` interface, `DEFAULT_MESSAGES`, `ClearSignProvider`, and `useClearSignMessages` hook for full internationalization and string overrides without hard-coded strings.
 - Pseudo-localization utilities `pseudoLocalizeString` and `createPseudoLocalizedMessages` for stress-testing UI with character dilation and diacritics.
 - Complete design tokens via CSS custom properties (`--clearsign-*`) for colors, spacing, border radii, and typography.
