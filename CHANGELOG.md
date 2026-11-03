@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- Issue template configuration (`.github/ISSUE_TEMPLATE/config.yml`) with community links.
+- CI build status, License, and npm badges in `README.md`.
+- Unit tests verifying repository templates and badges (`test/unit/templates.test.ts`).
+
+### Changed
+
+- Enhanced `.github/pull_request_template.md` with mandatory screenshot/recording section and checklist item for UI changes.
+- Added screenshot prompt to `.github/ISSUE_TEMPLATE/bug_report.md`.
+
 ## [0.1.0] - 2026-10-08
 
 ### Added
