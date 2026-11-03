@@ -5,6 +5,14 @@ packages:
 
 allowBuilds:
   esbuild: true
+  "@reown/appkit": true
+  bufferutil: true
+  secp256k1: true
+  utf-8-validate: true
 
 onlyBuiltDependencies:
   - esbuild
+  - "@reown/appkit"
+  - bufferutil
+  - secp256k1
+  - utf-8-validate

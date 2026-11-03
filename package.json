@@ -34,17 +34,18 @@
     "lint": "eslint src test",
     "format:check": "prettier --check .",
     "test": "vitest run --dir test",
-    "test:coverage": "vitest run --coverage --dir test"
+    "test:coverage": "vitest run --coverage --dir test",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@clearsign/core": "link:../SCSK-Backend",
     "@stellar/stellar-sdk": "^17.2.1"
   },
   "peerDependencies": {
-    "react": "^18.0.0 || ^19.0.0",
-    "react-dom": "^18.0.0 || ^19.0.0",
+    "@creit.tech/stellar-wallets-kit": ">=1.0.0",
     "@stellar/freighter-api": ">=1.0.0",
-    "@creit.tech/stellar-wallets-kit": ">=1.0.0"
+    "react": "^18.0.0 || ^19.0.0",
+    "react-dom": "^18.0.0 || ^19.0.0"
   },
   "peerDependenciesMeta": {
     "@stellar/freighter-api": {
@@ -56,6 +57,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.64.1",
     "@stellar/freighter-api": "^6.0.1",
     "@testing-library/jest-dom": "^6.5.0",
     "@testing-library/react": "^16.0.1",
