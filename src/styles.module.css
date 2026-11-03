@@ -136,6 +136,131 @@
   margin-top: 4px;
 }
 
+/* WAI-ARIA AuthorizationTree Styles */
+.authTreeRoot {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-family: inherit;
+}
+
+.authTreeGroup {
+  list-style: none;
+  padding-left: 20px;
+  margin: 0;
+  border-left: 1px dashed var(--clearsign-border, #e0e0e0);
+}
+
+.authTreeItem {
+  list-style: none;
+  margin: 2px 0;
+  outline: none;
+}
+
+.authTreeRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 4px 6px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.authTreeRow:hover {
+  background: var(--clearsign-surface, #f8f9fa);
+}
+
+.authTreeRowFocused {
+  background: var(--clearsign-surface, #f1f3f4);
+  outline: 2px solid var(--clearsign-primary, #1a73e8);
+  outline-offset: -1px;
+}
+
+.authTreeChevron {
+  background: none;
+  border: none;
+  padding: 2px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--clearsign-text-muted, #5f6368);
+  transition: transform 0.15s ease;
+  width: 20px;
+  height: 20px;
+}
+
+.authTreeChevronExpanded {
+  transform: rotate(90deg);
+}
+
+.authTreeKind {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  background: var(--clearsign-surface, #f1f3f4);
+  color: var(--clearsign-text-muted, #5f6368);
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.authTreeContract {
+  font-family: monospace;
+  font-size: 13px;
+  color: var(--clearsign-text, #1a1a1a);
+}
+
+.authTreeFunction {
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--clearsign-primary, #1a73e8);
+}
+
+.authTreeRevealBtn {
+  background: none;
+  border: none;
+  color: var(--clearsign-primary, #1a73e8);
+  font-size: 11px;
+  cursor: pointer;
+  padding: 0 4px;
+  text-decoration: underline;
+}
+
+.authTreeArgs {
+  margin: 4px 0 6px 28px;
+  padding: 6px 10px;
+  background: var(--clearsign-surface, #f8f9fa);
+  border-radius: 4px;
+  font-size: 12px;
+  list-style: none;
+}
+
+.authTreeArgItem {
+  margin: 2px 0;
+  word-break: break-all;
+}
+
+.authTreeNodeWarning {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--clearsign-risk-review-bg, #fef7e0);
+  color: var(--clearsign-risk-review-text, #b06000);
+  border: 1px solid var(--clearsign-warning, #f29900);
+}
+
+.authTreeNodeWarningBlocked {
+  background: var(--clearsign-risk-blocked-bg, #fce8e6);
+  color: var(--clearsign-risk-blocked-text, #c5221f);
+  border-color: var(--clearsign-negative, #d93025);
+}
+
 .warningItem {
   padding: 8px;
   background: var(--clearsign-surface, #f8f9fa);
