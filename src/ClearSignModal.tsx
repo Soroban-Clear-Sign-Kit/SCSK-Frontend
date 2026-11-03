@@ -30,7 +30,14 @@ export interface ClearSignModalProps {
   onReject: () => void;
   isSigning?: boolean | undefined;
   isPending?: boolean | undefined;
-  status?: "decoding" | "ready" | "review" | "blocked" | "error" | undefined;
+  status?:
+    | "decoding"
+    | "ready"
+    | "review"
+    | "blocked"
+    | "error"
+    | "success"
+    | undefined;
   errorMessage?: string | undefined;
   useAuthorizationTree?: boolean | undefined;
   authTree?: AuthTreeNode[] | undefined;
@@ -161,7 +168,8 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({
 
   const dataTheme = theme && theme !== "auto" ? theme : undefined;
   const pendingSignature = isSigning || isPending;
-  const visible = preview !== null || loading;
+  const visible =
+    preview !== null || loading || status === "error" || status === "success";
 
   const mappedWarnings = useMemo(
     () => (preview?.warnings || []).map(mapToWarningViewModel),
@@ -170,6 +178,7 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({
 
   const isBlocked =
     status === "blocked" ||
+    status === "error" ||
     preview?.risk === "blocked" ||
     mappedWarnings.some((w) => w.severity === "blocked");
 
@@ -248,71 +257,6 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({
     };
   }, [visible, pendingSignature]);
 
-  if (!preview) {
-    if (!loading) return null;
-    return (
-      <div className={styles.modalOverlay} data-theme={dataTheme}>
-        <div
-          className={styles.modalContent}
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="clearsign-modal-title"
-          aria-busy="true"
-          ref={modalRef}
-          tabIndex={-1}
-          data-theme={dataTheme}
-        >
-          <div className={styles.modalHeader}>
-            <h2 id="clearsign-modal-title">{m.modalTitle}</h2>
-          </div>
-          <div className={styles.modalBody}>
-            <p role="status">{m.decodingPreview}</p>
-          </div>
-          <div className={styles.modalFooter}>
-            <div className={styles.buttonGroup}>
-              <button
-                type="button"
-                className={`${styles.button} ${styles.buttonReject}`}
-                onClick={onReject}
-              >
-                {m.reject}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  const getRiskBannerInfo = () => {
-    if (isBlocked) {
-      return {
-        text: m.riskBlocked,
-        className: styles.riskBlocked,
-        icon: <ShieldAlertIcon />,
-      };
-    }
-    if (isReview) {
-      return {
-        text: m.riskReview,
-        className: styles.riskReview,
-        icon: <AlertTriangleIcon />,
-      };
-    }
-    if (preview.risk === "ok") {
-      return {
-        text: m.riskOk,
-        className: styles.riskOk,
-        icon: <CheckCircleIcon />,
-      };
-    }
-    return {
-      text: m.riskUnknown,
-      className: styles.riskBlocked,
-      icon: <AlertCircleIcon />,
-    };
-  };
-
   const getStatusAnnouncement = () => {
     const currentStatus =
       status ||
@@ -324,7 +268,7 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({
             ? "blocked"
             : isReview
               ? "review"
-              : preview.risk === "ok"
+              : preview?.risk === "ok"
                 ? "ready"
                 : "ready");
 
@@ -341,9 +285,112 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({
         return m.announcementPending;
       case "error":
         return m.announcementError(errorMessage);
+      case "success":
+        return m.announcementSuccess;
       default:
         return m.announcementUpdated;
     }
+  };
+
+  if (!preview) {
+    if (!loading && status !== "error" && status !== "success") return null;
+    return (
+      <div className={styles.modalOverlay} data-theme={dataTheme}>
+        <div
+          className={styles.modalContent}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="clearsign-modal-title"
+          aria-busy={loading ? "true" : undefined}
+          ref={modalRef}
+          tabIndex={-1}
+          data-theme={dataTheme}
+        >
+          <div className={styles.modalHeader}>
+            <h2 id="clearsign-modal-title">{m.modalTitle}</h2>
+          </div>
+          <div className={styles.modalBody}>
+            {status === "error" ? (
+              <div
+                className={`${styles.riskBanner} ${styles.riskBlocked}`}
+                role="alert"
+              >
+                <span className={styles.riskIcon} aria-hidden="true">
+                  <AlertCircleIcon />
+                </span>
+                <span>{errorMessage || m.announcementError(errorMessage)}</span>
+              </div>
+            ) : status === "success" ? (
+              <div
+                className={`${styles.riskBanner} ${styles.riskOk}`}
+                role="status"
+              >
+                <span className={styles.riskIcon} aria-hidden="true">
+                  <CheckCircleIcon />
+                </span>
+                <span>{m.statusSuccess}</span>
+              </div>
+            ) : (
+              <p role="status">{m.decodingPreview}</p>
+            )}
+          </div>
+          <div className={styles.modalFooter}>
+            <div className={styles.buttonGroup}>
+              <button
+                type="button"
+                className={`${styles.button} ${styles.buttonReject}`}
+                onClick={onReject}
+              >
+                {status === "success" ? m.close : m.reject}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const getRiskBannerInfo = () => {
+    if (status === "success") {
+      return {
+        text: m.statusSuccess,
+        className: styles.riskOk,
+        icon: <CheckCircleIcon />,
+      };
+    }
+    if (status === "error") {
+      return {
+        text: errorMessage || m.announcementError(errorMessage),
+        className: styles.riskBlocked,
+        icon: <AlertCircleIcon />,
+      };
+    }
+    if (isBlocked) {
+      return {
+        text: m.riskBlocked,
+        className: styles.riskBlocked,
+        icon: <ShieldAlertIcon />,
+      };
+    }
+    if (isReview) {
+      return {
+        text: m.riskReview,
+        className: styles.riskReview,
+        icon: <AlertTriangleIcon />,
+      };
+    }
+    if (preview.risk === "ok" || status === "ready") {
+      return {
+        text: m.riskOk,
+        className: styles.riskOk,
+        icon: <CheckCircleIcon />,
+      };
+    }
+    return {
+      text: m.riskUnknown,
+      className: styles.riskBlocked,
+      icon: <AlertCircleIcon />,
+    };
   };
 
   const riskInfo = getRiskBannerInfo();
@@ -650,9 +697,9 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({
               onClick={onReject}
               disabled={pendingSignature}
             >
-              {m.reject}
+              {status === "success" ? m.close : m.reject}
             </button>
-            {!isBlocked && (
+            {!isBlocked && status !== "success" && (
               <button
                 type="button"
                 className={`${styles.button} ${styles.buttonApprove}`}

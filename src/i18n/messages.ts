@@ -6,6 +6,7 @@ export interface ClearSignMessages {
   // Actions
   reject: string;
   approve: string;
+  close: string;
   signing: string;
   copy: string;
   copyXdr: string;
@@ -19,6 +20,7 @@ export interface ClearSignMessages {
   riskReview: string;
   riskOk: string;
   riskUnknown: string;
+  statusSuccess: string;
 
   // Announcements (aria-live)
   announcementDecoding: string;
@@ -27,6 +29,7 @@ export interface ClearSignMessages {
   announcementBlocked: string;
   announcementPending: string;
   announcementError: (errorMessage?: string) => string;
+  announcementSuccess: string;
   announcementUpdated: string;
 
   // Section Titles
@@ -119,6 +122,7 @@ export const DEFAULT_MESSAGES: ClearSignMessages = {
   // Actions
   reject: "Reject",
   approve: "Approve",
+  close: "Close",
   signing: "Signing...",
   copy: "Copy",
   copyXdr: "Copy XDR",
@@ -132,6 +136,7 @@ export const DEFAULT_MESSAGES: ClearSignMessages = {
   riskReview: "Review carefully",
   riskOk: "Decoded and verified",
   riskUnknown: "Unknown risk",
+  statusSuccess: "Transaction Signed",
 
   // Announcements
   announcementDecoding: "Decoding transaction preview...",
@@ -141,6 +146,7 @@ export const DEFAULT_MESSAGES: ClearSignMessages = {
   announcementPending: "Transaction signature pending...",
   announcementError: (errorMessage?: string) =>
     `Error: ${errorMessage || "Unable to verify transaction."}`,
+  announcementSuccess: "Transaction signed successfully.",
   announcementUpdated: "Transaction preview updated.",
 
   // Section Titles
