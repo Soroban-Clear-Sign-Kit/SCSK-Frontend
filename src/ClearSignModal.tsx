@@ -4,6 +4,11 @@ import styles from "./styles.module.css";
 import { handleCopy, shortenAddress } from "./utils.js";
 import { DisplayValueRenderer } from "./components/DisplayValueRenderer.js";
 import { AuthNodeRenderer } from "./components/AuthNodeRenderer.js";
+import {
+  AuthorizationTree,
+  AuthTreeNode,
+  convertCoreAuthToTree,
+} from "./components/AuthorizationTree.js";
 
 export interface ClearSignModalProps {
   preview: ClearSignPreview | null;
@@ -15,6 +20,8 @@ export interface ClearSignModalProps {
   isPending?: boolean;
   status?: "decoding" | "ready" | "review" | "blocked" | "error";
   errorMessage?: string;
+  useAuthorizationTree?: boolean;
+  authTree?: AuthTreeNode[];
 }
 
 const CheckCircleIcon: React.FC = () => (
@@ -95,6 +102,8 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({
   isPending = false,
   status,
   errorMessage,
+  useAuthorizationTree = false,
+  authTree,
 }) => {
   const [reviewed, setReviewed] = useState(false);
   const [xdrExpanded, setXdrExpanded] = useState(false);
@@ -347,12 +356,21 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({
           {preview.auth && preview.auth.length > 0 && (
             <div className={styles.section}>
               <h3 className={styles.sectionTitle}>Authorizations</h3>
-              {preview.auth.map((entry, i) => (
-                <div key={i}>
-                  <div>Credentials: {entry.credentials.type}</div>
-                  <AuthNodeRenderer node={entry.root} />
-                </div>
-              ))}
+              {useAuthorizationTree || authTree ? (
+                <AuthorizationTree
+                  nodes={
+                    authTree ||
+                    convertCoreAuthToTree(preview.auth, preview.warnings)
+                  }
+                />
+              ) : (
+                preview.auth.map((entry, i) => (
+                  <div key={i}>
+                    <div>Credentials: {entry.credentials.type}</div>
+                    <AuthNodeRenderer node={entry.root} />
+                  </div>
+                ))
+              )}
             </div>
           )}
 
