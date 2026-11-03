@@ -8,9 +8,11 @@ export const handleCopy = (text: string) => {
 };
 
 /** Returns warnings with blocking ones first, otherwise keeping their original order. */
-export function orderWarnings<T extends { severity: 'review' | 'blocked' }>(warnings: readonly T[]): T[] {
+export function orderWarnings<T extends { severity: "review" | "blocked" }>(
+  warnings: readonly T[],
+): T[] {
   return [
-    ...warnings.filter((w) => w.severity === 'blocked'),
-    ...warnings.filter((w) => w.severity !== 'blocked'),
+    ...warnings.filter((w) => w.severity === "blocked"),
+    ...warnings.filter((w) => w.severity !== "blocked"),
   ];
 }

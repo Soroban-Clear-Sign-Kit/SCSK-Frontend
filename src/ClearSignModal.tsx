@@ -110,7 +110,9 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({
   const modalRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLElement | null>(null);
   const onRejectRef = useRef(onReject);
-  onRejectRef.current = onReject;
+  useEffect(() => {
+    onRejectRef.current = onReject;
+  }, [onReject]);
 
   const pendingSignature = isSigning || isPending;
 
@@ -182,7 +184,11 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({
           </div>
           <div className={styles.modalFooter}>
             <div className={styles.buttonGroup}>
-              <button type="button" className={`${styles.button} ${styles.buttonReject}`} onClick={onReject}>
+              <button
+                type="button"
+                className={`${styles.button} ${styles.buttonReject}`}
+                onClick={onReject}
+              >
                 Reject
               </button>
             </div>
@@ -377,7 +383,11 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({
           <div className={styles.section}>
             <h3 className={styles.sectionTitle}>Network</h3>
             <div>{preview.network.passphrase}</div>
-            <div>{preview.network.verified ? 'Network verified against the RPC' : 'Network not verified'}</div>
+            <div>
+              {preview.network.verified
+                ? "Network verified against the RPC"
+                : "Network not verified"}
+            </div>
           </div>
 
           <div className={styles.section}>

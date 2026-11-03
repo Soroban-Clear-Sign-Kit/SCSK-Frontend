@@ -19,7 +19,10 @@ export const AuthNodeRenderer: React.FC<{ node: AuthNode }> = ({ node }) => {
       {node.args && node.args.length > 0 && (
         <ul>
           {node.args.map((arg, i) => (
-            <li key={i}><strong>{arg.name || 'arg'}:</strong> <DisplayValueRenderer val={arg.value} /></li>
+            <li key={i}>
+              <strong>{arg.name || "arg"}:</strong>{" "}
+              <DisplayValueRenderer val={arg.value} />
+            </li>
           ))}
         </ul>
       )}

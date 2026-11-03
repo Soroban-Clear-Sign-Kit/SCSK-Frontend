@@ -31,15 +31,20 @@ export function useClearSign(opts: UseClearSignOptions): UseClearSignResult {
 
   const resolverRef = useRef<((value: boolean) => void) | null>(null);
   const previewRef = useRef<ClearSignPreview | null>(null);
-  previewRef.current = preview;
+  useEffect(() => {
+    previewRef.current = preview;
+  }, [preview]);
   const requestIdRef = useRef(0);
 
   // If the component unmounts mid-request, don't leave the caller waiting forever.
-  useEffect(() => () => {
-    requestIdRef.current++;
-    resolverRef.current?.(false);
-    resolverRef.current = null;
-  }, []);
+  useEffect(
+    () => () => {
+      requestIdRef.current++;
+      resolverRef.current?.(false);
+      resolverRef.current = null;
+    },
+    [],
+  );
 
   const requestApproval = useCallback(
     async (xdr: string, requestOpts?: RequestApprovalOptions) => {
@@ -83,7 +88,7 @@ export function useClearSign(opts: UseClearSignOptions): UseClearSignResult {
     const current = previewRef.current;
     if (!current) return; // nothing to approve yet
     // Never approve something the kit refused to vouch for, even if the UI lets the call through.
-    const approvable = current.risk === 'ok' || current.risk === 'review';
+    const approvable = current.risk === "ok" || current.risk === "review";
     setOpen(false);
     if (resolverRef.current) {
       resolverRef.current(approvable);
