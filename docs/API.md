@@ -19,11 +19,21 @@ import { ClearSignModal } from "@clearsign/react";
 #### Props:
 
 - `preview` (ClearSignPreview | null): The resolved preview object from `@clearsign/core`. If null or missing, the modal displays a loading state or nothing.
-- `onApprove` (function): Callback fired when the user successfully clicks "Approve". If risk is `review`, they must check the warning acknowledgment box first. If risk is `blocked`, this button is hidden and cannot be clicked.
+- `onApprove` (`(acknowledgedWarnings?: WarningViewModel[]) => void`): Callback fired when the user successfully clicks "Approve". If risk is `review`, they must check the warning acknowledgment box first, and the acknowledged warnings are reported in the callback. If risk is `blocked`, this button is disabled/hidden and cannot be re-enabled.
 - `onReject` (function): Callback fired when the user clicks "Reject", clicks outside the modal, or presses the Escape key.
 - `isSigning` (boolean, optional): Set to true during active wallet signing. Suppresses Escape dismissal and disables action buttons.
 - `useAuthorizationTree` (boolean, optional): When true, renders authorization entries using the accessible, collapsible `AuthorizationTree` component.
 - `authTree` (AuthTreeNode[], optional): Custom authorization tree nodes to display directly.
+
+### `WarningList`
+
+An accessible warning list component that groups warnings by severity (`blocked`, `review`, `info`) with icons, explanations, and documentation links. See [docs/WARNINGS.md](WARNINGS.md) for the complete decision table.
+
+```tsx
+import { WarningList } from "@clearsign/react";
+
+<WarningList warnings={warnings} />;
+```
 
 ### `AuthorizationTree`
 

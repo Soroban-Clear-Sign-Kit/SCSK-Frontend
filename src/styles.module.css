@@ -262,15 +262,77 @@
 }
 
 .warningItem {
-  padding: 8px;
+  padding: 10px;
   background: var(--clearsign-surface, #f8f9fa);
   border-radius: 4px;
   border-left: 4px solid var(--clearsign-warning, #f29900);
   font-size: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 8px;
 }
 
 .warningBlocked {
   border-left-color: var(--clearsign-negative, #d93025);
+  background: var(--clearsign-risk-blocked-bg, #fce8e6);
+}
+
+.warningReview {
+  border-left-color: var(--clearsign-warning, #f29900);
+  background: var(--clearsign-risk-review-bg, #fef7e0);
+}
+
+.warningInfo {
+  border-left-color: var(--clearsign-primary, #1a73e8);
+  background: var(--clearsign-surface, #f1f3f4);
+}
+
+.warningGroup {
+  margin-bottom: 12px;
+}
+
+.warningGroupTitle {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+  color: var(--clearsign-text-muted, #5f6368);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.warningTitleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.warningCodeTitle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.warningExplanation {
+  font-size: 13px;
+  color: var(--clearsign-text, #1a1a1a);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.warningDocsLink {
+  font-size: 12px;
+  color: var(--clearsign-primary, #1a73e8);
+  text-decoration: underline;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
 }
 
 .rawXdr {

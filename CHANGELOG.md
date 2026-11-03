@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Local `WarningViewModel` and `WarningSeverity` types with `mapToWarningViewModel` and `groupWarningsBySeverity` mapping functions.
+- `WarningList` component grouping warnings by severity (`blocked`, `review`, `info`) with codes, titles, explanations, and documentation links.
+- Warnings specification and decision table documentation in `docs/WARNINGS.md`.
+- Comprehensive warning gating and acknowledgement reset test suite in `test/unit/warnings.test.tsx`.
 - `AuthorizationTree` component for nested invocations with full WAI-ARIA tree pattern and keyboard navigation.
 - Local `AuthTreeNode`, `AuthTreeArg`, and `AuthTreeWarning` types and `convertCoreAuthToTree` helper.
 - Lazy rendering for deep invocation trees with level > 2 collapsed by default, supporting 500+ node trees without jank.
@@ -29,6 +33,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Gated signing strictly when any warning or risk is `blocked`, disabling the sign button and preventing re-enabling by props.
+- Guaranteed signing in a blocked state is a strict no-op.
+- Required explicit review acknowledgment checkbox (`reviewed`) before enabling signing for `review` severity transactions.
+- Automatically reset review acknowledgment whenever the transaction or preview changes.
+- Updated `onApprove` callback to report acknowledged `WarningViewModel[]` for audit logging and telemetry.
 - Updated `ClearSignModal` focus trap and keyboard navigation to suppress Escape closing when signature is pending.
 - Enhanced `.github/pull_request_template.md` with mandatory screenshot/recording section and checklist item for UI changes.
 - Added screenshot prompt to `.github/ISSUE_TEMPLATE/bug_report.md`.
