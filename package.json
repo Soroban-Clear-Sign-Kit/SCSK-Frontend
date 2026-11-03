@@ -21,10 +21,9 @@
   "scripts": {
     "build": "tsup",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run --dir test",
-    "test:coverage": "vitest run --dir test --coverage",
-    "check": "pnpm run typecheck && pnpm test",
-    "prepublishOnly": "pnpm run check && pnpm run build"
+    "lint": "eslint src test",
+    "format:check": "prettier --check .",
+    "test": "vitest run --dir test"
   },
   "dependencies": {
     "@clearsign/core": "link:../SCSK-Backend",
@@ -35,18 +34,23 @@
     "react-dom": "^18.0.0 || ^19.0.0"
   },
   "devDependencies": {
-    "@testing-library/react": "^16.0.1",
+    "@eslint/js": "^10.0.1",
     "@testing-library/jest-dom": "^6.5.0",
+    "@testing-library/react": "^16.0.1",
     "@types/node": "^22.5.5",
     "@types/react": "^18.3.11",
     "@types/react-dom": "^18.3.0",
+    "@vitest/coverage-v8": "^2.1.1",
+    "eslint": "^10.12.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
     "jsdom": "^25.0.1",
+    "prettier": "^3.9.9",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "tsup": "^8.3.0",
     "typescript": "^5.6.2",
-    "vitest": "^2.1.1",
-    "@vitest/coverage-v8": "^2.1.1"
+    "typescript-eslint": "^8.71.1",
+    "vitest": "^2.1.1"
   },
   "files": [
     "dist"
