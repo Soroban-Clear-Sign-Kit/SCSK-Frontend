@@ -12,6 +12,7 @@ The Frontend package of the **Soroban Clear-Sign Kit (SCSK)** provides React con
 - **`useClearSign`**: A hook that manages the UI state for transaction previews and leverages `@clearsign/core` to build transaction summaries and decode arguments.
 - **Accessibility & UX**: Built with modern CSS modules, offering clean diffs, warning cards, and structured invocation displays. The dialog traps focus, closes on Escape, returns focus to the trigger, announces review and blocked risk as alerts, and shows a busy state while the preview builds.
 - **Fail-closed**: Approve is only offered for `ok` and `review` previews, `review` needs an explicit acknowledgement for each preview, and unrecognised risk levels cannot be approved.
+- **Theming & i18n**: Fully customizable without forking using CSS custom property tokens, automatic light/dark switching and manual overrides, WCAG 2.1 AA contrast compliance, message dictionary overrides (`ClearSignProvider`), pseudo-localization, and RTL layout support. See [docs/THEMING_AND_I18N.md](docs/THEMING_AND_I18N.md).
 
 ## Usage
 

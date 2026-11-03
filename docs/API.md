@@ -24,6 +24,8 @@ import { ClearSignModal } from "@clearsign/react";
 - `isSigning` (boolean, optional): Set to true during active wallet signing. Suppresses Escape dismissal and disables action buttons.
 - `useAuthorizationTree` (boolean, optional): When true, renders authorization entries using the accessible, collapsible `AuthorizationTree` component.
 - `authTree` (AuthTreeNode[], optional): Custom authorization tree nodes to display directly.
+- `theme` (`"light" | "dark" | "auto"`, optional, default: `"auto"`): Forces light or dark mode styling, overriding system preferences.
+- `messages` (`Partial<ClearSignMessages>`, optional): Custom or translated strings for all user-facing labels in this modal instance. See [docs/THEMING_AND_I18N.md](THEMING_AND_I18N.md).
 
 ### `WarningList`
 
@@ -72,6 +74,18 @@ export interface AuthTreeNode {
   }>;
   kind?: string;
 }
+```
+
+### `ClearSignProvider`
+
+Context provider for customizing themes and supplying localized user-facing message dictionaries across all child ClearSign components. See [docs/THEMING_AND_I18N.md](THEMING_AND_I18N.md).
+
+```tsx
+import { ClearSignProvider } from "@clearsign/react";
+
+<ClearSignProvider messages={customMessages}>
+  <App />
+</ClearSignProvider>;
 ```
 
 ## Hooks
