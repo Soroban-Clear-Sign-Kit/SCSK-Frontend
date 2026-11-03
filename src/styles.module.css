@@ -498,6 +498,85 @@
   overflow-y: auto;
 }
 
+/* Tab Navigation */
+.tabList {
+  display: flex;
+  gap: var(--clearsign-space-sm);
+  border-bottom: 1px solid var(--clearsign-border);
+  margin-bottom: var(--clearsign-space-md);
+}
+
+.tabButton {
+  padding: var(--clearsign-space-xs) var(--clearsign-space-md);
+  font-size: var(--clearsign-font-size-sm);
+  font-weight: 600;
+  color: var(--clearsign-text-muted);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.tabButton:hover {
+  color: var(--clearsign-text);
+}
+
+.tabButtonActive {
+  color: var(--clearsign-primary);
+  border-bottom-color: var(--clearsign-primary);
+}
+
+.tabButton:focus-visible {
+  outline: 2px solid var(--clearsign-primary);
+  outline-offset: 2px;
+}
+
+/* Raw Tab Details */
+.rawHeaderRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--clearsign-space-sm);
+  margin-bottom: var(--clearsign-space-xs);
+}
+
+.copyButton {
+  padding: 3px 8px;
+  font-size: var(--clearsign-font-size-xs);
+  font-weight: 500;
+  border-radius: var(--clearsign-radius-sm);
+  border: 1px solid var(--clearsign-border);
+  background: var(--clearsign-surface);
+  color: var(--clearsign-text);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.copyButton:hover {
+  background: var(--clearsign-surface-hover);
+}
+
+.copyButton:focus-visible {
+  outline: 2px solid var(--clearsign-primary);
+  outline-offset: 1px;
+}
+
+.rawCodeBlock {
+  margin: 0;
+  padding: var(--clearsign-space-sm);
+  background: var(--clearsign-code-bg);
+  color: var(--clearsign-code-text);
+  border: 1px solid var(--clearsign-border);
+  border-radius: var(--clearsign-radius-sm);
+  font-family: var(--clearsign-font-family-mono);
+  font-size: var(--clearsign-font-size-xs);
+  word-break: break-all;
+  white-space: pre-wrap;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
 .modalFooter {
   padding: var(--clearsign-space-lg);
   border-top: 1px solid var(--clearsign-border);

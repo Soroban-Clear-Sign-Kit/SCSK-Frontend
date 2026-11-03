@@ -127,6 +127,31 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({
   const m = useClearSignMessages(messages);
   const [reviewed, setReviewed] = useState(false);
   const [xdrExpanded, setXdrExpanded] = useState(false);
+  const [activeTab, setActiveTab] = useState<"details" | "raw">("details");
+  const [copiedXdr, setCopiedXdr] = useState(false);
+  const [copiedJson, setCopiedJson] = useState(false);
+
+  const decodedJson = useMemo(() => {
+    if (!preview) return "{}";
+    try {
+      return JSON.stringify(preview, null, 2);
+    } catch {
+      return "{}";
+    }
+  }, [preview]);
+
+  const handleTabKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
+      e.preventDefault();
+      const nextTab = activeTab === "details" ? "raw" : "details";
+      setActiveTab(nextTab);
+      const tabEl = document.getElementById(
+        nextTab === "details" ? "clearsign-tab-details" : "clearsign-tab-raw",
+      );
+      tabEl?.focus();
+    }
+  };
+
   const modalRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLElement | null>(null);
   const onRejectRef = useRef(onReject);
@@ -360,159 +385,250 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({
             <span>{riskInfo.text}</span>
           </div>
 
-          {preview.summary && preview.summary.length > 0 && (
-            <div className={styles.section}>
-              <h3 className={styles.sectionTitle}>{m.sectionSummary}</h3>
-              {preview.summary.map((line, i) => (
-                <p key={i} className={styles.summaryLine}>
-                  {line}
-                </p>
-              ))}
-            </div>
-          )}
+          <div
+            role="tablist"
+            className={styles.tabList}
+            aria-label={m.modalTitle}
+            onKeyDown={handleTabKeyDown}
+          >
+            <button
+              type="button"
+              role="tab"
+              id="clearsign-tab-details"
+              className={`${styles.tabButton} ${activeTab === "details" ? styles.tabButtonActive : ""}`}
+              aria-selected={activeTab === "details"}
+              aria-controls="clearsign-panel-details"
+              tabIndex={activeTab === "details" ? 0 : -1}
+              onClick={() => setActiveTab("details")}
+            >
+              {m.tabDetails}
+            </button>
+            <button
+              type="button"
+              role="tab"
+              id="clearsign-tab-raw"
+              className={`${styles.tabButton} ${activeTab === "raw" ? styles.tabButtonActive : ""}`}
+              aria-selected={activeTab === "raw"}
+              aria-controls="clearsign-panel-raw"
+              tabIndex={activeTab === "raw" ? 0 : -1}
+              onClick={() => setActiveTab("raw")}
+            >
+              {m.tabRaw}
+            </button>
+          </div>
 
-          {((preview.effects && preview.effects.length > 0) ||
-            (stateDiffs && stateDiffs.length > 0)) && (
-            <div className={styles.section}>
-              <h3 className={styles.sectionTitle}>
-                {stateDiffs && stateDiffs.length > 0
-                  ? m.sectionStateDiffs
-                  : m.sectionBalanceChanges}
-              </h3>
-              <StateDiffViewer
-                entries={stateDiffs || preview.effects}
-                messages={messages}
-              />
-            </div>
-          )}
-
-          {preview.invocation && (
-            <div className={styles.section}>
-              <h3 className={styles.sectionTitle}>{m.sectionCallDetails}</h3>
-              <div>
-                {m.contractLabel}{" "}
-                <AddressHashView
-                  value={preview.invocation.contractId}
-                  kind="address"
-                  messages={{
-                    ...messages,
-                    copyAddressAriaLabel: m.copyContractAriaLabel,
-                  }}
-                />
+          <div
+            role="tabpanel"
+            id="clearsign-panel-details"
+            aria-labelledby="clearsign-tab-details"
+            hidden={activeTab !== "details"}
+          >
+            {preview.summary && preview.summary.length > 0 && (
+              <div className={styles.section}>
+                <h3 className={styles.sectionTitle}>{m.sectionSummary}</h3>
+                {preview.summary.map((line, i) => (
+                  <p key={i} className={styles.summaryLine}>
+                    {line}
+                  </p>
+                ))}
               </div>
-              <div>
-                {m.functionLabel} {preview.invocation.functionName}
-              </div>
-              {preview.invocation.args &&
-                preview.invocation.args.length > 0 && (
-                  <ul>
-                    {preview.invocation.args.map((arg, i) => (
-                      <li key={i}>
-                        <strong>{arg.name || "arg"}:</strong>{" "}
-                        <DisplayValueRenderer
-                          val={arg.value}
-                          messages={messages}
-                        />
-                      </li>
-                    ))}
-                  </ul>
-                )}
-            </div>
-          )}
+            )}
 
-          {preview.auth && preview.auth.length > 0 && (
-            <div className={styles.section}>
-              <h3 className={styles.sectionTitle}>{m.sectionAuthorizations}</h3>
-              {useAuthorizationTree || authTree ? (
-                <AuthorizationTree
-                  nodes={
-                    authTree ||
-                    convertCoreAuthToTree(preview.auth, preview.warnings)
-                  }
+            {((preview.effects && preview.effects.length > 0) ||
+              (stateDiffs && stateDiffs.length > 0)) && (
+              <div className={styles.section}>
+                <h3 className={styles.sectionTitle}>
+                  {stateDiffs && stateDiffs.length > 0
+                    ? m.sectionStateDiffs
+                    : m.sectionBalanceChanges}
+                </h3>
+                <StateDiffViewer
+                  entries={stateDiffs || preview.effects}
                   messages={messages}
                 />
-              ) : (
-                preview.auth.map((entry, i) => (
-                  <div key={i}>
-                    <div>
-                      {m.credentialsLabel} {entry.credentials.type}
+              </div>
+            )}
+
+            {preview.invocation && (
+              <div className={styles.section}>
+                <h3 className={styles.sectionTitle}>{m.sectionCallDetails}</h3>
+                <div>
+                  {m.contractLabel}{" "}
+                  <AddressHashView
+                    value={preview.invocation.contractId}
+                    kind="address"
+                    messages={{
+                      ...messages,
+                      copyAddressAriaLabel: m.copyContractAriaLabel,
+                    }}
+                  />
+                </div>
+                <div>
+                  {m.functionLabel} {preview.invocation.functionName}
+                </div>
+                {preview.invocation.args &&
+                  preview.invocation.args.length > 0 && (
+                    <ul>
+                      {preview.invocation.args.map((arg, i) => (
+                        <li key={i}>
+                          <strong>{arg.name || "arg"}:</strong>{" "}
+                          <DisplayValueRenderer
+                            val={arg.value}
+                            messages={messages}
+                          />
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+              </div>
+            )}
+
+            {preview.auth && preview.auth.length > 0 && (
+              <div className={styles.section}>
+                <h3 className={styles.sectionTitle}>
+                  {m.sectionAuthorizations}
+                </h3>
+                {useAuthorizationTree || authTree ? (
+                  <AuthorizationTree
+                    nodes={
+                      authTree ||
+                      convertCoreAuthToTree(preview.auth, preview.warnings)
+                    }
+                    messages={messages}
+                  />
+                ) : (
+                  preview.auth.map((entry, i) => (
+                    <div key={i}>
+                      <div>
+                        {m.credentialsLabel} {entry.credentials.type}
+                      </div>
+                      <AuthNodeRenderer node={entry.root} messages={messages} />
                     </div>
-                    <AuthNodeRenderer node={entry.root} messages={messages} />
-                  </div>
-                ))
+                  ))
+                )}
+              </div>
+            )}
+
+            <div className={styles.section}>
+              <h3 className={styles.sectionTitle}>{m.sectionNetwork}</h3>
+              <div>{preview.network.passphrase}</div>
+              <div>
+                {(
+                  "verified" in preview.network
+                    ? Boolean(
+                        (preview.network as { verified?: boolean }).verified,
+                      )
+                    : Boolean(preview.network.rpcMatches)
+                )
+                  ? m.networkVerified
+                  : m.networkNotVerified}
+              </div>
+            </div>
+
+            <div className={styles.section}>
+              <h3 className={styles.sectionTitle}>{m.sectionFees}</h3>
+              <div>
+                {m.declaredFeeLabel} {preview.envelope.fee}
+              </div>
+              {preview.simulation.minResourceFee && (
+                <div>
+                  {m.simulatedResourceFeeLabel}{" "}
+                  {preview.simulation.minResourceFee}
+                </div>
+              )}
+              {preview.simulation.status && (
+                <div>
+                  {m.simulationStatusLabel} {preview.simulation.status}
+                </div>
+              )}
+              {preview.simulation.error && (
+                <div>
+                  {m.simulationErrorLabel} {preview.simulation.error}
+                </div>
               )}
             </div>
-          )}
 
-          <div className={styles.section}>
-            <h3 className={styles.sectionTitle}>{m.sectionNetwork}</h3>
-            <div>{preview.network.passphrase}</div>
-            <div>
-              {(
-                "verified" in preview.network
-                  ? Boolean(
-                      (preview.network as { verified?: boolean }).verified,
-                    )
-                  : Boolean(preview.network.rpcMatches)
-              )
-                ? m.networkVerified
-                : m.networkNotVerified}
-            </div>
-          </div>
-
-          <div className={styles.section}>
-            <h3 className={styles.sectionTitle}>{m.sectionFees}</h3>
-            <div>
-              {m.declaredFeeLabel} {preview.envelope.fee}
-            </div>
-            {preview.simulation.minResourceFee && (
-              <div>
-                {m.simulatedResourceFeeLabel}{" "}
-                {preview.simulation.minResourceFee}
+            {mappedWarnings.length > 0 && (
+              <div className={styles.section}>
+                <h3 className={styles.sectionTitle}>{m.sectionWarnings}</h3>
+                <WarningList warnings={mappedWarnings} messages={messages} />
               </div>
             )}
-            {preview.simulation.status && (
-              <div>
-                {m.simulationStatusLabel} {preview.simulation.status}
-              </div>
-            )}
-            {preview.simulation.error && (
-              <div>
-                {m.simulationErrorLabel} {preview.simulation.error}
-              </div>
-            )}
-          </div>
 
-          {mappedWarnings.length > 0 && (
             <div className={styles.section}>
-              <h3 className={styles.sectionTitle}>{m.sectionWarnings}</h3>
-              <WarningList warnings={mappedWarnings} messages={messages} />
-            </div>
-          )}
-
-          <div className={styles.section}>
-            <h3 className={styles.sectionTitle}>
-              <button
-                type="button"
-                onClick={() => setXdrExpanded(!xdrExpanded)}
-                aria-expanded={xdrExpanded}
-              >
-                {xdrExpanded ? m.hideRawXdr : m.showRawXdr}
-              </button>
-            </h3>
-            {xdrExpanded && (
-              <div className={styles.rawXdr}>
-                {preview.raw.xdr}
-                <br />
+              <h3 className={styles.sectionTitle}>
                 <button
                   type="button"
-                  onClick={() => handleCopy(preview.raw.xdr)}
+                  onClick={() => setXdrExpanded(!xdrExpanded)}
+                  aria-expanded={xdrExpanded}
                 >
-                  {m.copyXdr}
+                  {xdrExpanded ? m.hideRawXdr : m.showRawXdr}
                 </button>
-              </div>
-            )}
+              </h3>
+              {xdrExpanded && (
+                <div className={styles.rawXdr}>
+                  {preview.raw.xdr}
+                  <br />
+                  <button
+                    type="button"
+                    onClick={() => handleCopy(preview.raw.xdr)}
+                  >
+                    {m.copyXdr}
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
+
+          {activeTab === "raw" && (
+            <div
+              role="tabpanel"
+              id="clearsign-panel-raw"
+              aria-labelledby="clearsign-tab-raw"
+            >
+              <div className={styles.section}>
+                <div className={styles.rawHeaderRow}>
+                  <h3 className={styles.sectionTitle}>{m.rawXdrTitle}</h3>
+                  <button
+                    type="button"
+                    className={styles.copyButton}
+                    onClick={() => {
+                      handleCopy(preview.raw.xdr);
+                      setCopiedXdr(true);
+                      setTimeout(() => setCopiedXdr(false), 2000);
+                    }}
+                    aria-label={m.copyXdr}
+                  >
+                    {copiedXdr ? m.copiedXdr : m.copyXdr}
+                  </button>
+                </div>
+                <pre className={styles.rawCodeBlock}>
+                  <code>{preview.raw.xdr}</code>
+                </pre>
+              </div>
+
+              <div className={styles.section}>
+                <div className={styles.rawHeaderRow}>
+                  <h3 className={styles.sectionTitle}>{m.rawJsonTitle}</h3>
+                  <button
+                    type="button"
+                    className={styles.copyButton}
+                    onClick={() => {
+                      handleCopy(decodedJson);
+                      setCopiedJson(true);
+                      setTimeout(() => setCopiedJson(false), 2000);
+                    }}
+                    aria-label={m.copyJson}
+                  >
+                    {copiedJson ? m.copiedJson : m.copyJson}
+                  </button>
+                </div>
+                <pre className={styles.rawCodeBlock}>
+                  <code>{decodedJson}</code>
+                </pre>
+              </div>
+            </div>
+          )}
         </div>
 
         <div className={styles.modalFooter}>

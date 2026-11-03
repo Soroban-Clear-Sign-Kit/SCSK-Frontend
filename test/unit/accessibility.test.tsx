@@ -261,15 +261,15 @@ describe("ClearSignModal Accessibility & Keyboard Navigation", () => {
         />,
       );
 
-      const showXdrBtn = screen.getByRole("button", { name: "Show Raw XDR" });
+      const detailsTab = screen.getByRole("tab", { name: "Details" });
       const rejectBtn = screen.getByRole("button", { name: "Reject" });
       const approveBtn = screen.getByRole("button", { name: "Approve" });
 
       expect(rejectBtn).toBeInTheDocument();
 
       // Focus first element
-      showXdrBtn.focus();
-      expect(document.activeElement).toBe(showXdrBtn);
+      detailsTab.focus();
+      expect(document.activeElement).toBe(detailsTab);
 
       // Shift+Tab on first element cycles to last element
       fireEvent.keyDown(document, { key: "Tab", shiftKey: true });
@@ -277,7 +277,7 @@ describe("ClearSignModal Accessibility & Keyboard Navigation", () => {
 
       // Tab on last element cycles back to first element
       fireEvent.keyDown(document, { key: "Tab", shiftKey: false });
-      expect(document.activeElement).toBe(showXdrBtn);
+      expect(document.activeElement).toBe(detailsTab);
     });
   });
 
