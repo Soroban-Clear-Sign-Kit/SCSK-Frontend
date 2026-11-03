@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- SSR and Server-Side Rendering support for Next.js (App Router and Pages Router), Remix, Astro, and Vite SSR.
+- Built-in `"use client";` banner directive injected in tsup build configs and source entry points (`@clearsign/react`, `@clearsign/react/adapters/freighter`, `@clearsign/react/adapters/stellar-wallets-kit`).
+- Comprehensive pure Node.js SSR test suite (`test/unit/ssr.test.tsx`) testing all 6 modal states, subcomponents, and adapters with `renderToString` from `react-dom/server`.
+- Next.js and SSR integration guide and client/server recipes (`docs/NEXTJS_AND_SSR.md`).
+
+### Changed
+
+- Defensively guarded clipboard access (`navigator.clipboard.writeText`) in `src/utils.ts` to prevent reference errors in Node / SSR runtimes where `navigator.clipboard` is undefined.
+
 - Support for all six modal states (`loading`, `ready`, `review`, `blocked`, `error`, `success`) in `ClearSignModal` with specific risk banners, live announcements, and gating controls.
 - Comprehensive Testing Library unit test suite for all modal states (`test/unit/modalStates.test.tsx`).
 - Playwright end-to-end visual regression test suite (`test/e2e/visual.spec.ts`) with 12 baseline snapshots across light and dark themes.

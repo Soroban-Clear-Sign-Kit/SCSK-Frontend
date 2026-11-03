@@ -1,3 +1,5 @@
+"use client";
+
 import React, { createContext, useContext, useMemo } from "react";
 import { ClearSignMessages, DEFAULT_MESSAGES } from "./messages.js";
 

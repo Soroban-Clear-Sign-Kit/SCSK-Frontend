@@ -19,7 +19,13 @@ export function formatGroupedMonospace(value: string, chunkSize = 4): string {
 }
 
 export const handleCopy = (text: string) => {
-  navigator.clipboard.writeText(text).catch(() => {});
+  if (
+    typeof navigator !== "undefined" &&
+    navigator.clipboard &&
+    typeof navigator.clipboard.writeText === "function"
+  ) {
+    navigator.clipboard.writeText(text).catch(() => {});
+  }
 };
 
 /** Returns warnings with blocking ones first, otherwise keeping their original order. */

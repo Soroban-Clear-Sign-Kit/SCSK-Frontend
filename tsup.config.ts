@@ -11,6 +11,9 @@ export default defineConfig({
   splitting: false,
   sourcemap: true,
   clean: true,
+  banner: {
+    js: '"use client";',
+  },
   external: [
     "react",
     "react-dom",

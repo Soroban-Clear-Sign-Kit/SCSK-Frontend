@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useCallback, useRef, useEffect } from "react";
 import { buildPreview } from "@clearsign/core";
 import type { ClearSignPreview } from "@clearsign/core";
