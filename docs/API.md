@@ -21,6 +21,48 @@ import { ClearSignModal } from "@clearsign/react";
 - `preview` (ClearSignPreview | null): The resolved preview object from `@clearsign/core`. If null or missing, the modal displays a loading state or nothing.
 - `onApprove` (function): Callback fired when the user successfully clicks "Approve". If risk is `review`, they must check the warning acknowledgment box first. If risk is `blocked`, this button is hidden and cannot be clicked.
 - `onReject` (function): Callback fired when the user clicks "Reject", clicks outside the modal, or presses the Escape key.
+- `isSigning` (boolean, optional): Set to true during active wallet signing. Suppresses Escape dismissal and disables action buttons.
+- `useAuthorizationTree` (boolean, optional): When true, renders authorization entries using the accessible, collapsible `AuthorizationTree` component.
+- `authTree` (AuthTreeNode[], optional): Custom authorization tree nodes to display directly.
+
+### `AuthorizationTree`
+
+A WAI-ARIA compliant tree component for deeply nested smart contract invocations and authorization trees.
+
+```tsx
+import { AuthorizationTree, AuthTreeNode } from "@clearsign/react";
+
+<AuthorizationTree
+  nodes={authTreeNodes}
+  defaultExpandedDepth={2}
+  onNodeSelect={(node) => console.log("Selected:", node)}
+/>;
+```
+
+#### Props:
+
+- `nodes` (`AuthTreeNode[]`): Tree nodes to display.
+- `defaultExpandedDepth` (`number`, optional, default: 2): Nodes deeper than this depth are collapsed by default.
+- `onNodeSelect` (`(node: AuthTreeNode) => void`, optional): Callback fired when a node is activated.
+- `ariaLabel` (`string`, optional, default: "Authorization Tree"): Accessible name for the tree landmark.
+
+#### Node Shape (`AuthTreeNode`):
+
+```ts
+export interface AuthTreeNode {
+  id?: string;
+  contract?: string;
+  functionName?: string;
+  args?: Array<{ name?: string; value: unknown }>;
+  children?: AuthTreeNode[];
+  warnings?: Array<{
+    code: string;
+    message: string;
+    severity?: "warning" | "blocked" | "info";
+  }>;
+  kind?: string;
+}
+```
 
 ## Hooks
 

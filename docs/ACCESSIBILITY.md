@@ -24,6 +24,22 @@ The `@clearsign/react` library is built to meet **WCAG 2.1 Level AA** standards.
   - Buttons ("Reject", "Approve", "Show/Hide Raw XDR", "Copy") activate via `Enter` and `Space`.
   - The risk acknowledgment checkbox ("I have reviewed the warnings") toggles via `Space`.
 
+### WAI-ARIA Tree Keyboard Pattern (`AuthorizationTree`)
+
+The nested invocation tree strictly follows the [W3C WAI-ARIA Treeview Design Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/treeview/):
+
+- **`Down Arrow`**: Moves focus to the next visible tree node.
+- **`Up Arrow`**: Moves focus to the previous visible tree node.
+- **`Right Arrow`**:
+  - If focus is on a collapsed node with children, expands the node.
+  - If focus is on an expanded node, moves focus to its first child node.
+- **`Left Arrow`**:
+  - If focus is on an expanded node with children, collapses the node.
+  - If focus is on a collapsed node or leaf node, moves focus to its parent node.
+- **`Home`**: Moves focus to the first visible node in the tree.
+- **`End`**: Moves focus to the last visible node in the tree.
+- **`Enter` / `Space`**: Toggles expansion on nodes with children and triggers selection.
+
 ---
 
 ## 3. ARIA Roles, Landmarks & Live Announcements
