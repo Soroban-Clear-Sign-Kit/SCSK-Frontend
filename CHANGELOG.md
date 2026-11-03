@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `AuthorizationTree` component for nested invocations with full WAI-ARIA tree pattern and keyboard navigation.
+- Local `AuthTreeNode`, `AuthTreeArg`, and `AuthTreeWarning` types and `convertCoreAuthToTree` helper.
+- Lazy rendering for deep invocation trees with level > 2 collapsed by default, supporting 500+ node trees without jank.
+- Inline truncation and full-value reveal toggles for contract IDs and decoded arguments.
+- Direct node-attached warning badges with blocked/warning severity highlights.
+- `useAuthorizationTree` and `authTree` props on `ClearSignModal`.
+- Test suite with keyboard navigation, 500-node performance benchmarks, and node snapshots (`test/unit/authorizationTree.test.tsx`).
 - Accessibility specification documentation (`docs/ACCESSIBILITY.md`).
 - Automated accessibility testing suite using `vitest-axe` and Testing Library (`test/unit/accessibility.test.tsx`).
 - Live announcements region (`aria-live="polite"`, `role="status"`) for decoding, ready, review, blocked, pending, and error states.
