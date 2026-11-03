@@ -6,6 +6,10 @@ import { DisplayValueRenderer } from "./components/DisplayValueRenderer.js";
 import { AuthNodeRenderer } from "./components/AuthNodeRenderer.js";
 import { AddressHashView } from "./components/AddressHashView.js";
 import {
+  StateDiffViewer,
+  StateDiffItem,
+} from "./components/StateDiffViewer.js";
+import {
   AuthorizationTree,
   AuthTreeNode,
   convertCoreAuthToTree,
@@ -32,6 +36,7 @@ export interface ClearSignModalProps {
   authTree?: AuthTreeNode[] | undefined;
   messages?: Partial<ClearSignMessages> | undefined;
   theme?: "light" | "dark" | "auto" | undefined;
+  stateDiffs?: readonly StateDiffItem[] | undefined;
 }
 
 const CheckCircleIcon: React.FC = () => (
@@ -117,6 +122,7 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({
   authTree,
   messages,
   theme,
+  stateDiffs,
 }) => {
   const m = useClearSignMessages(messages);
   const [reviewed, setReviewed] = useState(false);
@@ -365,32 +371,18 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({
             </div>
           )}
 
-          {preview.effects && preview.effects.length > 0 && (
+          {((preview.effects && preview.effects.length > 0) ||
+            (stateDiffs && stateDiffs.length > 0)) && (
             <div className={styles.section}>
-              <h3 className={styles.sectionTitle}>{m.sectionBalanceChanges}</h3>
-              {preview.effects.map((effect, i) => {
-                const isNegative = effect.delta.startsWith("-");
-                return (
-                  <div key={i} className={styles.balanceDelta}>
-                    <AddressHashView
-                      value={effect.account}
-                      kind="address"
-                      messages={messages}
-                    />
-                    <span
-                      className={
-                        isNegative
-                          ? styles.balanceNegative
-                          : styles.balancePositive
-                      }
-                    >
-                      <span aria-hidden="true">{isNegative ? "" : "+"}</span>
-                      {effect.formatted || effect.delta}{" "}
-                      {effect.symbol || "tokens"}
-                    </span>
-                  </div>
-                );
-              })}
+              <h3 className={styles.sectionTitle}>
+                {stateDiffs && stateDiffs.length > 0
+                  ? m.sectionStateDiffs
+                  : m.sectionBalanceChanges}
+              </h3>
+              <StateDiffViewer
+                entries={stateDiffs || preview.effects}
+                messages={messages}
+              />
             </div>
           )}
 

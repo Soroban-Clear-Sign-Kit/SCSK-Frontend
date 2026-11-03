@@ -619,6 +619,139 @@
   outline-offset: 1px;
 }
 
+/* State Diff Viewer & Pagination */
+.diffViewer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--clearsign-space-sm);
+}
+
+.diffEntriesList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--clearsign-space-xs);
+}
+
+.stateDiffRow {
+  display: flex;
+  flex-direction: column;
+  gap: var(--clearsign-space-xs);
+  padding: var(--clearsign-space-xs) var(--clearsign-space-sm);
+  background: var(--clearsign-surface);
+  border: 1px solid var(--clearsign-border);
+  border-radius: var(--clearsign-radius-sm);
+}
+
+.stateDiffHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--clearsign-space-sm);
+}
+
+.stateDiffTypeBadge {
+  font-size: var(--clearsign-font-size-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: var(--clearsign-radius-sm);
+}
+
+.stateDiffTypeCreate {
+  background: var(--clearsign-risk-ok-bg);
+  color: var(--clearsign-risk-ok-text);
+  border: 1px solid var(--clearsign-risk-ok-border);
+}
+
+.stateDiffTypeDelete {
+  background: var(--clearsign-risk-blocked-bg);
+  color: var(--clearsign-risk-blocked-text);
+  border: 1px solid var(--clearsign-risk-blocked-border);
+}
+
+.stateDiffTypeModify {
+  background: var(--clearsign-risk-review-bg);
+  color: var(--clearsign-risk-review-text);
+  border: 1px solid var(--clearsign-risk-review-border);
+}
+
+.stateDiffValues {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: var(--clearsign-font-size-xs);
+  padding-inline-start: var(--clearsign-space-sm);
+}
+
+.stateDiffLabel {
+  color: var(--clearsign-text-muted);
+  font-weight: 600;
+}
+
+.diffPagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--clearsign-space-sm);
+  padding-top: var(--clearsign-space-xs);
+  border-top: 1px solid var(--clearsign-border);
+  font-size: var(--clearsign-font-size-xs);
+}
+
+.diffPaginationInfo {
+  color: var(--clearsign-text-muted);
+  font-weight: 500;
+}
+
+.diffPaginationControls {
+  display: flex;
+  align-items: center;
+  gap: var(--clearsign-space-xs);
+}
+
+.diffPaginationBtn {
+  padding: 2px 8px;
+  font-size: var(--clearsign-font-size-xs);
+  border-radius: var(--clearsign-radius-sm);
+  border: 1px solid var(--clearsign-border);
+  background: var(--clearsign-surface);
+  color: var(--clearsign-text);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.diffPaginationBtn:hover:not(:disabled) {
+  background: var(--clearsign-surface-hover);
+}
+
+.diffPaginationBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.diffPaginationCurrentPage {
+  color: var(--clearsign-text);
+  font-weight: 600;
+  padding: 0 4px;
+}
+
+.diffPageSizeSelector {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-inline-start: var(--clearsign-space-sm);
+  color: var(--clearsign-text-muted);
+}
+
+.diffPageSizeSelect {
+  padding: 2px 4px;
+  font-size: var(--clearsign-font-size-xs);
+  border-radius: var(--clearsign-radius-sm);
+  border: 1px solid var(--clearsign-border);
+  background: var(--clearsign-surface);
+  color: var(--clearsign-text);
+}
+
 /* Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
   .modalOverlay,

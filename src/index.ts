@@ -4,6 +4,7 @@ export * from "./ClearSignModal.js";
 export * from "./components/AuthorizationTree.js";
 export * from "./components/WarningList.js";
 export * from "./components/AddressHashView.js";
+export * from "./components/StateDiffViewer.js";
 export { formatGroupedMonospace, shortenAddress } from "./utils.js";
 export * from "./types/signer.js";
 export * from "./i18n/index.js";
