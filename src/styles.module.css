@@ -1,10 +1,142 @@
+/* CSS Custom Properties & Design Tokens */
+:root,
+[data-theme="light"] {
+  /* Colors */
+  --clearsign-bg: #ffffff;
+  --clearsign-text: #1a1a1a;
+  --clearsign-text-muted: #5f6368;
+  --clearsign-border: #e5e5e5;
+  --clearsign-border-subtle: #f1f3f4;
+  --clearsign-surface: #f8f9fa;
+  --clearsign-surface-hover: #f1f3f4;
+  --clearsign-surface-focused: #e8f0fe;
+  --clearsign-overlay: rgba(0, 0, 0, 0.5);
+  --clearsign-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+  /* Brand / Action Colors */
+  --clearsign-primary: #1a73e8;
+  --clearsign-primary-hover: #1557b0;
+  --clearsign-primary-text: #ffffff;
+  --clearsign-disabled: #e8eaed;
+  --clearsign-disabled-text: #5f6368;
+
+  /* Status & Severity Colors */
+  --clearsign-positive: #137333;
+  --clearsign-negative: #c5221f;
+  --clearsign-warning: #854400;
+  --clearsign-info: #1a73e8;
+
+  /* Risk Banners */
+  --clearsign-risk-ok-bg: #e6f4ea;
+  --clearsign-risk-ok-text: #137333;
+  --clearsign-risk-review-bg: #fef7e0;
+  --clearsign-risk-review-text: #854400;
+  --clearsign-risk-blocked-bg: #fce8e6;
+  --clearsign-risk-blocked-text: #c5221f;
+  --clearsign-risk-info-bg: #e8f0fe;
+  --clearsign-risk-info-text: #174ea6;
+
+  /* Spacing */
+  --clearsign-space-xxs: 2px;
+  --clearsign-space-xs: 4px;
+  --clearsign-space-sm: 8px;
+  --clearsign-space-md: 12px;
+  --clearsign-space-lg: 16px;
+  --clearsign-space-xl: 20px;
+
+  /* Border Radii */
+  --clearsign-radius-sm: 4px;
+  --clearsign-radius-md: 8px;
+  --clearsign-radius-lg: 12px;
+
+  /* Typography */
+  --clearsign-font-family:
+    system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --clearsign-font-mono:
+    ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  --clearsign-font-size-xs: 11px;
+  --clearsign-font-size-sm: 12px;
+  --clearsign-font-size-base: 14px;
+  --clearsign-font-size-md: 16px;
+  --clearsign-font-size-lg: 18px;
+}
+
+/* Dark Theme (Media query or data-theme="dark") */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]),
+  [data-theme="dark"] {
+    --clearsign-bg: #121212;
+    --clearsign-text: #f5f5f5;
+    --clearsign-text-muted: #a0a6ad;
+    --clearsign-border: #333333;
+    --clearsign-border-subtle: #242424;
+    --clearsign-surface: #1e1e1e;
+    --clearsign-surface-hover: #292929;
+    --clearsign-surface-focused: #1f2d40;
+    --clearsign-overlay: rgba(0, 0, 0, 0.75);
+    --clearsign-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+
+    --clearsign-primary: #8ab4f8;
+    --clearsign-primary-hover: #aecbfa;
+    --clearsign-primary-text: #121212;
+    --clearsign-disabled: #2c2c2c;
+    --clearsign-disabled-text: #70757a;
+
+    --clearsign-positive: #81c995;
+    --clearsign-negative: #f28b82;
+    --clearsign-warning: #fdd663;
+    --clearsign-info: #8ab4f8;
+
+    --clearsign-risk-ok-bg: #0f381e;
+    --clearsign-risk-ok-text: #81c995;
+    --clearsign-risk-review-bg: #3c2a04;
+    --clearsign-risk-review-text: #fdd663;
+    --clearsign-risk-blocked-bg: #441616;
+    --clearsign-risk-blocked-text: #f28b82;
+    --clearsign-risk-info-bg: #102a45;
+    --clearsign-risk-info-text: #8ab4f8;
+  }
+}
+
+:root[data-theme="dark"],
+[data-theme="dark"] {
+  --clearsign-bg: #121212;
+  --clearsign-text: #f5f5f5;
+  --clearsign-text-muted: #a0a6ad;
+  --clearsign-border: #333333;
+  --clearsign-border-subtle: #242424;
+  --clearsign-surface: #1e1e1e;
+  --clearsign-surface-hover: #292929;
+  --clearsign-surface-focused: #1f2d40;
+  --clearsign-overlay: rgba(0, 0, 0, 0.75);
+  --clearsign-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+
+  --clearsign-primary: #8ab4f8;
+  --clearsign-primary-hover: #aecbfa;
+  --clearsign-primary-text: #121212;
+  --clearsign-disabled: #2c2c2c;
+  --clearsign-disabled-text: #70757a;
+
+  --clearsign-positive: #81c995;
+  --clearsign-negative: #f28b82;
+  --clearsign-warning: #fdd663;
+  --clearsign-info: #8ab4f8;
+
+  --clearsign-risk-ok-bg: #0f381e;
+  --clearsign-risk-ok-text: #81c995;
+  --clearsign-risk-review-bg: #3c2a04;
+  --clearsign-risk-review-text: #fdd663;
+  --clearsign-risk-blocked-bg: #441616;
+  --clearsign-risk-blocked-text: #f28b82;
+  --clearsign-risk-info-bg: #102a45;
+  --clearsign-risk-info-text: #8ab4f8;
+}
+
+/* Modal Overlay & Container */
 .modalOverlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  inset: 0;
+  background: var(--clearsign-overlay);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -12,25 +144,22 @@
 }
 
 .modalContent {
-  background: var(--clearsign-bg, #ffffff);
-  color: var(--clearsign-text, #1a1a1a);
-  border-radius: 8px;
+  background: var(--clearsign-bg);
+  color: var(--clearsign-text);
+  border-radius: var(--clearsign-radius-md);
   max-width: 500px;
   width: 90%;
   max-height: 90vh;
   overflow-y: auto;
-  font-family:
-    system-ui,
-    -apple-system,
-    sans-serif;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  font-family: var(--clearsign-font-family);
+  box-shadow: var(--clearsign-shadow);
   display: flex;
   flex-direction: column;
 }
 
 .modalHeader {
-  padding: 16px;
-  border-bottom: 1px solid var(--clearsign-border, #e5e5e5);
+  padding: var(--clearsign-space-lg);
+  border-bottom: 1px solid var(--clearsign-border);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -38,25 +167,26 @@
 
 .modalHeader h2 {
   margin: 0;
-  font-size: 18px;
+  font-size: var(--clearsign-font-size-lg);
+  color: var(--clearsign-text);
 }
 
 .modalBody {
-  padding: 16px;
+  padding: var(--clearsign-space-lg);
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--clearsign-space-lg);
 }
 
 .riskBanner {
-  padding: 12px;
-  border-radius: 4px;
+  padding: var(--clearsign-space-md);
+  border-radius: var(--clearsign-radius-sm);
   font-weight: 600;
   text-align: center;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: var(--clearsign-space-sm);
 }
 
 .riskIcon {
@@ -79,30 +209,30 @@
 }
 
 .riskOk {
-  background: var(--clearsign-risk-ok-bg, #e6f4ea);
-  color: var(--clearsign-risk-ok-text, #137333);
+  background: var(--clearsign-risk-ok-bg);
+  color: var(--clearsign-risk-ok-text);
 }
 
 .riskReview {
-  background: var(--clearsign-risk-review-bg, #fef7e0);
-  color: var(--clearsign-risk-review-text, #b06000);
+  background: var(--clearsign-risk-review-bg);
+  color: var(--clearsign-risk-review-text);
 }
 
 .riskBlocked {
-  background: var(--clearsign-risk-blocked-bg, #fce8e6);
-  color: var(--clearsign-risk-blocked-text, #c5221f);
+  background: var(--clearsign-risk-blocked-bg);
+  color: var(--clearsign-risk-blocked-text);
 }
 
 .section {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--clearsign-space-sm);
 }
 
 .sectionTitle {
-  font-size: 14px;
+  font-size: var(--clearsign-font-size-base);
   font-weight: 600;
-  color: var(--clearsign-text-muted, #5f6368);
+  color: var(--clearsign-text-muted);
   margin: 0;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -110,30 +240,32 @@
 
 .summaryLine {
   margin: 0;
-  font-size: 16px;
+  font-size: var(--clearsign-font-size-md);
+  color: var(--clearsign-text);
 }
 
 .balanceDelta {
   display: flex;
   justify-content: space-between;
-  padding: 8px;
-  background: var(--clearsign-surface, #f8f9fa);
-  border-radius: 4px;
+  padding: var(--clearsign-space-sm);
+  background: var(--clearsign-surface);
+  border-radius: var(--clearsign-radius-sm);
+  color: var(--clearsign-text);
 }
 
 .balanceNegative {
-  color: var(--clearsign-negative, #d93025);
+  color: var(--clearsign-negative);
 }
 
 .balancePositive {
-  color: var(--clearsign-positive, #188038);
+  color: var(--clearsign-positive);
 }
 
 .treeNode {
-  margin-left: 16px;
-  border-left: 1px solid var(--clearsign-border, #e5e5e5);
-  padding-left: 8px;
-  margin-top: 4px;
+  margin-inline-start: var(--clearsign-space-lg);
+  border-inline-start: 1px solid var(--clearsign-border);
+  padding-inline-start: var(--clearsign-space-sm);
+  margin-top: var(--clearsign-space-xs);
 }
 
 /* WAI-ARIA AuthorizationTree Styles */
@@ -146,14 +278,14 @@
 
 .authTreeGroup {
   list-style: none;
-  padding-left: 20px;
+  padding-inline-start: var(--clearsign-space-xl);
   margin: 0;
-  border-left: 1px dashed var(--clearsign-border, #e0e0e0);
+  border-inline-start: 1px dashed var(--clearsign-border);
 }
 
 .authTreeItem {
   list-style: none;
-  margin: 2px 0;
+  margin: var(--clearsign-space-xxs) 0;
   outline: none;
 }
 
@@ -162,143 +294,162 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 6px;
-  padding: 4px 6px;
-  border-radius: 4px;
+  padding: var(--clearsign-space-xs) 6px;
+  border-radius: var(--clearsign-radius-sm);
   cursor: pointer;
   transition: background-color 0.15s ease;
 }
 
 .authTreeRow:hover {
-  background: var(--clearsign-surface, #f8f9fa);
+  background: var(--clearsign-surface-hover);
 }
 
 .authTreeRowFocused {
-  background: var(--clearsign-surface, #f1f3f4);
-  outline: 2px solid var(--clearsign-primary, #1a73e8);
+  background: var(--clearsign-surface-focused);
+  outline: 2px solid var(--clearsign-primary);
   outline-offset: -1px;
 }
 
 .authTreeChevron {
   background: none;
   border: none;
-  padding: 2px;
+  padding: var(--clearsign-space-xxs);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: var(--clearsign-text-muted, #5f6368);
+  color: var(--clearsign-text-muted);
   transition: transform 0.15s ease;
   width: 20px;
   height: 20px;
+}
+
+/* In RTL, chevron defaults to pointing left */
+[dir="rtl"] .authTreeChevron svg {
+  transform: scaleX(-1);
 }
 
 .authTreeChevronExpanded {
   transform: rotate(90deg);
 }
 
+[dir="rtl"] .authTreeChevronExpanded {
+  transform: rotate(-90deg);
+}
+
 .authTreeKind {
-  font-size: 11px;
+  font-size: var(--clearsign-font-size-xs);
   font-weight: 600;
   text-transform: uppercase;
-  background: var(--clearsign-surface, #f1f3f4);
-  color: var(--clearsign-text-muted, #5f6368);
+  background: var(--clearsign-surface-hover);
+  color: var(--clearsign-text-muted);
   padding: 1px 6px;
-  border-radius: 4px;
+  border-radius: var(--clearsign-radius-sm);
 }
 
 .authTreeContract {
-  font-family: monospace;
+  font-family: var(--clearsign-font-mono);
   font-size: 13px;
-  color: var(--clearsign-text, #1a1a1a);
+  color: var(--clearsign-text);
 }
 
 .authTreeFunction {
   font-weight: 600;
   font-size: 13px;
-  color: var(--clearsign-primary, #1a73e8);
+  color: var(--clearsign-primary);
 }
 
 .authTreeRevealBtn {
   background: none;
   border: none;
-  color: var(--clearsign-primary, #1a73e8);
-  font-size: 11px;
+  color: var(--clearsign-primary);
+  font-size: var(--clearsign-font-size-xs);
   cursor: pointer;
-  padding: 0 4px;
+  padding: 0 var(--clearsign-space-xs);
   text-decoration: underline;
 }
 
 .authTreeArgs {
-  margin: 4px 0 6px 28px;
+  margin: var(--clearsign-space-xs) 0 6px 28px;
   padding: 6px 10px;
-  background: var(--clearsign-surface, #f8f9fa);
-  border-radius: 4px;
-  font-size: 12px;
+  background: var(--clearsign-surface);
+  border-radius: var(--clearsign-radius-sm);
+  font-size: var(--clearsign-font-size-sm);
   list-style: none;
+  color: var(--clearsign-text);
+}
+
+[dir="rtl"] .authTreeArgs {
+  margin: var(--clearsign-space-xs) 28px 6px 0;
 }
 
 .authTreeArgItem {
-  margin: 2px 0;
+  margin: var(--clearsign-space-xxs) 0;
   word-break: break-all;
 }
 
 .authTreeNodeWarning {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  font-size: 11px;
+  gap: var(--clearsign-space-xs);
+  font-size: var(--clearsign-font-size-xs);
   font-weight: 600;
-  padding: 2px 6px;
-  border-radius: 4px;
-  background: var(--clearsign-risk-review-bg, #fef7e0);
-  color: var(--clearsign-risk-review-text, #b06000);
-  border: 1px solid var(--clearsign-warning, #f29900);
+  padding: var(--clearsign-space-xxs) 6px;
+  border-radius: var(--clearsign-radius-sm);
+  background: var(--clearsign-risk-review-bg);
+  color: var(--clearsign-risk-review-text);
+  border: 1px solid var(--clearsign-warning);
 }
 
 .authTreeNodeWarningBlocked {
-  background: var(--clearsign-risk-blocked-bg, #fce8e6);
-  color: var(--clearsign-risk-blocked-text, #c5221f);
-  border-color: var(--clearsign-negative, #d93025);
+  background: var(--clearsign-risk-blocked-bg);
+  color: var(--clearsign-risk-blocked-text);
+  border-color: var(--clearsign-negative);
 }
 
+/* Warning List Components */
 .warningItem {
   padding: 10px;
-  background: var(--clearsign-surface, #f8f9fa);
-  border-radius: 4px;
-  border-left: 4px solid var(--clearsign-warning, #f29900);
-  font-size: 14px;
+  background: var(--clearsign-surface);
+  border-radius: var(--clearsign-radius-sm);
+  border-inline-start: 4px solid var(--clearsign-warning);
+  font-size: var(--clearsign-font-size-base);
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  margin-bottom: 8px;
+  gap: var(--clearsign-space-xs);
+  margin-bottom: var(--clearsign-space-sm);
+  color: var(--clearsign-text);
 }
 
 .warningBlocked {
-  border-left-color: var(--clearsign-negative, #d93025);
-  background: var(--clearsign-risk-blocked-bg, #fce8e6);
+  border-inline-start-color: var(--clearsign-negative);
+  background: var(--clearsign-risk-blocked-bg);
+  color: var(--clearsign-risk-blocked-text);
 }
 
 .warningReview {
-  border-left-color: var(--clearsign-warning, #f29900);
-  background: var(--clearsign-risk-review-bg, #fef7e0);
+  border-inline-start-color: var(--clearsign-warning);
+  background: var(--clearsign-risk-review-bg);
+  color: var(--clearsign-risk-review-text);
 }
 
 .warningInfo {
-  border-left-color: var(--clearsign-primary, #1a73e8);
-  background: var(--clearsign-surface, #f1f3f4);
+  border-inline-start-color: var(--clearsign-info);
+  background: var(--clearsign-risk-info-bg);
+  color: var(--clearsign-risk-info-text);
 }
 
 .warningGroup {
-  margin-bottom: 12px;
+  margin-bottom: var(--clearsign-space-md);
 }
 
 .warningGroupTitle {
-  font-size: 12px;
+  font-size: var(--clearsign-font-size-sm);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-bottom: 6px;
-  color: var(--clearsign-text-muted, #5f6368);
+  color: var(--clearsign-text-muted);
   display: flex;
   align-items: center;
   gap: 6px;
@@ -309,7 +460,7 @@
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: var(--clearsign-space-sm);
 }
 
 .warningCodeTitle {
@@ -321,85 +472,95 @@
 
 .warningExplanation {
   font-size: 13px;
-  color: var(--clearsign-text, #1a1a1a);
+  color: inherit;
   margin: 0;
   line-height: 1.4;
 }
 
 .warningDocsLink {
-  font-size: 12px;
-  color: var(--clearsign-primary, #1a73e8);
+  font-size: var(--clearsign-font-size-sm);
+  color: var(--clearsign-primary);
   text-decoration: underline;
   display: inline-flex;
   align-items: center;
-  gap: 2px;
+  gap: var(--clearsign-space-xxs);
 }
 
 .rawXdr {
   word-break: break-all;
-  font-family: monospace;
-  font-size: 12px;
-  background: var(--clearsign-surface, #f8f9fa);
-  padding: 8px;
-  border-radius: 4px;
+  font-family: var(--clearsign-font-mono);
+  font-size: var(--clearsign-font-size-sm);
+  background: var(--clearsign-surface);
+  color: var(--clearsign-text);
+  padding: var(--clearsign-space-sm);
+  border-radius: var(--clearsign-radius-sm);
   max-height: 100px;
   overflow-y: auto;
 }
 
 .modalFooter {
-  padding: 16px;
-  border-top: 1px solid var(--clearsign-border, #e5e5e5);
+  padding: var(--clearsign-space-lg);
+  border-top: 1px solid var(--clearsign-border);
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--clearsign-space-md);
 }
 
 .reviewCheckbox {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 14px;
+  gap: var(--clearsign-space-sm);
+  font-size: var(--clearsign-font-size-base);
+  color: var(--clearsign-text);
 }
 
 .buttonGroup {
   display: flex;
   justify-content: flex-end;
-  gap: 12px;
+  gap: var(--clearsign-space-md);
 }
 
 .button {
-  padding: 8px 16px;
-  border-radius: 4px;
+  padding: var(--clearsign-space-sm) var(--clearsign-space-lg);
+  border-radius: var(--clearsign-radius-sm);
   font-weight: 600;
   cursor: pointer;
   border: none;
-  font-size: 14px;
+  font-size: var(--clearsign-font-size-base);
+  font-family: inherit;
 }
 
 .buttonReject {
-  background: var(--clearsign-surface, #f8f9fa);
-  color: var(--clearsign-text, #1a1a1a);
-  border: 1px solid var(--clearsign-border, #e5e5e5);
+  background: var(--clearsign-surface);
+  color: var(--clearsign-text);
+  border: 1px solid var(--clearsign-border);
 }
 
 .buttonApprove {
-  background: var(--clearsign-primary, #1a73e8);
-  color: white;
+  background: var(--clearsign-primary);
+  color: var(--clearsign-primary-text);
+}
+
+.buttonApprove:hover:not(:disabled) {
+  background: var(--clearsign-primary-hover);
 }
 
 .buttonApprove:disabled {
-  background: var(--clearsign-disabled, #e8eaed);
-  color: var(--clearsign-text-muted, #5f6368);
+  background: var(--clearsign-disabled);
+  color: var(--clearsign-disabled-text);
   cursor: not-allowed;
 }
 
+/* Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
   .modalOverlay,
   .modalContent,
   .button,
   .balanceDelta,
   .warningItem,
-  .rawXdr {
+  .rawXdr,
+  .authTreeChevron,
+  .authTreeRow {
     transition: none !important;
     animation: none !important;
     scroll-behavior: auto !important;
