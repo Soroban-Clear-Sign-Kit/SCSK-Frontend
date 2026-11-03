@@ -16,6 +16,23 @@ export const AuthNodeRenderer: React.FC<{ node: AuthNode }> = ({ node }) => {
         </div>
       )}
       {node.functionName && <div>Function: {node.functionName}</div>}
+      {node.args && node.args.length > 0 && (
+        <ul>
+          {node.args.map((arg, i) => (
+            <li key={i}><strong>{arg.name || 'arg'}:</strong> <DisplayValueRenderer val={arg.value} /></li>
+          ))}
+        </ul>
+      )}
+      {node.details && Object.keys(node.details).length > 0 && (
+        <dl>
+          {Object.entries(node.details).map(([key, value]) => (
+            <React.Fragment key={key}>
+              <dt>{key}</dt>
+              <dd>{value}</dd>
+            </React.Fragment>
+          ))}
+        </dl>
+      )}
       {node.children && node.children.length > 0 && (
         <div>
           Sub-invocations:

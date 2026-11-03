@@ -448,4 +448,148 @@ describe("ClearSignModal", () => {
     );
     expect(container.firstChild).toBeNull();
   });
+
+  describe('focus and keyboard handling', () => {
+    it('returns focus to the original trigger even when onReject changes between renders', () => {
+      const trigger = document.createElement('button');
+      document.body.appendChild(trigger);
+      trigger.focus();
+
+      const { rerender, unmount } = render(
+        <ClearSignModal preview={basePreview} onApprove={vi.fn()} onReject={() => {}} />
+      );
+      rerender(<ClearSignModal preview={basePreview} onApprove={vi.fn()} onReject={() => {}} />);
+      rerender(<ClearSignModal preview={basePreview} onApprove={vi.fn()} onReject={() => {}} />);
+      unmount();
+
+      expect(document.activeElement).toBe(trigger);
+      trigger.remove();
+    });
+
+    it('ignores Escape while there is no preview to show', () => {
+      const onReject = vi.fn();
+      render(<ClearSignModal preview={null} onApprove={vi.fn()} onReject={onReject} />);
+
+      fireEvent.keyDown(document, { key: 'Escape', code: 'Escape' });
+
+      expect(onReject).not.toHaveBeenCalled();
+    });
+
+    it('moves focus into the dialog when the preview arrives after mount', () => {
+      const { rerender } = render(<ClearSignModal preview={null} onApprove={vi.fn()} onReject={vi.fn()} />);
+      rerender(<ClearSignModal preview={basePreview} onApprove={vi.fn()} onReject={vi.fn()} />);
+
+      expect(screen.getByRole('dialog')).toHaveFocus();
+    });
+
+    it('calls the latest onReject on Escape', () => {
+      const first = vi.fn();
+      const second = vi.fn();
+      const { rerender } = render(<ClearSignModal preview={basePreview} onApprove={vi.fn()} onReject={first} />);
+      rerender(<ClearSignModal preview={basePreview} onApprove={vi.fn()} onReject={second} />);
+
+      fireEvent.keyDown(document, { key: 'Escape', code: 'Escape' });
+
+      expect(first).not.toHaveBeenCalled();
+      expect(second).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('simulation details', () => {
+    it('shows the simulation status', () => {
+      render(<ClearSignModal preview={basePreview} onApprove={vi.fn()} onReject={vi.fn()} />);
+      expect(screen.getByText('Simulation: success')).toBeInTheDocument();
+    });
+
+    it('shows the simulation error when there is one', () => {
+      const failed: ClearSignPreview = {
+        ...basePreview,
+        risk: 'blocked',
+        simulation: { status: 'failed', error: 'HostError: insufficient balance' },
+      };
+      render(<ClearSignModal preview={failed} onApprove={vi.fn()} onReject={vi.fn()} />);
+
+      expect(screen.getByText('Simulation: failed')).toBeInTheDocument();
+      expect(screen.getByText('Simulation error: HostError: insufficient balance')).toBeInTheDocument();
+    });
+  });
+
+  describe('network details', () => {
+    it('shows the passphrase and that it was verified', () => {
+      render(<ClearSignModal preview={basePreview} onApprove={vi.fn()} onReject={vi.fn()} />);
+      expect(screen.getByText('test')).toBeInTheDocument();
+      expect(screen.getByText('Network verified against the RPC')).toBeInTheDocument();
+    });
+
+    it('says so when the network could not be verified', () => {
+      const unverified = { ...basePreview, network: { passphrase: 'Public Global Stellar Network ; September 2015', verified: false } };
+      render(<ClearSignModal preview={unverified} onApprove={vi.fn()} onReject={vi.fn()} />);
+      expect(screen.getByText('Network not verified')).toBeInTheDocument();
+      expect(screen.getByText('Public Global Stellar Network ; September 2015')).toBeInTheDocument();
+    });
+  });
+
+  describe('risk banner semantics', () => {
+    it.each([
+      ['blocked', 'alert'],
+      ['review', 'alert'],
+      ['ok', 'status'],
+    ] as const)('announces %s risk with role %s', (risk, role) => {
+      render(<ClearSignModal preview={{ ...basePreview, risk }} onApprove={vi.fn()} onReject={vi.fn()} />);
+      const banner = screen.getByRole(role);
+      expect(banner).toHaveTextContent(/Decoded and verified|Review carefully|Signing blocked/);
+    });
+  });
+
+  it('lists blocking warnings before advisory ones', () => {
+    const preview: ClearSignPreview = {
+      ...basePreview,
+      risk: 'blocked',
+      warnings: [
+        { code: 'ADVISORY_A', message: 'a', severity: 'review' },
+        { code: 'BLOCKER_B', message: 'b', severity: 'blocked' },
+        { code: 'ADVISORY_C', message: 'c', severity: 'review' },
+      ],
+    };
+    render(<ClearSignModal preview={preview} onApprove={vi.fn()} onReject={vi.fn()} />);
+
+    const order = screen.getAllByText(/ADVISORY_|BLOCKER_/).map((el) => el.textContent);
+    expect(order).toEqual(['BLOCKER_B', 'ADVISORY_A', 'ADVISORY_C']);
+  });
+
+  describe('loading state', () => {
+    it('shows a busy dialog with only a reject button while loading', () => {
+      const onReject = vi.fn();
+      render(<ClearSignModal preview={null} loading onApprove={vi.fn()} onReject={onReject} />);
+
+      expect(screen.getByRole('dialog')).toHaveAttribute('aria-busy', 'true');
+      expect(screen.getByRole('status')).toHaveTextContent(/simulating/i);
+      expect(screen.queryByRole('button', { name: 'Approve' })).not.toBeInTheDocument();
+
+      fireEvent.click(screen.getByRole('button', { name: 'Reject' }));
+      expect(onReject).toHaveBeenCalled();
+    });
+
+    it('can be dismissed with Escape while loading', () => {
+      const onReject = vi.fn();
+      render(<ClearSignModal preview={null} loading onApprove={vi.fn()} onReject={onReject} />);
+
+      fireEvent.keyDown(document, { key: 'Escape', code: 'Escape' });
+
+      expect(onReject).toHaveBeenCalledTimes(1);
+    });
+
+    it('renders nothing without a preview when not loading', () => {
+      const { container } = render(<ClearSignModal preview={null} onApprove={vi.fn()} onReject={vi.fn()} />);
+      expect(container).toBeEmptyDOMElement();
+    });
+
+    it('swaps the busy dialog for the preview once it arrives', () => {
+      const { rerender } = render(<ClearSignModal preview={null} loading onApprove={vi.fn()} onReject={vi.fn()} />);
+      rerender(<ClearSignModal preview={basePreview} loading={false} onApprove={vi.fn()} onReject={vi.fn()} />);
+
+      expect(screen.getByText('Decoded and verified')).toBeInTheDocument();
+      expect(screen.queryByRole('status', { name: /simulating/i })).not.toBeInTheDocument();
+    });
+  });
 });
