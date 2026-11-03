@@ -19,17 +19,35 @@ export const DisplayValueRenderer: React.FC<{ val: DisplayValue }> = ({
       </span>
     );
   }
-  if (
-    val.kind === "int" ||
-    val.kind === "bool" ||
-    val.kind === "string" ||
-    val.kind === "symbol" ||
-    val.kind === "void"
-  ) {
+  if (val.kind === "string" || val.kind === "symbol") {
+    return (
+      <span>
+        <span>{val.value}</span>
+        {val.truncated && <em> (truncated)</em>}
+        {val.sanitized && (
+          <em title="Hidden or control characters were removed">
+            {" "}
+            (sanitized)
+          </em>
+        )}
+      </span>
+    );
+  }
+  if (val.kind === "int" || val.kind === "bool" || val.kind === "void") {
     return <span>{"value" in val ? String(val.value) : "void"}</span>;
   }
   if (val.kind === "bytes") {
-    return <span>{val.hex}</span>;
+    return (
+      <span>
+        <span>{val.hex}</span>
+        {val.truncated ? "…" : ""}{" "}
+        {val.length !== undefined && (
+          <span>
+            ({val.length} bytes{val.truncated ? ", truncated" : ""})
+          </span>
+        )}
+      </span>
+    );
   }
   if (val.kind === "vec") {
     return (
@@ -53,40 +71,55 @@ export const DisplayValueRenderer: React.FC<{ val: DisplayValue }> = ({
       </ul>
     );
   }
-  if (val.kind === 'map') {
+  if (val.kind === "map") {
     if (val.entries.length === 0) return <span>Empty map</span>;
     return (
       <ul>
         {val.entries.map((entry, i) => (
-           <li key={i}>
-             <DisplayValueRenderer val={entry.key} /> <span aria-hidden="true">&rarr;</span> <DisplayValueRenderer val={entry.value} />
-           </li>
+          <li key={i}>
+            <DisplayValueRenderer val={entry.key} />{" "}
+            <span aria-hidden="true">&rarr;</span>{" "}
+            <DisplayValueRenderer val={entry.value} />
+          </li>
         ))}
       </ul>
     );
   }
-  if (val.kind === 'enum') {
+  if (val.kind === "enum") {
     return (
       <span>
-        <strong>{val.name}::{val.variant}</strong>
+        <strong>
+          {val.name}::{val.variant}
+        </strong>
         {val.values.length > 0 && (
           <ul>
             {val.values.map((v, i) => (
-               <li key={i}><DisplayValueRenderer val={v} /></li>
+              <li key={i}>
+                <DisplayValueRenderer val={v} />
+              </li>
             ))}
           </ul>
         )}
       </span>
     );
   }
-  if (val.kind === 'option') {
+  if (val.kind === "option") {
     if (val.value === null) return <span>None</span>;
-    return <span>Some(<DisplayValueRenderer val={val.value} />)</span>;
+    return (
+      <span>
+        Some(
+        <DisplayValueRenderer val={val.value} />)
+      </span>
+    );
   }
-  if (val.kind === 'timepoint' || val.kind === 'duration') {
-    return <span>{val.kind === 'timepoint' ? 'Timepoint' : 'Duration'} {val.value}</span>;
+  if (val.kind === "timepoint" || val.kind === "duration") {
+    return (
+      <span>
+        {val.kind === "timepoint" ? "Timepoint" : "Duration"} {val.value}
+      </span>
+    );
   }
-  if (val.kind === 'raw') {
+  if (val.kind === "raw") {
     return (
       <span title={val.xdr}>
         Undecoded {val.scvalType} value (raw XDR available below)

@@ -1,0 +1,403 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`AuthorizationTree Component > Snapshots per node type > matches snapshot for contract-fn root node 1`] = `
+<ul
+  aria-label="Authorization Tree"
+  class="_authTreeRoot_c22e9d "
+  role="tree"
+>
+  <li
+    aria-level="1"
+    class="_authTreeItem_c22e9d"
+    id="snap-root"
+    role="treeitem"
+    tabindex="0"
+  >
+    <div
+      class="_authTreeRow_c22e9d _authTreeRowFocused_c22e9d"
+    >
+      <span
+        aria-hidden="true"
+        style="width: 20px;"
+      />
+      <span
+        class="_authTreeKind_c22e9d"
+      >
+        contract-fn
+      </span>
+      <span
+        class="_authTreeContract_c22e9d"
+      >
+        CAAA...AAAA
+        <button
+          aria-expanded="false"
+          aria-label="Reveal full contract address"
+          class="_authTreeRevealBtn_c22e9d"
+          tabindex="-1"
+          type="button"
+        >
+          Reveal
+        </button>
+      </span>
+      <span
+        class="_authTreeFunction_c22e9d"
+      >
+        root_call
+        ()
+      </span>
+    </div>
+    <ul
+      aria-label="Decoded arguments"
+      class="_authTreeArgs_c22e9d"
+    >
+      <li
+        class="_authTreeArgItem_c22e9d"
+      >
+        <strong>
+          val
+          :
+        </strong>
+         
+        <span>
+          100
+        </span>
+      </li>
+    </ul>
+  </li>
+</ul>
+`;
+
+exports[`AuthorizationTree Component > Snapshots per node type > matches snapshot for deep nested node collapsed by default (> level 2) 1`] = `
+<ul
+  aria-label="Authorization Tree"
+  class="_authTreeRoot_c22e9d "
+  role="tree"
+>
+  <li
+    aria-expanded="true"
+    aria-level="1"
+    class="_authTreeItem_c22e9d"
+    id="lvl-1"
+    role="treeitem"
+    tabindex="0"
+  >
+    <div
+      class="_authTreeRow_c22e9d _authTreeRowFocused_c22e9d"
+    >
+      <button
+        aria-label="Collapse sub-invocations"
+        class="_authTreeChevron_c22e9d"
+        tabindex="-1"
+        type="button"
+      >
+        <svg
+          aria-hidden="true"
+          class="_authTreeChevron_c22e9d _authTreeChevronExpanded_c22e9d"
+          fill="none"
+          height="14"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2.5"
+          viewBox="0 0 24 24"
+          width="14"
+        >
+          <polyline
+            points="9 18 15 12 9 6"
+          />
+        </svg>
+      </button>
+      <span
+        class="_authTreeKind_c22e9d"
+      >
+        contract-fn
+      </span>
+    </div>
+    <ul
+      class="_authTreeGroup_c22e9d"
+      role="group"
+    >
+      <li
+        aria-expanded="true"
+        aria-level="2"
+        class="_authTreeItem_c22e9d"
+        id="lvl-2"
+        role="treeitem"
+        tabindex="-1"
+      >
+        <div
+          class="_authTreeRow_c22e9d "
+        >
+          <button
+            aria-label="Collapse sub-invocations"
+            class="_authTreeChevron_c22e9d"
+            tabindex="-1"
+            type="button"
+          >
+            <svg
+              aria-hidden="true"
+              class="_authTreeChevron_c22e9d _authTreeChevronExpanded_c22e9d"
+              fill="none"
+              height="14"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2.5"
+              viewBox="0 0 24 24"
+              width="14"
+            >
+              <polyline
+                points="9 18 15 12 9 6"
+              />
+            </svg>
+          </button>
+          <span
+            class="_authTreeKind_c22e9d"
+          >
+            contract-fn
+          </span>
+        </div>
+        <ul
+          class="_authTreeGroup_c22e9d"
+          role="group"
+        >
+          <li
+            aria-expanded="false"
+            aria-level="3"
+            class="_authTreeItem_c22e9d"
+            id="lvl-3-collapsed"
+            role="treeitem"
+            tabindex="-1"
+          >
+            <div
+              class="_authTreeRow_c22e9d "
+            >
+              <button
+                aria-label="Expand sub-invocations"
+                class="_authTreeChevron_c22e9d"
+                tabindex="-1"
+                type="button"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="_authTreeChevron_c22e9d "
+                  fill="none"
+                  height="14"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2.5"
+                  viewBox="0 0 24 24"
+                  width="14"
+                >
+                  <polyline
+                    points="9 18 15 12 9 6"
+                  />
+                </svg>
+              </button>
+              <span
+                class="_authTreeKind_c22e9d"
+              >
+                contract-fn
+              </span>
+            </div>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+`;
+
+exports[`AuthorizationTree Component > Snapshots per node type > matches snapshot for leaf node without children 1`] = `
+<ul
+  aria-label="Authorization Tree"
+  class="_authTreeRoot_c22e9d "
+  role="tree"
+>
+  <li
+    aria-level="1"
+    class="_authTreeItem_c22e9d"
+    id="snap-leaf"
+    role="treeitem"
+    tabindex="0"
+  >
+    <div
+      class="_authTreeRow_c22e9d _authTreeRowFocused_c22e9d"
+    >
+      <span
+        aria-hidden="true"
+        style="width: 20px;"
+      />
+      <span
+        class="_authTreeKind_c22e9d"
+      >
+        transfer
+      </span>
+      <span
+        class="_authTreeContract_c22e9d"
+      >
+        CLEA...0000
+        <button
+          aria-expanded="false"
+          aria-label="Reveal full contract address"
+          class="_authTreeRevealBtn_c22e9d"
+          tabindex="-1"
+          type="button"
+        >
+          Reveal
+        </button>
+      </span>
+      <span
+        class="_authTreeFunction_c22e9d"
+      >
+        end_leaf
+        ()
+      </span>
+    </div>
+  </li>
+</ul>
+`;
+
+exports[`AuthorizationTree Component > Snapshots per node type > matches snapshot for node with decoded arguments and full-value reveal 1`] = `
+<ul
+  aria-label="Authorization Tree"
+  class="_authTreeRoot_c22e9d "
+  role="tree"
+>
+  <li
+    aria-level="1"
+    class="_authTreeItem_c22e9d"
+    id="snap-args"
+    role="treeitem"
+    tabindex="0"
+  >
+    <div
+      class="_authTreeRow_c22e9d _authTreeRowFocused_c22e9d"
+    >
+      <span
+        aria-hidden="true"
+        style="width: 20px;"
+      />
+      <span
+        class="_authTreeKind_c22e9d"
+      >
+        contract-fn
+      </span>
+      <span
+        class="_authTreeContract_c22e9d"
+      >
+        CARG...0000
+        <button
+          aria-expanded="false"
+          aria-label="Reveal full contract address"
+          class="_authTreeRevealBtn_c22e9d"
+          tabindex="-1"
+          type="button"
+        >
+          Reveal
+        </button>
+      </span>
+      <span
+        class="_authTreeFunction_c22e9d"
+      >
+        set_data
+        ()
+      </span>
+    </div>
+    <ul
+      aria-label="Decoded arguments"
+      class="_authTreeArgs_c22e9d"
+    >
+      <li
+        class="_authTreeArgItem_c22e9d"
+      >
+        <strong>
+          payload
+          :
+        </strong>
+         
+        <span>
+          VeryLongPayloadStringThat...
+        </span>
+        <button
+          aria-expanded="false"
+          aria-label="Reveal full value for payload"
+          class="_authTreeRevealBtn_c22e9d"
+          type="button"
+        >
+          Reveal
+        </button>
+      </li>
+    </ul>
+  </li>
+</ul>
+`;
+
+exports[`AuthorizationTree Component > Snapshots per node type > matches snapshot for node with warning and blocked severity 1`] = `
+<ul
+  aria-label="Authorization Tree"
+  class="_authTreeRoot_c22e9d "
+  role="tree"
+>
+  <li
+    aria-level="1"
+    class="_authTreeItem_c22e9d"
+    id="snap-warning"
+    role="treeitem"
+    tabindex="0"
+  >
+    <div
+      class="_authTreeRow_c22e9d _authTreeRowFocused_c22e9d"
+    >
+      <span
+        aria-hidden="true"
+        style="width: 20px;"
+      />
+      <span
+        class="_authTreeKind_c22e9d"
+      >
+        contract-fn
+      </span>
+      <span
+        class="_authTreeContract_c22e9d"
+      >
+        CWAR...0000
+        <button
+          aria-expanded="false"
+          aria-label="Reveal full contract address"
+          class="_authTreeRevealBtn_c22e9d"
+          tabindex="-1"
+          type="button"
+        >
+          Reveal
+        </button>
+      </span>
+      <span
+        class="_authTreeFunction_c22e9d"
+      >
+        dangerous_op
+        ()
+      </span>
+      <span
+        style="display: inline-flex; gap: 4px;"
+      >
+        <span
+          aria-label="Warning: HIGH_RISK - Dangerous invocation"
+          class="_authTreeNodeWarning_c22e9d _authTreeNodeWarningBlocked_c22e9d"
+          role="status"
+        >
+          <span
+            aria-hidden="true"
+          >
+            ⚠️
+          </span>
+          <span>
+            HIGH_RISK
+          </span>
+        </span>
+      </span>
+    </div>
+  </li>
+</ul>
+`;

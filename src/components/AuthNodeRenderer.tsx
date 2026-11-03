@@ -1,6 +1,7 @@
 import React from "react";
 import { AuthNode } from "@clearsign/core";
 import { shortenAddress } from "../utils.js";
+import { DisplayValueRenderer } from "./DisplayValueRenderer.js";
 import styles from "../styles.module.css";
 
 export const AuthNodeRenderer: React.FC<{ node: AuthNode }> = ({ node }) => {
@@ -19,7 +20,10 @@ export const AuthNodeRenderer: React.FC<{ node: AuthNode }> = ({ node }) => {
       {node.args && node.args.length > 0 && (
         <ul>
           {node.args.map((arg, i) => (
-            <li key={i}><strong>{arg.name || 'arg'}:</strong> <DisplayValueRenderer val={arg.value} /></li>
+            <li key={i}>
+              <strong>{arg.name || "arg"}:</strong>{" "}
+              <DisplayValueRenderer val={arg.value} />
+            </li>
           ))}
         </ul>
       )}

@@ -71,13 +71,15 @@ describe("useClearSign", () => {
     });
   });
 
-  it('fails closed when buildPreview throws', async () => {
-    (core.buildPreview as any).mockRejectedValue(new Error('boom'));
-    const { result } = renderHook(() => useClearSign({ rpcUrl: 'http://localhost', networkPassphrase: 'test' }));
+  it("fails closed when buildPreview throws", async () => {
+    vi.mocked(core.buildPreview).mockRejectedValue(new Error("boom"));
+    const { result } = renderHook(() =>
+      useClearSign({ rpcUrl: "http://localhost", networkPassphrase: "test" }),
+    );
 
     let approved: boolean | undefined;
     await act(async () => {
-      approved = await result.current.requestApproval('xdr');
+      approved = await result.current.requestApproval("xdr");
     });
 
     expect(approved).toBe(false);
@@ -86,19 +88,25 @@ describe("useClearSign", () => {
     expect(result.current.preview).toBeNull();
   });
 
-  it('rejects a pending request when a newer one supersedes it', async () => {
-    (core.buildPreview as any).mockResolvedValue({ risk: 'ok' });
-    const { result } = renderHook(() => useClearSign({ rpcUrl: 'http://localhost', networkPassphrase: 'test' }));
+  it("rejects a pending request when a newer one supersedes it", async () => {
+    vi.mocked(core.buildPreview).mockResolvedValue({ risk: "ok" } as never);
+    const { result } = renderHook(() =>
+      useClearSign({ rpcUrl: "http://localhost", networkPassphrase: "test" }),
+    );
 
     let first: boolean | undefined;
     let second: boolean | undefined;
     act(() => {
-      result.current.requestApproval('xdr-1').then(res => { first = res; });
+      result.current.requestApproval("xdr-1").then((res) => {
+        first = res;
+      });
     });
     await waitFor(() => expect(result.current.preview).not.toBeNull());
 
     act(() => {
-      result.current.requestApproval('xdr-2').then(res => { second = res; });
+      result.current.requestApproval("xdr-2").then((res) => {
+        second = res;
+      });
     });
     await waitFor(() => expect(first).toBe(false));
     await waitFor(() => expect(result.current.preview).not.toBeNull());
@@ -109,55 +117,82 @@ describe("useClearSign", () => {
     await waitFor(() => expect(second).toBe(true));
   });
 
-  it('ignores a stale preview that resolves after a newer request', async () => {
-    let releaseFirst!: (value: unknown) => void;
-    (core.buildPreview as any)
-      .mockImplementationOnce(() => new Promise(resolve => { releaseFirst = resolve; }))
-      .mockResolvedValueOnce({ risk: 'ok', tag: 'second' });
-    const { result } = renderHook(() => useClearSign({ rpcUrl: 'http://localhost', networkPassphrase: 'test' }));
+  it("ignores a stale preview that resolves after a newer request", async () => {
+    let releaseFirst!: (value: core.ClearSignPreview) => void;
+    vi.mocked(core.buildPreview)
+      .mockImplementationOnce(
+        () =>
+          new Promise((resolve) => {
+            releaseFirst = resolve;
+          }),
+      )
+      .mockResolvedValueOnce({ risk: "ok", tag: "second" } as never);
+    const { result } = renderHook(() =>
+      useClearSign({ rpcUrl: "http://localhost", networkPassphrase: "test" }),
+    );
 
     let first: boolean | undefined;
     act(() => {
-      result.current.requestApproval('xdr-1').then(res => { first = res; });
+      result.current.requestApproval("xdr-1").then((res) => {
+        first = res;
+      });
     });
     act(() => {
-      result.current.requestApproval('xdr-2');
+      result.current.requestApproval("xdr-2");
     });
-    await waitFor(() => expect(result.current.preview).toEqual({ risk: 'ok', tag: 'second' }));
+    await waitFor(() =>
+      expect(result.current.preview).toEqual({ risk: "ok", tag: "second" }),
+    );
 
     await act(async () => {
-      releaseFirst({ risk: 'ok', tag: 'first' });
+      releaseFirst({
+        risk: "ok",
+        tag: "first",
+      } as unknown as core.ClearSignPreview);
     });
 
-    expect(result.current.preview).toEqual({ risk: 'ok', tag: 'second' });
+    expect(result.current.preview).toEqual({ risk: "ok", tag: "second" });
     expect(first).toBe(false);
   });
 
-  it.each(['blocked', 'unknown'])('refuses to approve a %s preview', async (risk) => {
-    (core.buildPreview as any).mockResolvedValue({ risk });
-    const { result } = renderHook(() => useClearSign({ rpcUrl: 'http://localhost', networkPassphrase: 'test' }));
+  it.each(["blocked", "unknown"])(
+    "refuses to approve a %s preview",
+    async (risk) => {
+      vi.mocked(core.buildPreview).mockResolvedValue({ risk } as never);
+      const { result } = renderHook(() =>
+        useClearSign({ rpcUrl: "http://localhost", networkPassphrase: "test" }),
+      );
 
-    let approved: boolean | undefined;
-    act(() => {
-      result.current.requestApproval('xdr').then(res => { approved = res; });
-    });
-    await waitFor(() => expect(result.current.preview).not.toBeNull());
+      let approved: boolean | undefined;
+      act(() => {
+        result.current.requestApproval("xdr").then((res) => {
+          approved = res;
+        });
+      });
+      await waitFor(() => expect(result.current.preview).not.toBeNull());
 
-    act(() => {
-      result.current.onApprove();
-    });
+      act(() => {
+        result.current.onApprove();
+      });
 
-    await waitFor(() => expect(approved).toBe(false));
-    expect(result.current.open).toBe(false);
-  });
+      await waitFor(() => expect(approved).toBe(false));
+      expect(result.current.open).toBe(false);
+    },
+  );
 
-  it('ignores onApprove while the preview is still loading', async () => {
-    (core.buildPreview as any).mockImplementation(() => new Promise(() => {}));
-    const { result } = renderHook(() => useClearSign({ rpcUrl: 'http://localhost', networkPassphrase: 'test' }));
+  it("ignores onApprove while the preview is still loading", async () => {
+    vi.mocked(core.buildPreview).mockImplementation(
+      () => new Promise(() => {}),
+    );
+    const { result } = renderHook(() =>
+      useClearSign({ rpcUrl: "http://localhost", networkPassphrase: "test" }),
+    );
 
     let settled = false;
     act(() => {
-      result.current.requestApproval('xdr').then(() => { settled = true; });
+      result.current.requestApproval("xdr").then(() => {
+        settled = true;
+      });
     });
     act(() => {
       result.current.onApprove();
@@ -167,13 +202,17 @@ describe("useClearSign", () => {
     expect(result.current.open).toBe(true);
   });
 
-  it('resolves a pending request as rejected when unmounted', async () => {
-    (core.buildPreview as any).mockResolvedValue({ risk: 'ok' });
-    const { result, unmount } = renderHook(() => useClearSign({ rpcUrl: 'http://localhost', networkPassphrase: 'test' }));
+  it("resolves a pending request as rejected when unmounted", async () => {
+    vi.mocked(core.buildPreview).mockResolvedValue({ risk: "ok" } as never);
+    const { result, unmount } = renderHook(() =>
+      useClearSign({ rpcUrl: "http://localhost", networkPassphrase: "test" }),
+    );
 
     let approved: boolean | undefined;
     act(() => {
-      result.current.requestApproval('xdr').then(res => { approved = res; });
+      result.current.requestApproval("xdr").then((res) => {
+        approved = res;
+      });
     });
     await waitFor(() => expect(result.current.open).toBe(true));
 

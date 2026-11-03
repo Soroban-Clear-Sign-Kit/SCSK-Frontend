@@ -1,20 +1,32 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { ClearSignPreview } from "@clearsign/core";
 import styles from "./styles.module.css";
 import { handleCopy, shortenAddress } from "./utils.js";
 import { DisplayValueRenderer } from "./components/DisplayValueRenderer.js";
 import { AuthNodeRenderer } from "./components/AuthNodeRenderer.js";
+import {
+  AuthorizationTree,
+  AuthTreeNode,
+  convertCoreAuthToTree,
+} from "./components/AuthorizationTree.js";
+import {
+  WarningList,
+  WarningViewModel,
+  mapToWarningViewModel,
+} from "./components/WarningList.js";
 
 export interface ClearSignModalProps {
   preview: ClearSignPreview | null;
   /** Shows a busy dialog (with a Reject button) while the preview is still being built. */
   loading?: boolean;
-  onApprove: () => void;
+  onApprove: (acknowledgedWarnings?: WarningViewModel[]) => void;
   onReject: () => void;
   isSigning?: boolean;
   isPending?: boolean;
   status?: "decoding" | "ready" | "review" | "blocked" | "error";
   errorMessage?: string;
+  useAuthorizationTree?: boolean;
+  authTree?: AuthTreeNode[];
 }
 
 const CheckCircleIcon: React.FC = () => (
@@ -89,21 +101,65 @@ const AlertCircleIcon: React.FC = () => (
 
 export const ClearSignModal: React.FC<ClearSignModalProps> = ({
   preview,
+  loading = false,
   onApprove,
   onReject,
   isSigning = false,
   isPending = false,
   status,
   errorMessage,
+  useAuthorizationTree = false,
+  authTree,
 }) => {
   const [reviewed, setReviewed] = useState(false);
   const [xdrExpanded, setXdrExpanded] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLElement | null>(null);
   const onRejectRef = useRef(onReject);
-  onRejectRef.current = onReject;
+  useEffect(() => {
+    onRejectRef.current = onReject;
+  }, [onReject]);
 
   const pendingSignature = isSigning || isPending;
+  const visible = preview !== null || loading;
+
+  const mappedWarnings = useMemo(
+    () => (preview?.warnings || []).map(mapToWarningViewModel),
+    [preview?.warnings],
+  );
+
+  const isBlocked =
+    status === "blocked" ||
+    preview?.risk === "blocked" ||
+    mappedWarnings.some((w) => w.severity === "blocked");
+
+  const isReview =
+    !isBlocked &&
+    (status === "review" ||
+      preview?.risk === "review" ||
+      mappedWarnings.some((w) => w.severity === "review"));
+
+  const txIdentifier =
+    preview?.raw?.xdr || preview?.envelope?.sequence || preview;
+
+  const [prevTxIdentifier, setPrevTxIdentifier] = useState(txIdentifier);
+  if (txIdentifier !== prevTxIdentifier) {
+    setPrevTxIdentifier(txIdentifier);
+    setReviewed(false);
+  }
+
+  const handleApprove = () => {
+    if (isBlocked) {
+      return;
+    }
+    if (isReview && !reviewed) {
+      return;
+    }
+    if (pendingSignature) {
+      return;
+    }
+    onApprove(mappedWarnings);
+  };
 
   useEffect(() => {
     if (!visible) return;
@@ -118,7 +174,7 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({
           return;
         }
         e.preventDefault();
-        onReject();
+        onRejectRef.current();
       }
 
       // Accessible Tab / Shift+Tab focus trap
@@ -150,7 +206,7 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({
         triggerRef.current.focus();
       }
     };
-  }, [onReject, pendingSignature]);
+  }, [visible, pendingSignature]);
 
   if (!preview) {
     if (!loading) return null;
@@ -173,7 +229,11 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({
           </div>
           <div className={styles.modalFooter}>
             <div className={styles.buttonGroup}>
-              <button type="button" className={`${styles.button} ${styles.buttonReject}`} onClick={onReject}>
+              <button
+                type="button"
+                className={`${styles.button} ${styles.buttonReject}`}
+                onClick={onReject}
+              >
                 Reject
               </button>
             </div>
@@ -184,32 +244,32 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({
   }
 
   const getRiskBannerInfo = () => {
-    switch (preview.risk) {
-      case "ok":
-        return {
-          text: "Decoded and verified",
-          className: styles.riskOk,
-          icon: <CheckCircleIcon />,
-        };
-      case "review":
-        return {
-          text: "Review carefully",
-          className: styles.riskReview,
-          icon: <AlertTriangleIcon />,
-        };
-      case "blocked":
-        return {
-          text: "Signing blocked",
-          className: styles.riskBlocked,
-          icon: <ShieldAlertIcon />,
-        };
-      default:
-        return {
-          text: "Unknown risk",
-          className: styles.riskBlocked,
-          icon: <AlertCircleIcon />,
-        };
+    if (isBlocked) {
+      return {
+        text: "Signing blocked",
+        className: styles.riskBlocked,
+        icon: <ShieldAlertIcon />,
+      };
     }
+    if (isReview) {
+      return {
+        text: "Review carefully",
+        className: styles.riskReview,
+        icon: <AlertTriangleIcon />,
+      };
+    }
+    if (preview.risk === "ok") {
+      return {
+        text: "Decoded and verified",
+        className: styles.riskOk,
+        icon: <CheckCircleIcon />,
+      };
+    }
+    return {
+      text: "Unknown risk",
+      className: styles.riskBlocked,
+      icon: <AlertCircleIcon />,
+    };
   };
 
   const getStatusAnnouncement = () => {
@@ -219,12 +279,12 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({
         ? "error"
         : pendingSignature
           ? "pending"
-          : preview.risk === "ok"
-            ? "ready"
-            : preview.risk === "review"
+          : isBlocked
+            ? "blocked"
+            : isReview
               ? "review"
-              : preview.risk === "blocked"
-                ? "blocked"
+              : preview.risk === "ok"
+                ? "ready"
                 : "ready");
 
     switch (currentStatus) {
@@ -275,6 +335,7 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({
           <div
             id="clearsign-modal-description"
             className={`${styles.riskBanner} ${riskInfo.className}`}
+            role={isBlocked || isReview ? "alert" : undefined}
           >
             <span className={styles.riskIcon} aria-hidden="true">
               {riskInfo.icon}
@@ -347,19 +408,38 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({
           {preview.auth && preview.auth.length > 0 && (
             <div className={styles.section}>
               <h3 className={styles.sectionTitle}>Authorizations</h3>
-              {preview.auth.map((entry, i) => (
-                <div key={i}>
-                  <div>Credentials: {entry.credentials.type}</div>
-                  <AuthNodeRenderer node={entry.root} />
-                </div>
-              ))}
+              {useAuthorizationTree || authTree ? (
+                <AuthorizationTree
+                  nodes={
+                    authTree ||
+                    convertCoreAuthToTree(preview.auth, preview.warnings)
+                  }
+                />
+              ) : (
+                preview.auth.map((entry, i) => (
+                  <div key={i}>
+                    <div>Credentials: {entry.credentials.type}</div>
+                    <AuthNodeRenderer node={entry.root} />
+                  </div>
+                ))
+              )}
             </div>
           )}
 
           <div className={styles.section}>
             <h3 className={styles.sectionTitle}>Network</h3>
             <div>{preview.network.passphrase}</div>
-            <div>{preview.network.verified ? 'Network verified against the RPC' : 'Network not verified'}</div>
+            <div>
+              {(
+                "verified" in preview.network
+                  ? Boolean(
+                      (preview.network as { verified?: boolean }).verified,
+                    )
+                  : Boolean(preview.network.rpcMatches)
+              )
+                ? "Network verified against the RPC"
+                : "Network not verified"}
+            </div>
           </div>
 
           <div className={styles.section}>
@@ -370,32 +450,18 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({
                 Simulated Resource Fee: {preview.simulation.minResourceFee}
               </div>
             )}
+            {preview.simulation.status && (
+              <div>Simulation: {preview.simulation.status}</div>
+            )}
+            {preview.simulation.error && (
+              <div>Simulation error: {preview.simulation.error}</div>
+            )}
           </div>
 
-          {preview.warnings && preview.warnings.length > 0 && (
+          {mappedWarnings.length > 0 && (
             <div className={styles.section}>
               <h3 className={styles.sectionTitle}>Warnings</h3>
-              {preview.warnings.map((w, i) => (
-                <div
-                  key={i}
-                  className={`${styles.warningItem} ${
-                    w.severity === "blocked" ? styles.warningBlocked : ""
-                  }`}
-                >
-                  <span
-                    className={styles.riskIcon}
-                    aria-hidden="true"
-                    style={{ marginRight: 6 }}
-                  >
-                    {w.severity === "blocked" ? (
-                      <ShieldAlertIcon />
-                    ) : (
-                      <AlertTriangleIcon />
-                    )}
-                  </span>
-                  <strong>{w.code}</strong>: {w.message}
-                </div>
-              ))}
+              <WarningList warnings={mappedWarnings} />
             </div>
           )}
 
@@ -425,7 +491,7 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({
         </div>
 
         <div className={styles.modalFooter}>
-          {preview.risk === "review" && (
+          {isReview && (
             <label className={styles.reviewCheckbox}>
               <input
                 type="checkbox"
@@ -445,14 +511,12 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({
             >
               Reject
             </button>
-            {preview.risk !== "blocked" && (
+            {!isBlocked && (
               <button
                 type="button"
                 className={`${styles.button} ${styles.buttonApprove}`}
-                onClick={onApprove}
-                disabled={
-                  (preview.risk === "review" && !reviewed) || pendingSignature
-                }
+                onClick={handleApprove}
+                disabled={(isReview && !reviewed) || pendingSignature}
               >
                 {pendingSignature ? "Signing..." : "Approve"}
               </button>

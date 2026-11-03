@@ -16,20 +16,30 @@ The Frontend package of the **Soroban Clear-Sign Kit (SCSK)** provides React con
 ## Usage
 
 ```tsx
-import { ClearSignModal, useClearSign } from '@clearsign/react';
-import '@clearsign/react/styles.css';
+import { ClearSignModal, useClearSign } from "@clearsign/react";
+import "@clearsign/react/styles.css";
 
 function SignButton({ xdr }: { xdr: string }) {
-  const { open, preview, loading, requestApproval, onApprove, onReject } = useClearSign({
-    rpcUrl: 'https://soroban-testnet.stellar.org',
-    networkPassphrase: 'Test SDF Network ; September 2015',
-  });
+  const { open, preview, loading, requestApproval, onApprove, onReject } =
+    useClearSign({
+      rpcUrl: "https://soroban-testnet.stellar.org",
+      networkPassphrase: "Test SDF Network ; September 2015",
+    });
 
   return (
     <>
-      <button onClick={() => requestApproval(xdr).then((ok) => ok && sign(xdr))}>Sign</button>
+      <button
+        onClick={() => requestApproval(xdr).then((ok) => ok && sign(xdr))}
+      >
+        Sign
+      </button>
       {open && (
-        <ClearSignModal preview={preview} loading={loading} onApprove={onApprove} onReject={onReject} />
+        <ClearSignModal
+          preview={preview}
+          loading={loading}
+          onApprove={onApprove}
+          onReject={onReject}
+        />
       )}
     </>
   );
@@ -41,7 +51,7 @@ function SignButton({ xdr }: { xdr: string }) {
 ### Guarding an existing wallet call
 
 ```ts
-import { withClearSign } from '@clearsign/react';
+import { withClearSign } from "@clearsign/react";
 
 const safeSignTransaction = withClearSign(signTransaction, { requestApproval });
 // Throws ClearSignRejectedError unless the user approved the preview.
