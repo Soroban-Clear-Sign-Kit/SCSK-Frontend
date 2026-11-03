@@ -14,19 +14,23 @@ import {
   WarningViewModel,
   mapToWarningViewModel,
 } from "./components/WarningList.js";
+import { ClearSignMessages } from "./i18n/messages.js";
+import { useClearSignMessages } from "./i18n/context.js";
 
 export interface ClearSignModalProps {
   preview: ClearSignPreview | null;
   /** Shows a busy dialog (with a Reject button) while the preview is still being built. */
-  loading?: boolean;
+  loading?: boolean | undefined;
   onApprove: (acknowledgedWarnings?: WarningViewModel[]) => void;
   onReject: () => void;
-  isSigning?: boolean;
-  isPending?: boolean;
-  status?: "decoding" | "ready" | "review" | "blocked" | "error";
-  errorMessage?: string;
-  useAuthorizationTree?: boolean;
-  authTree?: AuthTreeNode[];
+  isSigning?: boolean | undefined;
+  isPending?: boolean | undefined;
+  status?: "decoding" | "ready" | "review" | "blocked" | "error" | undefined;
+  errorMessage?: string | undefined;
+  useAuthorizationTree?: boolean | undefined;
+  authTree?: AuthTreeNode[] | undefined;
+  messages?: Partial<ClearSignMessages> | undefined;
+  theme?: "light" | "dark" | "auto" | undefined;
 }
 
 const CheckCircleIcon: React.FC = () => (
@@ -110,7 +114,10 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({
   errorMessage,
   useAuthorizationTree = false,
   authTree,
+  messages,
+  theme,
 }) => {
+  const m = useClearSignMessages(messages);
   const [reviewed, setReviewed] = useState(false);
   const [xdrExpanded, setXdrExpanded] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
@@ -120,6 +127,7 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({
     onRejectRef.current = onReject;
   }, [onReject]);
 
+  const dataTheme = theme && theme !== "auto" ? theme : undefined;
   const pendingSignature = isSigning || isPending;
   const visible = preview !== null || loading;
 
@@ -211,7 +219,7 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({
   if (!preview) {
     if (!loading) return null;
     return (
-      <div className={styles.modalOverlay}>
+      <div className={styles.modalOverlay} data-theme={dataTheme}>
         <div
           className={styles.modalContent}
           role="dialog"
@@ -220,12 +228,13 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({
           aria-busy="true"
           ref={modalRef}
           tabIndex={-1}
+          data-theme={dataTheme}
         >
           <div className={styles.modalHeader}>
-            <h2 id="clearsign-modal-title">Transaction Preview</h2>
+            <h2 id="clearsign-modal-title">{m.modalTitle}</h2>
           </div>
           <div className={styles.modalBody}>
-            <p role="status">Decoding and simulating the transaction&hellip;</p>
+            <p role="status">{m.decodingPreview}</p>
           </div>
           <div className={styles.modalFooter}>
             <div className={styles.buttonGroup}>
@@ -234,7 +243,7 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({
                 className={`${styles.button} ${styles.buttonReject}`}
                 onClick={onReject}
               >
-                Reject
+                {m.reject}
               </button>
             </div>
           </div>
@@ -246,27 +255,27 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({
   const getRiskBannerInfo = () => {
     if (isBlocked) {
       return {
-        text: "Signing blocked",
+        text: m.riskBlocked,
         className: styles.riskBlocked,
         icon: <ShieldAlertIcon />,
       };
     }
     if (isReview) {
       return {
-        text: "Review carefully",
+        text: m.riskReview,
         className: styles.riskReview,
         icon: <AlertTriangleIcon />,
       };
     }
     if (preview.risk === "ok") {
       return {
-        text: "Decoded and verified",
+        text: m.riskOk,
         className: styles.riskOk,
         icon: <CheckCircleIcon />,
       };
     }
     return {
-      text: "Unknown risk",
+      text: m.riskUnknown,
       className: styles.riskBlocked,
       icon: <AlertCircleIcon />,
     };
@@ -289,26 +298,26 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({
 
     switch (currentStatus) {
       case "decoding":
-        return "Decoding transaction preview...";
+        return m.announcementDecoding;
       case "ready":
-        return "Transaction preview ready. Decoded and verified.";
+        return m.announcementReady;
       case "review":
-        return "Transaction requires review: warnings detected.";
+        return m.announcementReview;
       case "blocked":
-        return "Transaction signing blocked: high risk detected.";
+        return m.announcementBlocked;
       case "pending":
-        return "Transaction signature pending...";
+        return m.announcementPending;
       case "error":
-        return `Error: ${errorMessage || "Unable to verify transaction."}`;
+        return m.announcementError(errorMessage);
       default:
-        return "Transaction preview updated.";
+        return m.announcementUpdated;
     }
   };
 
   const riskInfo = getRiskBannerInfo();
 
   return (
-    <div className={styles.modalOverlay}>
+    <div className={styles.modalOverlay} data-theme={dataTheme}>
       <div
         className={styles.modalContent}
         role="dialog"
@@ -317,6 +326,7 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({
         aria-describedby="clearsign-modal-description"
         ref={modalRef}
         tabIndex={-1}
+        data-theme={dataTheme}
       >
         <div
           role="status"
@@ -328,7 +338,7 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({
         </div>
 
         <div className={styles.modalHeader}>
-          <h2 id="clearsign-modal-title">Transaction Preview</h2>
+          <h2 id="clearsign-modal-title">{m.modalTitle}</h2>
         </div>
 
         <div className={styles.modalBody}>
@@ -345,7 +355,7 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({
 
           {preview.summary && preview.summary.length > 0 && (
             <div className={styles.section}>
-              <h3 className={styles.sectionTitle}>Summary</h3>
+              <h3 className={styles.sectionTitle}>{m.sectionSummary}</h3>
               {preview.summary.map((line, i) => (
                 <p key={i} className={styles.summaryLine}>
                   {line}
@@ -356,7 +366,7 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({
 
           {preview.effects && preview.effects.length > 0 && (
             <div className={styles.section}>
-              <h3 className={styles.sectionTitle}>Balance Changes</h3>
+              <h3 className={styles.sectionTitle}>{m.sectionBalanceChanges}</h3>
               {preview.effects.map((effect, i) => {
                 const isNegative = effect.delta.startsWith("-");
                 return (
@@ -383,21 +393,26 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({
 
           {preview.invocation && (
             <div className={styles.section}>
-              <h3 className={styles.sectionTitle}>Call Details</h3>
+              <h3 className={styles.sectionTitle}>{m.sectionCallDetails}</h3>
               <div>
-                Contract:{" "}
+                {m.contractLabel}{" "}
                 <span title={preview.invocation.contractId}>
                   {shortenAddress(preview.invocation.contractId)}
                 </span>
               </div>
-              <div>Function: {preview.invocation.functionName}</div>
+              <div>
+                {m.functionLabel} {preview.invocation.functionName}
+              </div>
               {preview.invocation.args &&
                 preview.invocation.args.length > 0 && (
                   <ul>
                     {preview.invocation.args.map((arg, i) => (
                       <li key={i}>
                         <strong>{arg.name || "arg"}:</strong>{" "}
-                        <DisplayValueRenderer val={arg.value} />
+                        <DisplayValueRenderer
+                          val={arg.value}
+                          messages={messages}
+                        />
                       </li>
                     ))}
                   </ul>
@@ -407,19 +422,22 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({
 
           {preview.auth && preview.auth.length > 0 && (
             <div className={styles.section}>
-              <h3 className={styles.sectionTitle}>Authorizations</h3>
+              <h3 className={styles.sectionTitle}>{m.sectionAuthorizations}</h3>
               {useAuthorizationTree || authTree ? (
                 <AuthorizationTree
                   nodes={
                     authTree ||
                     convertCoreAuthToTree(preview.auth, preview.warnings)
                   }
+                  messages={messages}
                 />
               ) : (
                 preview.auth.map((entry, i) => (
                   <div key={i}>
-                    <div>Credentials: {entry.credentials.type}</div>
-                    <AuthNodeRenderer node={entry.root} />
+                    <div>
+                      {m.credentialsLabel} {entry.credentials.type}
+                    </div>
+                    <AuthNodeRenderer node={entry.root} messages={messages} />
                   </div>
                 ))
               )}
@@ -427,7 +445,7 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({
           )}
 
           <div className={styles.section}>
-            <h3 className={styles.sectionTitle}>Network</h3>
+            <h3 className={styles.sectionTitle}>{m.sectionNetwork}</h3>
             <div>{preview.network.passphrase}</div>
             <div>
               {(
@@ -437,31 +455,38 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({
                     )
                   : Boolean(preview.network.rpcMatches)
               )
-                ? "Network verified against the RPC"
-                : "Network not verified"}
+                ? m.networkVerified
+                : m.networkNotVerified}
             </div>
           </div>
 
           <div className={styles.section}>
-            <h3 className={styles.sectionTitle}>Fees</h3>
-            <div>Declared Fee: {preview.envelope.fee}</div>
+            <h3 className={styles.sectionTitle}>{m.sectionFees}</h3>
+            <div>
+              {m.declaredFeeLabel} {preview.envelope.fee}
+            </div>
             {preview.simulation.minResourceFee && (
               <div>
-                Simulated Resource Fee: {preview.simulation.minResourceFee}
+                {m.simulatedResourceFeeLabel}{" "}
+                {preview.simulation.minResourceFee}
               </div>
             )}
             {preview.simulation.status && (
-              <div>Simulation: {preview.simulation.status}</div>
+              <div>
+                {m.simulationStatusLabel} {preview.simulation.status}
+              </div>
             )}
             {preview.simulation.error && (
-              <div>Simulation error: {preview.simulation.error}</div>
+              <div>
+                {m.simulationErrorLabel} {preview.simulation.error}
+              </div>
             )}
           </div>
 
           {mappedWarnings.length > 0 && (
             <div className={styles.section}>
-              <h3 className={styles.sectionTitle}>Warnings</h3>
-              <WarningList warnings={mappedWarnings} />
+              <h3 className={styles.sectionTitle}>{m.sectionWarnings}</h3>
+              <WarningList warnings={mappedWarnings} messages={messages} />
             </div>
           )}
 
@@ -472,7 +497,7 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({
                 onClick={() => setXdrExpanded(!xdrExpanded)}
                 aria-expanded={xdrExpanded}
               >
-                {xdrExpanded ? "Hide Raw XDR" : "Show Raw XDR"}
+                {xdrExpanded ? m.hideRawXdr : m.showRawXdr}
               </button>
             </h3>
             {xdrExpanded && (
@@ -483,7 +508,7 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({
                   type="button"
                   onClick={() => handleCopy(preview.raw.xdr)}
                 >
-                  Copy XDR
+                  {m.copyXdr}
                 </button>
               </div>
             )}
@@ -499,7 +524,7 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({
                 onChange={(e) => setReviewed(e.target.checked)}
                 disabled={pendingSignature}
               />
-              I have reviewed the warnings
+              {m.reviewCheckboxLabel}
             </label>
           )}
           <div className={styles.buttonGroup}>
@@ -509,7 +534,7 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({
               onClick={onReject}
               disabled={pendingSignature}
             >
-              Reject
+              {m.reject}
             </button>
             {!isBlocked && (
               <button
@@ -518,7 +543,7 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({
                 onClick={handleApprove}
                 disabled={(isReview && !reviewed) || pendingSignature}
               >
-                {pendingSignature ? "Signing..." : "Approve"}
+                {pendingSignature ? m.signing : m.approve}
               </button>
             )}
           </div>

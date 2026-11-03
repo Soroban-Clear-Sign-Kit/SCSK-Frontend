@@ -5,7 +5,7 @@ export const ClearSignMessagesContext =
   createContext<ClearSignMessages>(DEFAULT_MESSAGES);
 
 export interface ClearSignProviderProps {
-  messages?: Partial<ClearSignMessages>;
+  messages?: Partial<ClearSignMessages> | undefined;
   children: React.ReactNode;
 }
 

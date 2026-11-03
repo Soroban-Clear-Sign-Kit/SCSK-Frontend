@@ -7,6 +7,8 @@ import React, {
 } from "react";
 import styles from "../styles.module.css";
 import { shortenAddress } from "../utils.js";
+import { ClearSignMessages } from "../i18n/messages.js";
+import { useClearSignMessages } from "../i18n/context.js";
 
 export interface AuthTreeWarning {
   code: string;
@@ -31,10 +33,11 @@ export interface AuthTreeNode {
 
 export interface AuthorizationTreeProps {
   nodes: AuthTreeNode[];
-  defaultExpandedDepth?: number;
-  className?: string;
-  onNodeSelect?: (node: AuthTreeNode) => void;
-  ariaLabel?: string;
+  defaultExpandedDepth?: number | undefined;
+  className?: string | undefined;
+  onNodeSelect?: ((node: AuthTreeNode) => void) | undefined;
+  ariaLabel?: string | undefined;
+  messages?: Partial<ClearSignMessages> | undefined;
 }
 
 interface FlatVisibleNode {
@@ -70,8 +73,11 @@ export const AuthorizationTree: React.FC<AuthorizationTreeProps> = ({
   defaultExpandedDepth = 2,
   className = "",
   onNodeSelect,
-  ariaLabel = "Authorization Tree",
+  ariaLabel,
+  messages,
 }) => {
+  const m = useClearSignMessages(messages);
+  const effectiveAriaLabel = ariaLabel || m.authTreeAriaLabel;
   // Normalize nodes with unique IDs if missing
   const normalizedNodes = useMemo(() => {
     let counter = 0;
@@ -273,7 +279,7 @@ export const AuthorizationTree: React.FC<AuthorizationTreeProps> = ({
   const renderArgs = (args: AuthTreeArg[], nodeId: string) => {
     if (!args || args.length === 0) return null;
     return (
-      <ul className={styles.authTreeArgs} aria-label="Decoded arguments">
+      <ul className={styles.authTreeArgs} aria-label={m.authTreeArgsAriaLabel}>
         {args.map((arg, idx) => {
           const argKey = `${nodeId}-arg-${idx}`;
           const isRevealed = revealedValues.has(argKey);
@@ -309,11 +315,11 @@ export const AuthorizationTree: React.FC<AuthorizationTreeProps> = ({
                   aria-expanded={isRevealed}
                   aria-label={
                     isRevealed
-                      ? `Hide full value for ${arg.name || "argument"}`
-                      : `Reveal full value for ${arg.name || "argument"}`
+                      ? m.hideFullArgValue(arg.name)
+                      : m.revealFullArgValue(arg.name)
                   }
                 >
-                  {isRevealed ? "Hide" : "Reveal"}
+                  {isRevealed ? m.hide : m.reveal}
                 </button>
               )}
             </li>
@@ -367,9 +373,7 @@ export const AuthorizationTree: React.FC<AuthorizationTreeProps> = ({
                 toggleExpand(id);
               }}
               aria-label={
-                isExpanded
-                  ? "Collapse sub-invocations"
-                  : "Expand sub-invocations"
+                isExpanded ? m.collapseSubInvocations : m.expandSubInvocations
               }
               tabIndex={-1}
             >
@@ -399,12 +403,12 @@ export const AuthorizationTree: React.FC<AuthorizationTreeProps> = ({
                   aria-expanded={isContractRevealed}
                   aria-label={
                     isContractRevealed
-                      ? "Hide full contract address"
-                      : "Reveal full contract address"
+                      ? m.hideFullContract
+                      : m.revealFullContract
                   }
                   tabIndex={-1}
                 >
-                  {isContractRevealed ? "Hide" : "Reveal"}
+                  {isContractRevealed ? m.hide : m.reveal}
                 </button>
               )}
             </span>
@@ -453,7 +457,7 @@ export const AuthorizationTree: React.FC<AuthorizationTreeProps> = ({
   return (
     <ul
       role="tree"
-      aria-label={ariaLabel}
+      aria-label={effectiveAriaLabel}
       className={`${styles.authTreeRoot} ${className}`}
       onKeyDown={handleKeyDown}
     >

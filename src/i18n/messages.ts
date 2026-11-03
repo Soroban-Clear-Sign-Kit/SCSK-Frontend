@@ -76,6 +76,12 @@ export interface ClearSignMessages {
   sanitizedTooltip: string;
   bytesFormatted: (length: number, truncated?: boolean) => string;
   emptyMap: string;
+  optionNone: string;
+  optionSomePrefix: string;
+  timepointLabel: string;
+  durationLabel: string;
+  undecodedLabel: (scvalType?: string) => string;
+  complexValue: string;
 }
 
 export const DEFAULT_MESSAGES: ClearSignMessages = {
@@ -161,6 +167,13 @@ export const DEFAULT_MESSAGES: ClearSignMessages = {
   bytesFormatted: (length: number, truncated?: boolean) =>
     `(${length} bytes${truncated ? ", truncated" : ""})`,
   emptyMap: "Empty map",
+  optionNone: "None",
+  optionSomePrefix: "Some(",
+  timepointLabel: "Timepoint",
+  durationLabel: "Duration",
+  undecodedLabel: (scvalType?: string) =>
+    `Undecoded ${scvalType || ""} value (raw XDR available below)`,
+  complexValue: "Complex value",
 };
 
 const PSEUDO_MAP: Record<string, string> = {
