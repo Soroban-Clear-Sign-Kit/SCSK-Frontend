@@ -2,3 +2,6 @@ packages:
   - "."
   - "example"
   - "vue"
+
+allowBuilds:
+  esbuild: true
