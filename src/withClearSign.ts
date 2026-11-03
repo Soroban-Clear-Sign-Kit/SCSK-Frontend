@@ -1,9 +1,6 @@
-export class ClearSignRejectedError extends Error {
-  constructor(message = "User rejected the transaction preview") {
-    super(message);
-    this.name = "ClearSignRejectedError";
-  }
-}
+import { ClearSignRejectedError } from "./types/signer.js";
+
+export { ClearSignRejectedError };
 
 export interface WithClearSignOptions {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- opts shape is caller-defined

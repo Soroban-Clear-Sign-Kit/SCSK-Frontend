@@ -93,13 +93,73 @@ const { open, preview, loading, requestApproval } = useClearSign({
 
 - `rpcUrl` (string): The RPC endpoint to use for fetching contract specs and simulating transactions.
 - `networkPassphrase` (string): The exact network passphrase expected.
+- `adapter` (`SignerAdapter`, optional): Wallet adapter conforming to the `SignerAdapter` interface. When provided, `signTransaction` coordinates preview, approval gating, and wallet signing.
 
 #### Hook Returns:
 
 - `open` (boolean): Whether the modal should be visible.
 - `preview` (ClearSignPreview | null): The resolved preview object.
 - `loading` (boolean): True while the preview is actively being simulated and built.
+- `isSigning` (boolean): True while the connected wallet adapter is in flight signing the transaction.
+- `signedXdr` (string | null): The signed transaction XDR returned by the adapter upon success.
+- `error` (Error | null): The last error encountered (`ClearSignRejectedError`, `WalletSigningError`, etc.).
 - `requestApproval(xdr: string, options?: RequestApprovalOptions)`: A function returning a `Promise<boolean>`. Resolves to `true` if approved, `false` if rejected.
+- `signTransaction(xdr: string, options?: RequestApprovalOptions)`: A function returning `Promise<string>`. Evaluates preview, gates on security/warnings, prompts approval via modal, and signs via the configured adapter. Throws `ClearSignRejectedError` on user rejection or `WalletSigningError` on wallet failure.
+
+## Wallet Signer Adapters
+
+`@clearsign/react` supports optional, decoupled wallet signing via the `SignerAdapter` interface. Reference adapters are provided in separate entry points so that the main bundle does not grow and optional peer dependencies are only loaded when needed.
+
+### `SignerAdapter` Interface
+
+```ts
+export interface SignTransactionOptions {
+  networkPassphrase?: string;
+  [key: string]: unknown;
+}
+
+export interface SignerAdapter {
+  getAddress(): Promise<string>;
+  signTransaction(xdr: string, opts?: SignTransactionOptions): Promise<string>;
+}
+```
+
+### Reference Adapters
+
+#### Freighter (`@clearsign/react/adapters/freighter`)
+
+```tsx
+import { useClearSign } from "@clearsign/react";
+import { freighterAdapter } from "@clearsign/react/adapters/freighter";
+
+const { signTransaction, open, preview, isSigning, onApprove, onReject } =
+  useClearSign({
+    rpcUrl: "https://soroban-testnet.stellar.org",
+    networkPassphrase: "Test SDF Network ; September 2015",
+    adapter: freighterAdapter(),
+  });
+```
+
+#### Stellar Wallets Kit (`@clearsign/react/adapters/stellar-wallets-kit`)
+
+```tsx
+import { useClearSign } from "@clearsign/react";
+import { stellarWalletsKitAdapter } from "@clearsign/react/adapters/stellar-wallets-kit";
+import { StellarWalletsKit } from "@creit.tech/stellar-wallets-kit";
+
+const kit = new StellarWalletsKit({ ... });
+
+const { signTransaction } = useClearSign({
+  rpcUrl: "https://soroban-testnet.stellar.org",
+  networkPassphrase: "Test SDF Network ; September 2015",
+  adapter: stellarWalletsKitAdapter({ kit }),
+});
+```
+
+### Typed Signing Errors
+
+- `ClearSignRejectedError`: Thrown when the user rejects transaction signing in the preview modal or closes it without approving.
+- `WalletSigningError`: Thrown when wallet interaction fails, extension is missing, or the user declines inside the wallet popup. Preserves the underlying `cause`.
 
 ## Utilities
 
