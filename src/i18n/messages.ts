@@ -71,6 +71,12 @@ export interface ClearSignMessages {
 
   // Value Display
   copyAddressAriaLabel: string;
+  revealFullAddress: string;
+  hideFullAddress: string;
+  revealFullValue: string;
+  hideFullValue: string;
+  copyValueAriaLabel: string;
+  copied: string;
   truncatedBadge: string;
   sanitizedBadge: string;
   sanitizedTooltip: string;
@@ -82,6 +88,26 @@ export interface ClearSignMessages {
   durationLabel: string;
   undecodedLabel: (scvalType?: string) => string;
   complexValue: string;
+
+  // Raw Tab & Verification
+  tabDetails: string;
+  tabRaw: string;
+  rawXdrTitle: string;
+  rawJsonTitle: string;
+  copyJson: string;
+  copiedJson: string;
+  copiedXdr: string;
+
+  // State Diffs & Pagination
+  sectionStateDiffs: string;
+  diffPaginationPrevious: string;
+  diffPaginationNext: string;
+  diffPaginationStatus: (
+    currentPage: number,
+    totalPages: number,
+    totalEntries: number,
+  ) => string;
+  diffPageSizeLabel: string;
 }
 
 export const DEFAULT_MESSAGES: ClearSignMessages = {
@@ -161,6 +187,12 @@ export const DEFAULT_MESSAGES: ClearSignMessages = {
 
   // Value Display
   copyAddressAriaLabel: "Copy address",
+  revealFullAddress: "Reveal full address",
+  hideFullAddress: "Hide full address",
+  revealFullValue: "Reveal full value",
+  hideFullValue: "Hide full value",
+  copyValueAriaLabel: "Copy full value",
+  copied: "Copied!",
   truncatedBadge: "(truncated)",
   sanitizedBadge: "(sanitized)",
   sanitizedTooltip: "Hidden or control characters were removed",
@@ -174,6 +206,26 @@ export const DEFAULT_MESSAGES: ClearSignMessages = {
   undecodedLabel: (scvalType?: string) =>
     `Undecoded ${scvalType || ""} value (raw XDR available below)`,
   complexValue: "Complex value",
+
+  // Raw Tab & Verification
+  tabDetails: "Details",
+  tabRaw: "Raw",
+  rawXdrTitle: "Transaction Envelope (XDR Base64)",
+  rawJsonTitle: "Decoded Transaction (JSON)",
+  copyJson: "Copy JSON",
+  copiedJson: "Copied JSON!",
+  copiedXdr: "Copied XDR!",
+
+  // State Diffs & Pagination
+  sectionStateDiffs: "State Modifications",
+  diffPaginationPrevious: "Previous",
+  diffPaginationNext: "Next",
+  diffPaginationStatus: (
+    currentPage: number,
+    totalPages: number,
+    totalEntries: number,
+  ) => `Page ${currentPage} of ${totalPages} (${totalEntries} entries)`,
+  diffPageSizeLabel: "Per page:",
 };
 
 const PSEUDO_MAP: Record<string, string> = {

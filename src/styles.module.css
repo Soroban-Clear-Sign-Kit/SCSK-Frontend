@@ -551,6 +551,74 @@
   cursor: not-allowed;
 }
 
+/* Address & Hash Formatted Display */
+.addressHashContainer {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--clearsign-space-xs);
+  vertical-align: middle;
+}
+
+.addressHashMono {
+  font-family: var(--clearsign-font-family-mono);
+  font-size: var(--clearsign-font-size-sm);
+}
+
+.addressHashCollapsed,
+.addressHashExpanded {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--clearsign-space-xs);
+}
+
+.addressHashText {
+  color: var(--clearsign-text);
+  font-weight: 500;
+}
+
+.addressHashGrouped {
+  display: inline-block;
+  background: var(--clearsign-surface);
+  border: 1px solid var(--clearsign-border);
+  border-radius: var(--clearsign-radius-sm);
+  padding: 2px var(--clearsign-space-xs);
+  color: var(--clearsign-text);
+  word-break: break-all;
+  white-space: normal;
+  letter-spacing: 0.05em;
+  font-family: var(--clearsign-font-family-mono);
+}
+
+.addressHashExpandBtn,
+.addressHashCopyBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 6px;
+  font-size: var(--clearsign-font-size-xs);
+  line-height: 1.2;
+  border-radius: var(--clearsign-radius-sm);
+  border: 1px solid var(--clearsign-border);
+  background: var(--clearsign-surface);
+  color: var(--clearsign-text-muted);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.addressHashExpandBtn:hover,
+.addressHashCopyBtn:hover {
+  background: var(--clearsign-surface-hover);
+  color: var(--clearsign-text);
+  border-color: var(--clearsign-border);
+}
+
+.addressHashExpandBtn:focus-visible,
+.addressHashCopyBtn:focus-visible {
+  outline: 2px solid var(--clearsign-primary);
+  outline-offset: 1px;
+}
+
 /* Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
   .modalOverlay,
