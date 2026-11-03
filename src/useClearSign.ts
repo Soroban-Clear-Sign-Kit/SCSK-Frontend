@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { buildPreview, ClearSignPreview, Intent } from "@clearsign/core";
 
 export interface UseClearSignOptions {
@@ -48,9 +48,15 @@ export function useClearSign(opts: UseClearSignOptions): UseClearSignResult {
 
   const requestApproval = useCallback(
     async (xdr: string, requestOpts?: RequestApprovalOptions) => {
-      if (resolverRef.current) {
-        resolverRef.current(false);
-      }
+      // A newer request supersedes any pending one, which is reported as rejected.
+      resolverRef.current?.(false);
+      const requestId = ++requestIdRef.current;
+      let settle!: (value: boolean) => void;
+      const decision = new Promise<boolean>((resolve) => {
+        settle = resolve;
+      });
+      resolverRef.current = settle;
+
       setLoading(true);
       setPreview(null);
       setOpen(true);
@@ -69,17 +75,23 @@ export function useClearSign(opts: UseClearSignOptions): UseClearSignResult {
           buildInput.specs = requestOpts.specs;
 
         const res = await buildPreview(buildInput);
+        if (requestId !== requestIdRef.current) return decision;
         setPreview(res);
       } catch {
-        // In case buildPreview somehow throws despite catching internals
-        setPreview(null);
+        // buildPreview is designed not to throw. If it does, fail closed: there is nothing
+        // to show the user, so close the dialog and report the request as rejected.
+        if (requestId === requestIdRef.current) {
+          setPreview(null);
+          setOpen(false);
+          resolverRef.current = null;
+          settle(false);
+        }
+        return decision;
       } finally {
-        setLoading(false);
+        if (requestId === requestIdRef.current) setLoading(false);
       }
 
-      return new Promise<boolean>((resolve) => {
-        resolverRef.current = resolve;
-      });
+      return decision;
     },
     [opts.rpcUrl, opts.networkPassphrase],
   );

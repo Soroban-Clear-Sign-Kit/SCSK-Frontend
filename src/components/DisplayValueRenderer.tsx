@@ -19,17 +19,35 @@ export const DisplayValueRenderer: React.FC<{ val: DisplayValue }> = ({
       </span>
     );
   }
-  if (
-    val.kind === "int" ||
-    val.kind === "bool" ||
-    val.kind === "string" ||
-    val.kind === "symbol" ||
-    val.kind === "void"
-  ) {
+  if (val.kind === "string" || val.kind === "symbol") {
+    return (
+      <span>
+        <span>{val.value}</span>
+        {val.truncated && <em> (truncated)</em>}
+        {val.sanitized && (
+          <em title="Hidden or control characters were removed">
+            {" "}
+            (sanitized)
+          </em>
+        )}
+      </span>
+    );
+  }
+  if (val.kind === "int" || val.kind === "bool" || val.kind === "void") {
     return <span>{"value" in val ? String(val.value) : "void"}</span>;
   }
   if (val.kind === "bytes") {
-    return <span>{val.hex}</span>;
+    return (
+      <span>
+        <span>{val.hex}</span>
+        {val.truncated ? "…" : ""}{" "}
+        {val.length !== undefined && (
+          <span>
+            ({val.length} bytes{val.truncated ? ", truncated" : ""})
+          </span>
+        )}
+      </span>
+    );
   }
   if (val.kind === "vec") {
     return (

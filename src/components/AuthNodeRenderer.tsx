@@ -1,6 +1,7 @@
 import React from "react";
 import { AuthNode } from "@clearsign/core";
 import { shortenAddress } from "../utils.js";
+import { DisplayValueRenderer } from "./DisplayValueRenderer.js";
 import styles from "../styles.module.css";
 
 export const AuthNodeRenderer: React.FC<{ node: AuthNode }> = ({ node }) => {

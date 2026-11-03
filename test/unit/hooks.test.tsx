@@ -118,7 +118,7 @@ describe("useClearSign", () => {
   });
 
   it("ignores a stale preview that resolves after a newer request", async () => {
-    let releaseFirst!: (value: unknown) => void;
+    let releaseFirst!: (value: core.ClearSignPreview) => void;
     vi.mocked(core.buildPreview)
       .mockImplementationOnce(
         () =>
@@ -145,7 +145,10 @@ describe("useClearSign", () => {
     );
 
     await act(async () => {
-      releaseFirst({ risk: "ok", tag: "first" });
+      releaseFirst({
+        risk: "ok",
+        tag: "first",
+      } as unknown as core.ClearSignPreview);
     });
 
     expect(result.current.preview).toEqual({ risk: "ok", tag: "second" });

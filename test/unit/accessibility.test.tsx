@@ -2,15 +2,26 @@ import React from "react";
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { axe } from "vitest-axe";
+import * as matchers from "vitest-axe/matchers";
+import type { AxeMatchers } from "vitest-axe";
 import { ClearSignModal } from "../../src/ClearSignModal.js";
 import { ClearSignPreview } from "@clearsign/core";
+
+expect.extend(matchers);
+
+declare module "vitest" {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-empty-object-type, @typescript-eslint/no-unused-vars
+  export interface Assertion<T = any> extends AxeMatchers {}
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+  export interface AsymmetricMatchersContaining extends AxeMatchers {}
+}
 
 describe("ClearSignModal Accessibility & Keyboard Navigation", () => {
   const basePreview: ClearSignPreview = {
     version: 1,
     risk: "ok",
     warnings: [],
-    network: { passphrase: "test", verified: true },
+    network: { passphrase: "test", rpcMatches: true, signatureBound: true },
     envelope: { source: "G123", sequence: "1", fee: "100", operations: [] },
     auth: [],
     simulation: { status: "success" },
@@ -40,7 +51,7 @@ describe("ClearSignModal Accessibility & Keyboard Navigation", () => {
           {
             code: "AUTH_EXPIRING",
             message: "Signature authorization expires soon",
-            severity: "warning",
+            severity: "review",
           },
         ],
       };
@@ -100,27 +111,33 @@ describe("ClearSignModal Accessibility & Keyboard Navigation", () => {
             delta: "-50",
             symbol: "XLM",
             formatted: "50",
+            tokenContractId: "CTOKEN1",
           },
           {
             account: "GBXXXXXX2VGDR2FYWLIYAQIEGXTQVTPEKGQKJZLDEOJKIOPU",
             delta: "100",
             symbol: "USDC",
             formatted: "100",
+            tokenContractId: "CTOKEN2",
           },
         ],
         invocation: {
+          specSource: "wasm",
           contractId: "CDQJUTQYK2MQX2VGDR2FYWLIYAQIEGXTQVTPEKGQKJZLDEOJKIOPU",
           functionName: "swap",
           args: [
             {
               name: "amount",
+              typeName: "u32",
               value: { kind: "int", type: "u32", value: "100" },
             },
             {
               name: "recipient",
+              typeName: "address",
               value: {
                 kind: "address",
                 value: "GDQJUTQYK2MQX2VGDR2FYWLIYAQIEGXTQVTPEKGQKJZLDEOJKIOPU",
+                addressType: "account",
               },
             },
           ],
@@ -149,7 +166,7 @@ describe("ClearSignModal Accessibility & Keyboard Navigation", () => {
           {
             code: "WARN_FEE",
             message: "Simulated fee exceeds usual bounds",
-            severity: "warning",
+            severity: "review",
           },
         ],
       };
@@ -412,8 +429,18 @@ describe("ClearSignModal Accessibility & Keyboard Navigation", () => {
       const effectsPreview: ClearSignPreview = {
         ...basePreview,
         effects: [
-          { account: "GAAA", delta: "25", symbol: "USDC" },
-          { account: "GBBB", delta: "-10", symbol: "USDC" },
+          {
+            account: "GAAA",
+            delta: "25",
+            symbol: "USDC",
+            tokenContractId: "CTOKEN1",
+          },
+          {
+            account: "GBBB",
+            delta: "-10",
+            symbol: "USDC",
+            tokenContractId: "CTOKEN2",
+          },
         ],
       };
 

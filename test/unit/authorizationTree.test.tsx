@@ -104,10 +104,13 @@ describe("AuthorizationTree Component", () => {
       // Initially shortened
       expect(screen.getByText("CAAA...AAAA")).toBeInTheDocument();
 
-      const revealBtn = screen.getByRole("button", {
+      const revealBtn = screen.getAllByRole("button", {
         name: "Reveal full contract address",
-      });
-      fireEvent.click(revealBtn);
+      })[0];
+      expect(revealBtn).toBeDefined();
+      if (revealBtn) {
+        fireEvent.click(revealBtn);
+      }
 
       // Full address revealed
       expect(
@@ -115,14 +118,15 @@ describe("AuthorizationTree Component", () => {
           "CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
         ),
       ).toBeInTheDocument();
-      expect(
-        screen.getByRole("button", { name: "Hide full contract address" }),
-      ).toBeInTheDocument();
+      const hideBtn = screen.getAllByRole("button", {
+        name: "Hide full contract address",
+      })[0];
+      expect(hideBtn).toBeInTheDocument();
 
       // Click to hide again
-      fireEvent.click(
-        screen.getByRole("button", { name: "Hide full contract address" }),
-      );
+      if (hideBtn) {
+        fireEvent.click(hideBtn);
+      }
       expect(screen.getByText("CAAA...AAAA")).toBeInTheDocument();
     });
 
@@ -294,7 +298,11 @@ describe("AuthorizationTree Component", () => {
       version: 1,
       risk: "ok",
       warnings: [],
-      network: { passphrase: "test", verified: true },
+      network: {
+        passphrase: "test",
+        rpcMatches: true,
+        signatureBound: true,
+      },
       envelope: { source: "G123", sequence: "1", fee: "100", operations: [] },
       auth: [
         {

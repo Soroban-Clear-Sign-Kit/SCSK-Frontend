@@ -9,7 +9,7 @@ describe("ClearSignModal", () => {
     version: 1,
     risk: "ok",
     warnings: [],
-    network: { passphrase: "test", verified: true },
+    network: { passphrase: "test", rpcMatches: true, signatureBound: true },
     envelope: { source: "G123", sequence: "1", fee: "100", operations: [] },
     auth: [],
     simulation: { status: "success" },
@@ -597,7 +597,8 @@ describe("ClearSignModal", () => {
         ...basePreview,
         network: {
           passphrase: "Public Global Stellar Network ; September 2015",
-          verified: false,
+          rpcMatches: false,
+          signatureBound: false,
         },
       };
       render(

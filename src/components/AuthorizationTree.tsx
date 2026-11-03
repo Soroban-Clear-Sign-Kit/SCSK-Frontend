@@ -20,13 +20,13 @@ export interface AuthTreeArg {
 }
 
 export interface AuthTreeNode {
-  id?: string;
-  contract?: string;
-  functionName?: string;
-  args?: AuthTreeArg[];
-  children?: AuthTreeNode[];
-  warnings?: AuthTreeWarning[];
-  kind?: string;
+  id?: string | undefined;
+  contract?: string | undefined;
+  functionName?: string | undefined;
+  args?: AuthTreeArg[] | undefined;
+  children?: AuthTreeNode[] | undefined;
+  warnings?: AuthTreeWarning[] | undefined;
+  kind?: string | undefined;
 }
 
 export interface AuthorizationTreeProps {
@@ -145,7 +145,7 @@ export const AuthorizationTree: React.FC<AuthorizationTreeProps> = ({
   }, [normalizedNodes, expandedIds]);
 
   const [focusedId, setFocusedId] = useState<string | null>(() => {
-    return visibleNodes.length > 0 ? visibleNodes[0].id : null;
+    return visibleNodes.length > 0 ? (visibleNodes[0]?.id ?? null) : null;
   });
 
   const itemRefs = useRef<Record<string, HTMLElement | null>>({});
@@ -186,13 +186,16 @@ export const AuthorizationTree: React.FC<AuthorizationTreeProps> = ({
     const currentIndex = visibleNodes.findIndex((vn) => vn.id === focusedId);
     const currentNode =
       currentIndex >= 0 ? visibleNodes[currentIndex] : visibleNodes[0];
+    if (!currentNode) return;
 
     switch (e.key) {
       case "ArrowDown": {
         e.preventDefault();
         const nextIndex = Math.min(currentIndex + 1, visibleNodes.length - 1);
         const nextNode = visibleNodes[nextIndex];
-        setFocusedId(nextNode.id);
+        if (nextNode) {
+          setFocusedId(nextNode.id);
+        }
         break;
       }
 
@@ -200,7 +203,9 @@ export const AuthorizationTree: React.FC<AuthorizationTreeProps> = ({
         e.preventDefault();
         const prevIndex = Math.max(currentIndex - 1, 0);
         const prevNode = visibleNodes[prevIndex];
-        setFocusedId(prevNode.id);
+        if (prevNode) {
+          setFocusedId(prevNode.id);
+        }
         break;
       }
 
@@ -212,8 +217,9 @@ export const AuthorizationTree: React.FC<AuthorizationTreeProps> = ({
           } else {
             // Already expanded: move to first child
             const nextIndex = currentIndex + 1;
-            if (nextIndex < visibleNodes.length) {
-              setFocusedId(visibleNodes[nextIndex].id);
+            const nextNode = visibleNodes[nextIndex];
+            if (nextNode) {
+              setFocusedId(nextNode.id);
             }
           }
         }
@@ -234,13 +240,19 @@ export const AuthorizationTree: React.FC<AuthorizationTreeProps> = ({
 
       case "Home": {
         e.preventDefault();
-        setFocusedId(visibleNodes[0].id);
+        const first = visibleNodes[0];
+        if (first) {
+          setFocusedId(first.id);
+        }
         break;
       }
 
       case "End": {
         e.preventDefault();
-        setFocusedId(visibleNodes[visibleNodes.length - 1].id);
+        const last = visibleNodes[visibleNodes.length - 1];
+        if (last) {
+          setFocusedId(last.id);
+        }
         break;
       }
 
