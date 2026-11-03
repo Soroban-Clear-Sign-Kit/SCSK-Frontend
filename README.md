@@ -14,6 +14,7 @@ The Frontend package of the **Soroban Clear-Sign Kit (SCSK)** provides React con
 - **Fail-closed**: Approve is only offered for `ok` and `review` previews, `review` needs an explicit acknowledgement for each preview, and unrecognised risk levels cannot be approved.
 - **Theming & i18n**: Fully customizable without forking using CSS custom property tokens, automatic light/dark switching and manual overrides, WCAG 2.1 AA contrast compliance, message dictionary overrides (`ClearSignProvider`), pseudo-localization, and RTL layout support. See [docs/THEMING_AND_I18N.md](docs/THEMING_AND_I18N.md).
 - **Verification & Raw View**: Accessible 'Raw' tab with Base64 transaction envelope and formatted JSON, one-click copy buttons, grouped 4-character monospace chunk reveals for addresses and hashes, and paginated diff viewers handling 1,000+ entries without performance loss. Zero value is available only in truncated form. See [docs/VERIFICATION_AND_RAW.md](docs/VERIFICATION_AND_RAW.md).
+- **Testing & Visual Regressions**: Testing Library unit tests across all 6 modal states (`loading`, `ready`, `review`, `blocked`, `error`, `success`), Playwright e2e visual regression test suite in light and dark themes (12 baseline snapshots), strict coverage thresholds, and automated CI failure diff artifact uploads. See [docs/TESTING_AND_VISUAL.md](docs/TESTING_AND_VISUAL.md).
 
 ## Usage
 
@@ -86,5 +87,15 @@ pnpm run build
 ## Testing
 
 ```bash
-pnpm run test
+# Run all unit tests
+pnpm test
+
+# Run unit tests with coverage thresholds check
+pnpm run test:coverage
+
+# Run Playwright visual regression tests
+pnpm run test:e2e
+
+# Update Playwright snapshots
+npx playwright test --update-snapshots
 ```

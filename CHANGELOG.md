@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Support for all six modal states (`loading`, `ready`, `review`, `blocked`, `error`, `success`) in `ClearSignModal` with specific risk banners, live announcements, and gating controls.
+- Comprehensive Testing Library unit test suite for all modal states (`test/unit/modalStates.test.tsx`).
+- Playwright end-to-end visual regression test suite (`test/e2e/visual.spec.ts`) with 12 baseline snapshots across light and dark themes.
+- Interactive modal state and theme URL controller in `example/src/App.tsx` (`?state=...&theme=...`).
+- Strict Vitest coverage thresholds enforced at production levels (90% stmts, 85% branch, 95% funcs, 90% lines) and `test:coverage` script.
+- CI visual regression testing with automated failure diff uploads via `actions/upload-artifact@v4`.
+- Testing and visual regression architecture documentation (`docs/TESTING_AND_VISUAL.md`).
+
 - Accessible 'Raw' tab in `ClearSignModal` featuring transaction envelope XDR (base64) and formatted decoded JSON with dedicated copy buttons and copy status feedback.
 - WAI-ARIA compliant tab navigation between 'Details' and 'Raw' tabs with arrow key switching.
 - `AddressHashView` component and `formatGroupedMonospace` utility providing middle-truncated default previews, on-demand full reveals in grouped 4-character monospace chunks, and direct clipboard copying.
