@@ -50,7 +50,10 @@
     "node": ">=18.0.0"
   },
   "scripts": {
+    "setup": "node scripts/setup.mjs",
+    "dev": "pnpm --filter example dev",
     "build": "tsup",
+    "build:example": "pnpm --filter example build",
     "typecheck": "tsc --noEmit",
     "lint": "eslint src test",
     "format:check": "prettier --check .",

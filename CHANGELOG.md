@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- F0 audit & clean-clone onboarding walkthrough in under 10 minutes with automated `pnpm run setup` script (`scripts/setup.mjs`).
+- Complete, copy-pasteable Soroban Testnet Quick Start component in `README.md` using `freighterAdapter()`.
+- Comprehensive props and member reference tables for `ClearSignModal`, `useClearSign`, `withClearSign`, `SignerAdapter`, and `ClearSignMessages`.
+- Detailed visual preview table with light and dark mode screenshot assets for all 6 modal states (`ready`, `loading`, `review`, `blocked`, `error`, `success`) in `docs/screenshots/`.
+- Full documentation for the `@clearsign/vue` companion package in root `README.md` and `vue/README.md`.
+- Added `"setup"`, `"dev"`, and `"build:example"` workspace scripts in root `package.json`.
+
 - Per-entrypoint size-limit budgets enforcing `< 20 KB` for core ESM, `< 25 KB` for core CJS, `< 2 KB` for wallet adapters, and `< 5 KB` for published CSS (`.size-limit.json` and `pnpm run check:size`).
 - Comprehensive packaging validation script (`pnpm run check:package`) integrating `publint` and `@arethetypeswrong/cli` into CI.
 - Automated clean Vite consumer verification test (`scripts/test-packed-tarball.mjs` and `pnpm run test:tarball`) installing packed `.tgz` into an isolated Vite project and rendering `ClearSignModal`.
