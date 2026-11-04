@@ -1,0 +1,27 @@
+[
+  {
+    "name": "@clearsign/react (ESM)",
+    "path": "dist/index.js",
+    "limit": "20 KB"
+  },
+  {
+    "name": "@clearsign/react (CJS)",
+    "path": "dist/index.cjs",
+    "limit": "25 KB"
+  },
+  {
+    "name": "@clearsign/react/adapters/freighter (ESM)",
+    "path": "dist/adapters/freighter.js",
+    "limit": "2 KB"
+  },
+  {
+    "name": "@clearsign/react/adapters/stellar-wallets-kit (ESM)",
+    "path": "dist/adapters/stellar-wallets-kit.js",
+    "limit": "2 KB"
+  },
+  {
+    "name": "@clearsign/react/styles.css",
+    "path": "dist/index.css",
+    "limit": "5 KB"
+  }
+]

@@ -1,0 +1,5 @@
+{
+  "main": "../../dist/adapters/stellar-wallets-kit.cjs",
+  "module": "../../dist/adapters/stellar-wallets-kit.js",
+  "types": "../../dist/adapters/stellar-wallets-kit.d.ts"
+}

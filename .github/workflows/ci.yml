@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: ["main", "Frontend-Files", "fix/*"]
+    branches: ["main", "fix/*"]
   pull_request:
-    branches: ["main", "Frontend-Files"]
+    branches: ["main"]
 
 jobs:
   build-and-test:
@@ -25,6 +25,12 @@ jobs:
       - run: pnpm run format:check
       - run: pnpm run typecheck
       - run: pnpm run build
+      - name: Package Checks (publint & arethetypeswrong)
+        run: pnpm run check:package
+      - name: Size Limit Budgets
+        run: pnpm run check:size
+      - name: Packed Tarball Clean Vite Consumer Test
+        run: pnpm run test:tarball
       - run: pnpm run test:coverage
       - name: Install Playwright Browsers
         run: pnpm exec playwright install --with-deps chromium

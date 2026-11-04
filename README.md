@@ -85,6 +85,42 @@ pnpm run dev
 pnpm run build
 ```
 
+## Package Distribution & Published CSS
+
+`@clearsign/react` is built for maximum compatibility across modern ESM, CommonJS, and legacy bundlers with zero type resolution flaws:
+
+| Entry Point                | Import Path                                     | Description                                           | Size Budget          |
+| :------------------------- | :---------------------------------------------- | :---------------------------------------------------- | :------------------- |
+| **Main Component & Hooks** | `@clearsign/react`                              | `ClearSignModal`, `useClearSign`, `ClearSignProvider` | `< 20 KB` (brotlied) |
+| **Freighter Adapter**      | `@clearsign/react/adapters/freighter`           | Freighter wallet signing adapter                      | `< 2 KB` (brotlied)  |
+| **Stellar Wallets Kit**    | `@clearsign/react/adapters/stellar-wallets-kit` | Creit Tech StellarWalletsKit adapter                  | `< 2 KB` (brotlied)  |
+| **Published Stylesheet**   | `@clearsign/react/styles.css`                   | CSS tokens, layouts, and animations                   | `< 5 KB` (brotlied)  |
+
+### Stylesheet Import
+
+Always include the stylesheet once in your application entry file or root layout:
+
+```tsx
+import "@clearsign/react/styles.css";
+```
+
+### Packaging & Quality Verification
+
+- **Exports & Dual ESM/CJS Types**: Verified via `publint` and `@arethetypeswrong/cli` across `node10`, `node16 (CJS/ESM)`, and `bundler` resolution modes.
+- **Size Budgets**: Enforced via `size-limit` per entry point to guarantee light bundle footprints.
+- **Tarball Consumer Test**: Automated test installs packed `.tgz` into a clean Vite application and renders the modal component.
+
+```bash
+# Run publint and arethetypeswrong audits
+pnpm run check:package
+
+# Verify size-limit budgets
+pnpm run check:size
+
+# Test packed tarball in an isolated Vite application
+pnpm run test:tarball
+```
+
 ## Testing
 
 ```bash

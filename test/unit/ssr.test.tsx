@@ -241,8 +241,7 @@ describe("Server-Side Rendering (SSR) & Node Environment Safety", () => {
       const mockAuthTree: AuthTreeNode[] = [
         {
           id: "node-1",
-          contract:
-            "CA3D5KRYMCMCZVACQ3VOXJDTBC65CV46UMTMVN6AZKQ3M5KN7W3KHA5C",
+          contract: "CA3D5KRYMCMCZVACQ3VOXJDTBC65CV46UMTMVN6AZKQ3M5KN7W3KHA5C",
           functionName: "swap",
           args: [
             {
@@ -285,7 +284,7 @@ describe("Server-Side Rendering (SSR) & Node Environment Safety", () => {
         <AddressHashView
           value="GBRPYHIL2CI3FNQ4BXLFMNDLFJUNPU2HY3ZMFSHONUCEOASW7QC7OX2H"
           kind="address"
-        />
+        />,
       );
 
       expect(html).toContain("GBRP...OX2H");

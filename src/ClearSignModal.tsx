@@ -574,28 +574,32 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({
               </div>
             </div>
 
-            <div className={styles.section}>
-              <h3 className={styles.sectionTitle}>{m.sectionFees}</h3>
-              <div>
-                {m.declaredFeeLabel} {preview.envelope.fee}
+            {(preview.envelope || preview.simulation) && (
+              <div className={styles.section}>
+                <h3 className={styles.sectionTitle}>{m.sectionFees}</h3>
+                {preview.envelope?.fee && (
+                  <div>
+                    {m.declaredFeeLabel} {preview.envelope.fee}
+                  </div>
+                )}
+                {preview.simulation?.minResourceFee && (
+                  <div>
+                    {m.simulatedResourceFeeLabel}{" "}
+                    {preview.simulation.minResourceFee}
+                  </div>
+                )}
+                {preview.simulation?.status && (
+                  <div>
+                    {m.simulationStatusLabel} {preview.simulation.status}
+                  </div>
+                )}
+                {preview.simulation?.error && (
+                  <div>
+                    {m.simulationErrorLabel} {preview.simulation.error}
+                  </div>
+                )}
               </div>
-              {preview.simulation.minResourceFee && (
-                <div>
-                  {m.simulatedResourceFeeLabel}{" "}
-                  {preview.simulation.minResourceFee}
-                </div>
-              )}
-              {preview.simulation.status && (
-                <div>
-                  {m.simulationStatusLabel} {preview.simulation.status}
-                </div>
-              )}
-              {preview.simulation.error && (
-                <div>
-                  {m.simulationErrorLabel} {preview.simulation.error}
-                </div>
-              )}
-            </div>
+            )}
 
             {mappedWarnings.length > 0 && (
               <div className={styles.section}>

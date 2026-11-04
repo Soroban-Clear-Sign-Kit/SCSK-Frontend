@@ -1,0 +1,5 @@
+{
+  "main": "../../dist/adapters/freighter.cjs",
+  "module": "../../dist/adapters/freighter.js",
+  "types": "../../dist/adapters/freighter.d.ts"
+}

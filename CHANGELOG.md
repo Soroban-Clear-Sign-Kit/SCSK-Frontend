@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Per-entrypoint size-limit budgets enforcing `< 20 KB` for core ESM, `< 25 KB` for core CJS, `< 2 KB` for wallet adapters, and `< 5 KB` for published CSS (`.size-limit.json` and `pnpm run check:size`).
+- Comprehensive packaging validation script (`pnpm run check:package`) integrating `publint` and `@arethetypeswrong/cli` into CI.
+- Automated clean Vite consumer verification test (`scripts/test-packed-tarball.mjs` and `pnpm run test:tarball`) installing packed `.tgz` into an isolated Vite project and rendering `ClearSignModal`.
+- Published stylesheet documentation and import path specifications in `README.md`.
+
+### Changed
+
+- Updated `package.json` exports map to explicit nested `import` and `require` conditions with dedicated `.d.ts` and `.d.cts` dual type declarations.
+- Created legacy Node 10 subpath proxies in `adapters/freighter/package.json` and `adapters/stellar-wallets-kit/package.json` ensuring 100% green resolution across all module resolution algorithms.
+- Configured explicit `sideEffects` and `engines` fields in `package.json`.
+
 - SSR and Server-Side Rendering support for Next.js (App Router and Pages Router), Remix, Astro, and Vite SSR.
 - Built-in `"use client";` banner directive injected in tsup build configs and source entry points (`@clearsign/react`, `@clearsign/react/adapters/freighter`, `@clearsign/react/adapters/stellar-wallets-kit`).
 - Comprehensive pure Node.js SSR test suite (`test/unit/ssr.test.tsx`) testing all 6 modal states, subcomponents, and adapters with `renderToString` from `react-dom/server`.

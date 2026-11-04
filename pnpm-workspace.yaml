@@ -3,6 +3,9 @@ packages:
   - "example"
   - "vue"
 
+overrides:
+  "@clearsign/core": "link:../SCSK-Backend"
+
 allowBuilds:
   esbuild: true
   "@reown/appkit": true

@@ -7,26 +7,47 @@
   "main": "dist/index.cjs",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
+  "style": "dist/index.css",
   "sideEffects": [
+    "dist/index.css",
     "**/*.css"
   ],
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
     },
     "./adapters/freighter": {
-      "types": "./dist/adapters/freighter.d.ts",
-      "import": "./dist/adapters/freighter.js",
-      "require": "./dist/adapters/freighter.cjs"
+      "import": {
+        "types": "./dist/adapters/freighter.d.ts",
+        "default": "./dist/adapters/freighter.js"
+      },
+      "require": {
+        "types": "./dist/adapters/freighter.d.cts",
+        "default": "./dist/adapters/freighter.cjs"
+      }
     },
     "./adapters/stellar-wallets-kit": {
-      "types": "./dist/adapters/stellar-wallets-kit.d.ts",
-      "import": "./dist/adapters/stellar-wallets-kit.js",
-      "require": "./dist/adapters/stellar-wallets-kit.cjs"
+      "import": {
+        "types": "./dist/adapters/stellar-wallets-kit.d.ts",
+        "default": "./dist/adapters/stellar-wallets-kit.js"
+      },
+      "require": {
+        "types": "./dist/adapters/stellar-wallets-kit.d.cts",
+        "default": "./dist/adapters/stellar-wallets-kit.cjs"
+      }
     },
-    "./styles.css": "./dist/index.css"
+    "./styles.css": "./dist/index.css",
+    "./package.json": "./package.json"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   },
   "scripts": {
     "build": "tsup",
@@ -35,10 +56,13 @@
     "format:check": "prettier --check .",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "test:tarball": "node scripts/test-packed-tarball.mjs",
+    "check:package": "publint && attw --pack . --exclude-entrypoints ./styles.css ./package.json",
+    "check:size": "size-limit"
   },
   "dependencies": {
-    "@clearsign/core": "link:../SCSK-Backend",
+    "@clearsign/core": "^0.1.0",
     "@stellar/stellar-sdk": "^17.2.1"
   },
   "peerDependencies": {
@@ -56,8 +80,10 @@
     }
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.5",
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.64.1",
+    "@size-limit/file": "^14.3.0",
     "@stellar/freighter-api": "^6.0.1",
     "@testing-library/jest-dom": "^6.5.0",
     "@testing-library/react": "^16.0.1",
@@ -70,8 +96,10 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "jsdom": "^25.0.1",
     "prettier": "^3.9.9",
+    "publint": "^0.3.25",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "size-limit": "^14.3.0",
     "tsup": "^8.3.0",
     "typescript": "^5.6.2",
     "typescript-eslint": "^8.71.1",
@@ -79,6 +107,7 @@
     "vitest-axe": "^0.1.0"
   },
   "files": [
-    "dist"
+    "dist",
+    "adapters"
   ]
 }
