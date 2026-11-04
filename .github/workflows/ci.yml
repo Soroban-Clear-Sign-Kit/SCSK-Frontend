@@ -14,12 +14,18 @@ jobs:
         node-version: [22, 24]
     steps:
       - uses: actions/checkout@v4
+      - name: Clone Backend Core
+        run: git clone --depth 1 https://github.com/Soroban-Clear-Sign-Kit/SCSK-Backend.git ../SCSK-Backend
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
       - uses: pnpm/action-setup@v3
         with:
           version: 12
+      - name: Build Backend Core
+        run: |
+          pnpm --dir ../SCSK-Backend install
+          pnpm --dir ../SCSK-Backend run build
       - run: pnpm install --frozen-lockfile
       - run: pnpm run lint
       - run: pnpm run format:check
