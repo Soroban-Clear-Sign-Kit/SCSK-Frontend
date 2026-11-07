@@ -1,15 +1,17 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { buildPreview, ClearSignPreview, Intent } from '@clearsign/core';
+import { buildPreview, ClearSignPreview, Intent, PreviewOptions } from '@clearsign/core';
 
-export interface UseClearSignOptions {
+export interface UseClearSignOptions extends PreviewOptions {
   rpcUrl: string;
   networkPassphrase: string;
+  options?: PreviewOptions;
 }
 
 export interface RequestApprovalOptions {
   signerAddress?: string;
   intent?: Intent;
   specs?: Record<string, Buffer | Uint8Array>;
+  options?: PreviewOptions;
 }
 
 export interface UseClearSignResult {
@@ -61,6 +63,19 @@ export function useClearSign(opts: UseClearSignOptions): UseClearSignResult {
       if (requestOpts?.signerAddress !== undefined) buildInput.signerAddress = requestOpts.signerAddress;
       if (requestOpts?.intent !== undefined) buildInput.intent = requestOpts.intent;
       if (requestOpts?.specs !== undefined) buildInput.specs = requestOpts.specs;
+
+      const { rpcUrl: _r, networkPassphrase: _n, options: hookNestedOpts, ...hookInlineOpts } = opts;
+      const mergedOptions: PreviewOptions = {
+        ...hookInlineOpts,
+        ...hookNestedOpts,
+        ...requestOpts?.options,
+      };
+      const cleanedOptions = Object.fromEntries(
+        Object.entries(mergedOptions).filter(([, v]) => v !== undefined),
+      ) as PreviewOptions;
+      if (Object.keys(cleanedOptions).length > 0) {
+        buildInput.options = cleanedOptions;
+      }
 
       const res = await buildPreview(buildInput);
       if (requestId !== requestIdRef.current) return decision;

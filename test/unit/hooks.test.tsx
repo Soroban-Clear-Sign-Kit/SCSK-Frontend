@@ -173,5 +173,35 @@ describe('useClearSign', () => {
 
     await waitFor(() => expect(approved).toBe(false));
   });
+
+  it('forwards hook-level and request-level PreviewOptions to buildPreview', async () => {
+    (core.buildPreview as any).mockResolvedValue({ risk: 'ok' });
+    const { result } = renderHook(() =>
+      useClearSign({
+        rpcUrl: 'http://localhost',
+        networkPassphrase: 'test',
+        rpcTimeoutMs: 2500,
+        strictUnverifiedNetwork: true,
+      })
+    );
+
+    act(() => {
+      result.current.requestApproval('xdr', {
+        options: { skipTokenMetadata: true },
+      });
+    });
+
+    await waitFor(() => expect(result.current.preview).toEqual({ risk: 'ok' }));
+    expect(core.buildPreview).toHaveBeenCalledWith(
+      expect.objectContaining({
+        xdr: 'xdr',
+        options: {
+          rpcTimeoutMs: 2500,
+          strictUnverifiedNetwork: true,
+          skipTokenMetadata: true,
+        },
+      })
+    );
+  });
 });
 

@@ -7,6 +7,9 @@ export class ClearSignRejectedError extends Error {
 
 export interface WithClearSignOptions {
   requestApproval: (xdr: string, opts?: any) => Promise<boolean>;
+  signerAddress?: string;
+  specs?: Record<string, Buffer | Uint8Array>;
+  options?: Record<string, any>;
 }
 
 export function withClearSign<T extends (xdr: string, ...args: any[]) => Promise<any>>(
@@ -15,10 +18,17 @@ export function withClearSign<T extends (xdr: string, ...args: any[]) => Promise
 ): T {
   const safeSign = async (xdr: string, ...args: any[]) => {
     const intent = args[0]?.intent;
-    const specs = args[0]?.specs;
-    const signerAddress = args[0]?.signerAddress || args[0]?.address || args[0]?.publicKey;
-    
-    let approved = await options.requestApproval(xdr, { signerAddress, intent, specs });
+    const specs = args[0]?.specs ?? options.specs;
+    const signerAddress =
+      args[0]?.signerAddress || args[0]?.address || args[0]?.publicKey || options.signerAddress;
+    const previewOptions = args[0]?.options ?? options.options;
+
+    const approvalOpts: Record<string, any> = { signerAddress, intent, specs };
+    if (previewOptions !== undefined) {
+      approvalOpts.options = previewOptions;
+    }
+
+    let approved = await options.requestApproval(xdr, approvalOpts);
     
     if (approved !== true) {
       throw new ClearSignRejectedError();

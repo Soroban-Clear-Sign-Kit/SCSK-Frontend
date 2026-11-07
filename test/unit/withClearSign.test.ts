@@ -87,4 +87,23 @@ describe('withClearSign', () => {
     expect(err.message).toBe('User rejected the transaction preview');
     expect(new ClearSignRejectedError('custom').message).toBe('custom');
   });
+
+  it('forwards wrapper-level default options and signerAddress when not overridden per call', async () => {
+    const requestApproval = vi.fn().mockResolvedValue(true);
+    const safeSign = withClearSign(vi.fn().mockResolvedValue('ok'), {
+      requestApproval,
+      signerAddress: 'GDEFAULT',
+      options: { strictUnverifiedNetwork: true },
+    });
+
+    await safeSign('xdr', {});
+
+    expect(requestApproval).toHaveBeenCalledWith(
+      'xdr',
+      expect.objectContaining({
+        signerAddress: 'GDEFAULT',
+        options: { strictUnverifiedNetwork: true },
+      })
+    );
+  });
 });

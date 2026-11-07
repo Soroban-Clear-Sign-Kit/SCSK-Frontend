@@ -445,4 +445,23 @@ describe('ClearSignModal', () => {
       expect(screen.queryByRole('status', { name: /simulating/i })).not.toBeInTheDocument();
     });
   });
+
+  describe('custom title and overlay click', () => {
+    it('renders a custom title and rejects on backdrop click when closeOnOverlayClick is true', () => {
+      const onReject = vi.fn();
+      const { container } = render(
+        <ClearSignModal
+          preview={basePreview}
+          title="Custom Clear-Sign Title"
+          closeOnOverlayClick
+          onApprove={vi.fn()}
+          onReject={onReject}
+        />
+      );
+
+      expect(screen.getByText('Custom Clear-Sign Title')).toBeInTheDocument();
+      fireEvent.click(container.firstChild as HTMLElement);
+      expect(onReject).toHaveBeenCalledTimes(1);
+    });
+  });
 });

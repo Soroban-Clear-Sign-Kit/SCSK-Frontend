@@ -54,7 +54,7 @@
         <div :class="styles.buttonGroup">
           <button type="button" @click="handleReject" :class="styles.btnReject">Reject</button>
           <button 
-            v-if="preview.risk !== 'blocked'"
+            v-if="preview.risk === 'ok' || preview.risk === 'review'"
             type="button" 
             @click="handleApprove" 
             :disabled="preview.risk === 'review' && !reviewed"
@@ -76,6 +76,7 @@ import AuthNodeComponent from './AuthNode.vue';
 
 const props = defineProps<{
   preview: ClearSignPreview | null;
+  loading?: boolean;
 }>();
 
 const emit = defineEmits<{
@@ -99,7 +100,10 @@ const riskInfo = computed(() => {
 });
 
 const handleApprove = () => {
-  emit('approve');
+  if (!props.preview) return;
+  if (props.preview.risk === 'ok' || (props.preview.risk === 'review' && reviewed.value)) {
+    emit('approve');
+  }
 };
 
 const handleReject = () => {
@@ -107,6 +111,7 @@ const handleReject = () => {
 };
 
 watch(() => props.preview, (newVal) => {
+  reviewed.value = false;
   if (newVal) {
     triggerRef.value = document.activeElement as HTMLElement;
     setTimeout(() => {

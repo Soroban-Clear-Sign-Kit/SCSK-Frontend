@@ -6,6 +6,10 @@ export interface ClearSignModalProps {
   preview: ClearSignPreview | null;
   /** Shows a busy dialog (with a Reject button) while the preview is still being built. */
   loading?: boolean;
+  /** Custom dialog title (defaults to "Transaction Preview"). */
+  title?: string;
+  /** When true, clicking the backdrop overlay triggers `onReject`. */
+  closeOnOverlayClick?: boolean;
   onApprove: () => void;
   onReject: () => void;
 }
@@ -14,7 +18,14 @@ import { handleCopy, orderWarnings, shortenAddress } from './utils.js';
 import { DisplayValueRenderer } from './components/DisplayValueRenderer.js';
 import { AuthNodeRenderer } from './components/AuthNodeRenderer.js';
 
-export const ClearSignModal: React.FC<ClearSignModalProps> = ({ preview, loading = false, onApprove, onReject }) => {
+export const ClearSignModal: React.FC<ClearSignModalProps> = ({
+  preview,
+  loading = false,
+  title = 'Transaction Preview',
+  closeOnOverlayClick = false,
+  onApprove,
+  onReject,
+}) => {
   // The acknowledgement belongs to one specific preview, so a new preview starts unacknowledged.
   const [reviewedPreview, setReviewedPreview] = useState<ClearSignPreview | null>(null);
   const reviewed = preview !== null && reviewedPreview === preview;
@@ -70,7 +81,12 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({ preview, loading
   if (!preview) {
     if (!loading) return null;
     return (
-      <div className={styles.modalOverlay}>
+      <div
+        className={styles.modalOverlay}
+        onClick={(e) => {
+          if (closeOnOverlayClick && e.target === e.currentTarget) onReject();
+        }}
+      >
         <div
           className={styles.modalContent}
           role="dialog"
@@ -81,7 +97,7 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({ preview, loading
           tabIndex={-1}
         >
           <div className={styles.modalHeader}>
-            <h2 id="clearsign-modal-title">Transaction Preview</h2>
+            <h2 id="clearsign-modal-title">{title}</h2>
           </div>
           <div className={styles.modalBody}>
             <p role="status">Decoding and simulating the transaction&hellip;</p>
@@ -109,8 +125,19 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({ preview, loading
 
   const riskInfo = getRiskBannerInfo();
 
+  const handleApproveClick = () => {
+    if (preview.risk === 'ok' || (preview.risk === 'review' && reviewed)) {
+      onApprove();
+    }
+  };
+
   return (
-    <div className={styles.modalOverlay}>
+    <div
+      className={styles.modalOverlay}
+      onClick={(e) => {
+        if (closeOnOverlayClick && e.target === e.currentTarget) onReject();
+      }}
+    >
       <div 
         className={styles.modalContent} 
         role="dialog" 
@@ -120,7 +147,7 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({ preview, loading
         tabIndex={-1}
       >
         <div className={styles.modalHeader}>
-          <h2 id="clearsign-modal-title">Transaction Preview</h2>
+          <h2 id="clearsign-modal-title">{title}</h2>
         </div>
         
         <div className={styles.modalBody}>
@@ -235,7 +262,7 @@ export const ClearSignModal: React.FC<ClearSignModalProps> = ({ preview, loading
               <button 
                 type="button" 
                 className={`${styles.button} ${styles.buttonApprove}`} 
-                onClick={onApprove}
+                onClick={handleApproveClick}
                 disabled={preview.risk === 'review' && !reviewed}
               >
                 Approve
